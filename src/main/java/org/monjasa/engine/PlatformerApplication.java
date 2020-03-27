@@ -3,27 +3,32 @@ package org.monjasa.engine;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.input.Input;
+import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-
-import java.awt.*;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class PlatformerApplication extends GameApplication {
+
+    private static final int PLAYER_MOVE_SPEED = 200;
+    private static final int PLAYER_JUMP_SPEED = 400;
 
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.0.2");
+        settings.setVersion("0.0.3");
     }
 
     private Entity player;
@@ -43,7 +48,8 @@ public class PlatformerApplication extends GameApplication {
         Entity player = new Entity();
         player.setPosition(position);
 
-        Node playerView = new Rectangle(50, 50, Color.DARKBLUE);
+//        Node playerView = new Rectangle(50, 50, Color.DARKBLUE);
+        Node playerView = new ImageView(image("player.png"));
         player.getViewComponent().addChild(playerView);
 
         double viewWidth = playerView.getLayoutBounds().getWidth();
@@ -86,6 +92,48 @@ public class PlatformerApplication extends GameApplication {
         return platform;
     }
 
+    @Override
+    protected void initInput() {
+
+        Input input = getInput();
+
+        input.addAction(new UserAction("Move Right") {
+            @Override
+            protected void onAction() {
+                player.getComponent(PhysicsComponent.class).setVelocityX(PLAYER_MOVE_SPEED);
+                player.setScaleX(1);
+            }
+
+            @Override
+            protected void onActionEnd() {
+                stopMoving(player);
+            }
+        }, KeyCode.RIGHT);
+
+        input.addAction(new UserAction("Move Left") {
+            @Override
+            protected void onAction() {
+                player.getComponent(PhysicsComponent.class).setVelocityX(-PLAYER_MOVE_SPEED);
+                player.setScaleX(-1);
+            }
+
+            @Override
+            protected void onActionEnd() {
+                stopMoving(player);
+            }
+        }, KeyCode.LEFT);
+
+        input.addAction(new UserAction("Jump") {
+            @Override
+            protected void onAction() {
+                player.getComponent(PhysicsComponent.class).setVelocityY(-PLAYER_JUMP_SPEED);
+            }
+        }, KeyCode.UP);
+    }
+
+    private void stopMoving(Entity entity) {
+        entity.getComponent(PhysicsComponent.class).setVelocityX(0);
+    }
 
     public static void main(String[] args) {
         launch(args);
