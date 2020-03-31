@@ -9,12 +9,14 @@ import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
-import javafx.geometry.Point2D;
-import javafx.scene.Node;
-import javafx.scene.image.ImageView;
+import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import org.monjasa.engine.components.PlayerComponent;
+import org.monjasa.engine.entities.EntityBuilder;
+import org.monjasa.engine.entities.PlatformerEntityBuilder;
+import org.monjasa.engine.entities.PlatformerEntityType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,15 +25,12 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class PlatformerApplication extends GameApplication {
 
-    private static final int PLAYER_MOVE_SPEED = 200;
-    private static final int PLAYER_JUMP_SPEED = 400;
-
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.0.4");
+        settings.setVersion("0.1.0");
     }
 
     private Entity player;
@@ -41,12 +40,13 @@ public class PlatformerApplication extends GameApplication {
 
         PhysicsComponent playerPhysicsComponent = new PhysicsComponent();
         playerPhysicsComponent.setBodyType(BodyType.DYNAMIC);
+        playerPhysicsComponent.setFixtureDef(new FixtureDef().friction(0.0f));
 
         player = getEntityBuilder()
                 .addType(PlatformerEntityType.PLAYER)
                 .positionAt(120, 120)
-                .addViewWithHitBox("player.png")
-                .attachComponents(playerPhysicsComponent)
+                .addHitBox(new HitBox(BoundingShape.box(40, 53)))
+                .attachComponents(playerPhysicsComponent, new PlayerComponent())
                 .buildEntity();
 
         List<Entity> platforms = new ArrayList<>();
@@ -77,39 +77,33 @@ public class PlatformerApplication extends GameApplication {
         input.addAction(new UserAction("Move Right") {
             @Override
             protected void onAction() {
-                player.getComponent(PhysicsComponent.class).setVelocityX(PLAYER_MOVE_SPEED);
-                player.setScaleX(1);
+                player.getComponent(PlayerComponent.class).moveRight();
             }
 
             @Override
             protected void onActionEnd() {
-                stopMoving(player);
+                player.getComponent(PlayerComponent.class).horizontalStop();
             }
         }, KeyCode.RIGHT);
 
         input.addAction(new UserAction("Move Left") {
             @Override
             protected void onAction() {
-                player.getComponent(PhysicsComponent.class).setVelocityX(-PLAYER_MOVE_SPEED);
-                player.setScaleX(-1);
+                player.getComponent(PlayerComponent.class).moveLeft();
             }
 
             @Override
             protected void onActionEnd() {
-                stopMoving(player);
+                player.getComponent(PlayerComponent.class).horizontalStop();
             }
         }, KeyCode.LEFT);
 
         input.addAction(new UserAction("Jump") {
             @Override
             protected void onAction() {
-                player.getComponent(PhysicsComponent.class).setVelocityY(-PLAYER_JUMP_SPEED);
+                player.getComponent(PlayerComponent.class).jump();
             }
         }, KeyCode.UP);
-    }
-
-    private void stopMoving(Entity entity) {
-        entity.getComponent(PhysicsComponent.class).setVelocityX(0);
     }
 
     public static void main(String[] args) {

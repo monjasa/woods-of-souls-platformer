@@ -1,4 +1,4 @@
-package org.monjasa.engine;
+package org.monjasa.engine.entities;
 
 public enum PlatformerEntityType {
     PLAYER,

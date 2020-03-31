@@ -1,4 +1,4 @@
-package org.monjasa.engine;
+package org.monjasa.engine.entities;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
@@ -10,6 +10,7 @@ import com.almasb.fxgl.physics.HitBox;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
+import org.monjasa.engine.entities.EntityBuilder;
 
 public class PlatformerEntityBuilder implements EntityBuilder {
 
@@ -61,6 +62,20 @@ public class PlatformerEntityBuilder implements EntityBuilder {
     @Override
     public EntityBuilder positionAt(Point2D point) {
         entity.setPosition(point);
+        return this;
+    }
+
+    @Override
+    public EntityBuilder centerAt(double x, double y) {
+        addScaleOrigin(x, y);
+        addRotationOrigin(x, y);
+        return this;
+    }
+
+    @Override
+    public EntityBuilder centerAt(Point2D entityCenter) {
+        addScaleOrigin(entityCenter);
+        addRotationOrigin(entityCenter);
         return this;
     }
 

@@ -1,4 +1,4 @@
-package org.monjasa.engine;
+package org.monjasa.engine.entities;
 
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
@@ -20,6 +20,10 @@ public interface EntityBuilder {
     EntityBuilder positionAt(double x, double y);
 
     EntityBuilder positionAt(Point2D point);
+
+    EntityBuilder centerAt(double x, double y);
+
+    EntityBuilder centerAt(Point2D point);
 
     EntityBuilder layerAt(int zIndex);
 
