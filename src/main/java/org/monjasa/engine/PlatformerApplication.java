@@ -10,6 +10,7 @@ import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -22,8 +23,7 @@ import org.monjasa.engine.entities.PlatformerEntityType;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.almasb.fxgl.dsl.FXGL.getGameWorld;
-import static com.almasb.fxgl.dsl.FXGL.getInput;
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class PlatformerApplication extends GameApplication {
 
@@ -34,7 +34,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.1.1");
+        settings.setVersion("0.1.2");
     }
 
     @Override
@@ -42,6 +42,8 @@ public class PlatformerApplication extends GameApplication {
 
         PhysicsComponent playerPhysicsComponent = new PhysicsComponent();
         playerPhysicsComponent.setBodyType(BodyType.DYNAMIC);
+        playerPhysicsComponent.addGroundSensor(new HitBox("GROUND_SENSOR", new Point2D(8, 40),
+                BoundingShape.box(16, 2)));
         playerPhysicsComponent.setFixtureDef(new FixtureDef().friction(0.0f));
 
         player = getEntityBuilder()
@@ -63,6 +65,13 @@ public class PlatformerApplication extends GameApplication {
         platforms.add(getEntityBuilder()
                 .addType(PlatformerEntityType.PLATFORM)
                 .positionAt(360, 280)
+                .addViewWithHitBox(new Rectangle(280, 40, Color.BLACK))
+                .attachComponents(new PhysicsComponent())
+                .buildEntity());
+
+        platforms.add(getEntityBuilder()
+                .addType(PlatformerEntityType.PLATFORM)
+                .positionAt(750, 200)
                 .addViewWithHitBox(new Rectangle(280, 40, Color.BLACK))
                 .attachComponents(new PhysicsComponent())
                 .buildEntity());

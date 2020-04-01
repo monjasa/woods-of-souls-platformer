@@ -38,7 +38,8 @@ public class PlayerViewComponent extends Component {
             if (playerTexture.getAnimationChannel() != animationWalking)
                 playerTexture.loopAnimationChannel(animationWalking);
         } else {
-            playerTexture.loopAnimationChannel(animationIdle);
+            if (playerTexture.getAnimationChannel() != animationIdle)
+                playerTexture.loopAnimationChannel(animationIdle);
         }
     }
 }

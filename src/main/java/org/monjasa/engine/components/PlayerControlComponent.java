@@ -21,7 +21,9 @@ public class PlayerControlComponent extends Component {
     }
 
     public void jump() {
-        physicComponent.setVelocityY(-PLAYER_JUMP_SPEED);
+        if (physicComponent.isOnGround()) {
+            physicComponent.setVelocityY(-PLAYER_JUMP_SPEED);
+        }
     }
 
     public void stopHorizontalMoving() {
