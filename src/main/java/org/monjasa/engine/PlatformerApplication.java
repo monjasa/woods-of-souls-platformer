@@ -13,7 +13,8 @@ import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import org.monjasa.engine.components.PlayerComponent;
+import org.monjasa.engine.components.PlayerControlComponent;
+import org.monjasa.engine.components.PlayerViewComponent;
 import org.monjasa.engine.entities.EntityBuilder;
 import org.monjasa.engine.entities.PlatformerEntityBuilder;
 import org.monjasa.engine.entities.PlatformerEntityType;
@@ -21,19 +22,20 @@ import org.monjasa.engine.entities.PlatformerEntityType;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxgl.dsl.FXGL.getGameWorld;
+import static com.almasb.fxgl.dsl.FXGL.getInput;
 
 public class PlatformerApplication extends GameApplication {
+
+    private Entity player;
 
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.1.0");
+        settings.setVersion("0.1.1");
     }
-
-    private Entity player;
 
     @Override
     protected void initGame() {
@@ -45,8 +47,8 @@ public class PlatformerApplication extends GameApplication {
         player = getEntityBuilder()
                 .addType(PlatformerEntityType.PLAYER)
                 .positionAt(120, 120)
-                .addHitBox(new HitBox(BoundingShape.box(40, 53)))
-                .attachComponents(playerPhysicsComponent, new PlayerComponent())
+                .addHitBox(new HitBox(BoundingShape.box(32, 42)))
+                .attachComponents(playerPhysicsComponent, new PlayerViewComponent(), new PlayerControlComponent())
                 .buildEntity();
 
         List<Entity> platforms = new ArrayList<>();
@@ -77,40 +79,40 @@ public class PlatformerApplication extends GameApplication {
         input.addAction(new UserAction("Move Right") {
             @Override
             protected void onAction() {
-                player.getComponent(PlayerComponent.class).moveRight();
+                player.getComponent(PlayerControlComponent.class).moveRight();
             }
 
             @Override
             protected void onActionEnd() {
-                player.getComponent(PlayerComponent.class).horizontalStop();
+                player.getComponent(PlayerControlComponent.class).stopHorizontalMoving();
             }
         }, KeyCode.RIGHT);
 
         input.addAction(new UserAction("Move Left") {
             @Override
             protected void onAction() {
-                player.getComponent(PlayerComponent.class).moveLeft();
+                player.getComponent(PlayerControlComponent.class).moveLeft();
             }
 
             @Override
             protected void onActionEnd() {
-                player.getComponent(PlayerComponent.class).horizontalStop();
+                player.getComponent(PlayerControlComponent.class).stopHorizontalMoving();
             }
         }, KeyCode.LEFT);
 
         input.addAction(new UserAction("Jump") {
             @Override
             protected void onAction() {
-                player.getComponent(PlayerComponent.class).jump();
+                player.getComponent(PlayerControlComponent.class).jump();
             }
         }, KeyCode.UP);
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     public static EntityBuilder getEntityBuilder() {
         return new PlatformerEntityBuilder();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }
