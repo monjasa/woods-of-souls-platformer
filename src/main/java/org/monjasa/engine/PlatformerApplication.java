@@ -34,7 +34,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.1.2");
+        settings.setVersion("0.1.3");
     }
 
     @Override
@@ -115,6 +115,14 @@ public class PlatformerApplication extends GameApplication {
                 player.getComponent(PlayerControlComponent.class).jump();
             }
         }, KeyCode.UP);
+
+        getInput().addAction(new UserAction("Scale") {
+            @Override
+            protected void onActionBegin() {
+                player.setScaleX(player.getScaleX() + 1.0);
+                player.setScaleY(player.getScaleY() + 1.0);
+            }
+        }, KeyCode.F);
     }
 
     public static EntityBuilder getEntityBuilder() {
