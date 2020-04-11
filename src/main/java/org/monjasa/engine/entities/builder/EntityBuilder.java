@@ -1,4 +1,4 @@
-package org.monjasa.engine.entities;
+package org.monjasa.engine.entities.builder;
 
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;

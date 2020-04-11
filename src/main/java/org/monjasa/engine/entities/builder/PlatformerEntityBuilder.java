@@ -1,4 +1,4 @@
-package org.monjasa.engine.entities;
+package org.monjasa.engine.entities.builder;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
@@ -10,20 +10,15 @@ import com.almasb.fxgl.physics.HitBox;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
-import org.monjasa.engine.entities.EntityBuilder;
+import org.monjasa.engine.entities.factories.PlatformerEntityFactory;
 
-public class PlatformerEntityBuilder implements EntityBuilder {
+public abstract class PlatformerEntityBuilder implements EntityBuilder {
 
-    private Entity entity;
+    protected Entity entity;
+    protected PlatformerEntityFactory factory;
 
-    public PlatformerEntityBuilder() {
-        entity = new Entity();
-    }
-
-    @Override
-    public EntityBuilder resetEntity() {
-        entity = new Entity();
-        return this;
+    public PlatformerEntityBuilder(PlatformerEntityFactory factory) {
+        this.factory = factory;
     }
 
     @Override
@@ -201,5 +196,13 @@ public class PlatformerEntityBuilder implements EntityBuilder {
     @Override
     public Entity buildEntity() {
         return entity;
+    }
+
+    public PlatformerEntityFactory getFactory() {
+        return factory;
+    }
+
+    public void setFactory(PlatformerEntityFactory factory) {
+        this.factory = factory;
     }
 }
