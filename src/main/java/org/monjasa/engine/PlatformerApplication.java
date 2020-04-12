@@ -24,7 +24,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.1.5");
+        settings.setVersion("0.1.6");
 
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(false);
@@ -32,7 +32,7 @@ public class PlatformerApplication extends GameApplication {
             @NotNull
             @Override
             public FXGLMenu newMainMenu() {
-                return new PlatformerMainMenu(MenuType.MAIN_MENU);
+                return PlatformerMainMenu.getMainMenuInstance();
             }
         });
     }

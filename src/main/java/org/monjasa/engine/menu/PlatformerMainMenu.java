@@ -14,7 +14,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class PlatformerMainMenu extends FXGLMenu {
 
-    public PlatformerMainMenu(@NotNull MenuType type) {
+    private static PlatformerMainMenu mainMenu;
+
+    private PlatformerMainMenu(@NotNull MenuType type) {
         super(MenuType.MAIN_MENU);
 
         PlatformerMenuBox menuBox = createMainMenuBody();
@@ -104,5 +106,13 @@ public class PlatformerMainMenu extends FXGLMenu {
     @Override
     protected Node createProfileView(@NotNull String profileName) {
         return new Text(profileName);
+    }
+
+    public static PlatformerMainMenu getMainMenuInstance() {
+        if (mainMenu == null) {
+            mainMenu = new PlatformerMainMenu(MenuType.MAIN_MENU);
+        }
+
+        return mainMenu;
     }
 }
