@@ -1,4 +1,4 @@
-package org.monjasa.engine.entities.builder;
+package org.monjasa.engine.entities;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
@@ -12,17 +12,20 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import org.monjasa.engine.entities.factories.PlatformerEntityFactory;
 
-public abstract class PlatformerEntityBuilder implements EntityBuilder {
+public abstract class PlatformerEntityBuilder<T extends PlatformerEntityBuilder, E extends Entity>  {
 
-    protected Entity entity;
+    protected E entity;
     protected PlatformerEntityFactory factory;
 
     public PlatformerEntityBuilder(PlatformerEntityFactory factory) {
         this.factory = factory;
     }
 
-    @Override
-    public EntityBuilder loadFromSpawnData(SpawnData spawnData) {
+    protected abstract T getThis();
+
+    public abstract T resetEntity();
+
+    public T loadFromSpawnData(SpawnData spawnData) {
 
         positionAt(spawnData.getX(), spawnData.getY());
 
@@ -33,104 +36,88 @@ public abstract class PlatformerEntityBuilder implements EntityBuilder {
 
         spawnData.getData().forEach((key, value) -> entity.setProperty(key, value));
 
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder adjustProperty(String propertyKey, Object propertyValue) {
+    public T adjustProperty(String propertyKey, Object propertyValue) {
         entity.setProperty(propertyKey, propertyValue);
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder addType(Enum<?> type) {
+    public T addType(Enum<?> type) {
         entity.setType(type);
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder positionAt(double x, double y) {
+    public T positionAt(double x, double y) {
         entity.setPosition(x, y);
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder positionAt(Point2D point) {
+    public T positionAt(Point2D point) {
         entity.setPosition(point);
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder centerAt(double x, double y) {
+    public T centerAt(double x, double y) {
         addScaleOrigin(x, y);
         addRotationOrigin(x, y);
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder centerAt(Point2D entityCenter) {
+    public T centerAt(Point2D entityCenter) {
         addScaleOrigin(entityCenter);
         addRotationOrigin(entityCenter);
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder layerAt(int zIndex) {
+    public T layerAt(int zIndex) {
         entity.getTransformComponent().setZ(zIndex);
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder addRotationOrigin(double x, double y) {
+    public T addRotationOrigin(double x, double y) {
         entity.getTransformComponent().setRotationOrigin(new Point2D(x, y));
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder addRotationOrigin(Point2D point) {
+    public T addRotationOrigin(Point2D point) {
         entity.getTransformComponent().setRotationOrigin(point);
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder addScaleOrigin(double x, double y) {
+    public T addScaleOrigin(double x, double y) {
         entity.getTransformComponent().setScaleOrigin(new Point2D(x, y));
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder addScaleOrigin(Point2D point) {
+    public T addScaleOrigin(Point2D point) {
         entity.getTransformComponent().setScaleOrigin(point);
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder rotationAt(double angle) {
+    public T rotationAt(double angle) {
         entity.rotateBy(angle);
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder scalingAt(double scaleX, double scaleY) {
+    public T scalingAt(double scaleX, double scaleY) {
         entity.setScaleX(scaleX);
         entity.setScaleY(scaleY);
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder scalingAt(Point2D point) {
+    public T scalingAt(Point2D point) {
         scalingAt(point.getX(), point.getY());
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder addOpacity(double value) {
+    public T addOpacity(double value) {
         entity.getViewComponent().setOpacity(value);
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder addHitBox(HitBox hitBox) {
+    public T addHitBox(HitBox hitBox) {
 
         entity.getBoundingBoxComponent().addHitBox(hitBox);
 
@@ -139,23 +126,20 @@ public abstract class PlatformerEntityBuilder implements EntityBuilder {
         entity.getTransformComponent().setScaleOrigin(entityCenter);
         entity.getTransformComponent().setRotationOrigin(entityCenter);
 
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder addView(Node view) {
+    public T addView(Node view) {
         entity.getViewComponent().addChild(view);
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder addView(String assetName) {
+    public T addView(String assetName) {
         addView(FXGL.texture(assetName));
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder addViewWithHitBox(Node view) {
+    public T addViewWithHitBox(Node view) {
 
         entity.getBoundingBoxComponent().clearHitBoxes();
 
@@ -165,37 +149,28 @@ public abstract class PlatformerEntityBuilder implements EntityBuilder {
         addView(view);
         addHitBox(new HitBox("VIEW", BoundingShape.box(viewWidth, viewHeight)));
 
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder addViewWithHitBox(String assetName) {
+    public T addViewWithHitBox(String assetName) {
         addViewWithHitBox(FXGL.texture(assetName));
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder addOnClickAction(Runnable action) {
+    public T addOnClickAction(Runnable action) {
         entity.getViewComponent().addEventHandler(MouseEvent.MOUSE_CLICKED, event -> action.run());
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder attachComponents(Component... components) {
+    public T attachComponents(Component... components) {
         for (Component component : components)
             entity.addComponent(component);
-        return this;
+        return getThis();
     }
 
-    @Override
-    public EntityBuilder setCollidable() {
+    public T setCollidable() {
         entity.addComponent(new CollidableComponent(true));
-        return this;
-    }
-
-    @Override
-    public Entity buildEntity() {
-        return entity;
+        return getThis();
     }
 
     public PlatformerEntityFactory getFactory() {

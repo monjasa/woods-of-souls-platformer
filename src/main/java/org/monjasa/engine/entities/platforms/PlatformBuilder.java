@@ -1,10 +1,9 @@
 package org.monjasa.engine.entities.platforms;
 
-import org.monjasa.engine.entities.builder.EntityBuilder;
-import org.monjasa.engine.entities.builder.PlatformerEntityBuilder;
+import org.monjasa.engine.entities.PlatformerEntityBuilder;
 import org.monjasa.engine.entities.factories.PlatformerEntityFactory;
 
-public class PlatformBuilder extends PlatformerEntityBuilder {
+public class PlatformBuilder extends PlatformerEntityBuilder<PlatformBuilder, Platform> {
 
     public PlatformBuilder(PlatformerEntityFactory factory) {
         super(factory);
@@ -12,8 +11,17 @@ public class PlatformBuilder extends PlatformerEntityBuilder {
     }
 
     @Override
-    public EntityBuilder resetEntity() {
+    protected PlatformBuilder getThis() {
+        return this;
+    }
+
+    @Override
+    public PlatformBuilder resetEntity() {
         entity = factory.getPlatformInstance();
         return this;
+    }
+
+    public Platform buildPlatform() {
+        return entity;
     }
 }

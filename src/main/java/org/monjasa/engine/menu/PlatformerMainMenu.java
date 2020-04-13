@@ -16,7 +16,17 @@ public class PlatformerMainMenu extends FXGLMenu {
 
     private static PlatformerMainMenu mainMenu;
 
-    private PlatformerMainMenu(@NotNull MenuType type) {
+    public static PlatformerMainMenu getMainMenuInstance() {
+
+        if (mainMenu == null) {
+            mainMenu = new PlatformerMainMenu();
+        }
+
+        return mainMenu;
+    }
+
+    private PlatformerMainMenu() {
+
         super(MenuType.MAIN_MENU);
 
         PlatformerMenuBox menuBox = createMainMenuBody();
@@ -79,6 +89,7 @@ public class PlatformerMainMenu extends FXGLMenu {
     @NotNull
     @Override
     protected Node createTitleView(@NotNull String tittle) {
+
         Texture logo = FXGL.texture("logo-texture.png", 500, 340);
 
         StackPane titleRoot = new StackPane();
@@ -106,13 +117,5 @@ public class PlatformerMainMenu extends FXGLMenu {
     @Override
     protected Node createProfileView(@NotNull String profileName) {
         return new Text(profileName);
-    }
-
-    public static PlatformerMainMenu getMainMenuInstance() {
-        if (mainMenu == null) {
-            mainMenu = new PlatformerMainMenu(MenuType.MAIN_MENU);
-        }
-
-        return mainMenu;
     }
 }
