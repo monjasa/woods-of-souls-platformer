@@ -4,11 +4,11 @@ import com.almasb.fxgl.entity.Entity;
 
 public abstract class Player extends Entity {
 
-    public abstract void moveLeft();
+    public abstract void goLeft();
 
-    public abstract void moveRight();
+    public abstract void goRight();
 
-    public abstract void stopHorizontal();
+    public abstract void horizontalStop();
 
-    public abstract void jump();
+    public abstract void goUp();
 }

@@ -1,44 +1,169 @@
 package org.monjasa.engine.entities.players;
 
+import com.almasb.fxgl.audio.Music;
+import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.physics.PhysicsComponent;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
+import com.almasb.fxgl.texture.AnimatedTexture;
+import com.almasb.fxgl.texture.AnimationChannel;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.util.Duration;
 
 public class ForestPlayer extends Player {
 
     @Override
-    public void moveLeft() {
-        getComponent(PhysicsComponent.class).setVelocityX(-200);
-        getComponent(ForestPlayerViewComponent.class).onMovingHorizontally();
+    public void goLeft() {
+        getComponent(ForestPlayerControlComponent.class).moveLeft();
     }
 
     @Override
-    public void moveRight() {
-        getComponent(PhysicsComponent.class).setVelocityX(200);
-        getComponent(ForestPlayerViewComponent.class).onMovingHorizontally();
+    public void goRight() {
+        getComponent(ForestPlayerControlComponent.class).moveRight();
+
     }
 
     @Override
-    public void stopHorizontal() {
-        getComponent(PhysicsComponent.class).setVelocityX(0);
+    public void horizontalStop() {
+        getComponent(ForestPlayerControlComponent.class).stopHorizontalMoving();
     }
 
     @Override
-    public void jump() {
-        getComponent(PhysicsComponent.class).setVelocityY(-350);
+    public void goUp() {
+        getComponent(ForestPlayerControlComponent.class).jump();
+    }
+
+    public static class ForestPlayerControlComponent extends Component {
+
+        private PhysicsComponent physicsComponent;
+        private ForestPlayerViewComponent viewComponent;
+
+        private boolean movingVertically;
+
+        @Override
+        public void onAdded() {
+
+            viewComponent.setControlComponent(this);
+
+            physicsComponent.onGroundProperty().addListener((observable, wasOnGround, isOnGround) -> {
+                if (!isOnGround && wasOnGround && movingVertically) {
+                    viewComponent.onVerticalStart();
+                } else if (isOnGround && !wasOnGround && movingVertically) {
+                    movingVertically = false;
+                    viewComponent.onVerticalStop();
+                }
+            });
+        }
+
+        @Override
+        public void onUpdate(double tpf) {
+            if (FXGLMath.abs(physicsComponent.getVelocityY()) > 0) {
+                movingVertically = true;
+                viewComponent.onMovingVertically();
+            }
+        }
+
+        public void moveLeft() {
+            physicsComponent.setVelocityX(-200);
+            viewComponent.onMovingHorizontally();
+        }
+
+        public void moveRight() {
+            physicsComponent.setVelocityX(200);
+            viewComponent.onMovingHorizontally();
+        }
+
+        public void stopHorizontalMoving() {
+            physicsComponent.setVelocityX(0);
+            viewComponent.onHorizontalStop();
+        }
+
+        public void jump() {
+            if (physicsComponent.isOnGround()) {
+                physicsComponent.setVelocityY(-600);
+            }
+        }
+
+        public boolean isMovingVertically() {
+            return movingVertically;
+        }
+
     }
 
     public static class ForestPlayerViewComponent extends Component {
 
+        private ForestPlayerControlComponent controlComponent;
+        private PhysicsComponent physicsComponent;
+
+        private Music walkingSounds;
+
+        private AnimatedTexture animatedTexture;
+
+        private AnimationChannel animationIdle;
+        private AnimationChannel animationWalking;
+        private AnimationChannel animationJumping;
+        private AnimationChannel animationAfterJump;
+
+        public ForestPlayerViewComponent() {
+
+            walkingSounds = FXGL.getAssetLoader().loadMusic("walking_sound.mp3");
+
+            animationIdle = new AnimationChannel(FXGL.image("player_spritesheet.png"), 4,
+                    120, 210, Duration.INDEFINITE, 0, 0);
+
+            animationWalking = new AnimationChannel(FXGL.image("player_spritesheet.png"), 4,
+                    120, 210, Duration.millis(750), 1, 2);
+
+            animationJumping = new AnimationChannel(FXGL.image("player_spritesheet.png"), 4,
+                    120, 210, Duration.millis(750), 4, 4);
+
+            animationAfterJump = new AnimationChannel(FXGL.image("player_spritesheet.png"), 4,
+                    120, 210, Duration.INDEFINITE, 5, 5);
+
+            animatedTexture = new AnimatedTexture(animationIdle).loop();
+        }
+
         @Override
         public void onAdded() {
-            entity.getViewComponent().addChild(FXGL.texture("player.png"));
+            entity.getViewComponent().addChild(animatedTexture);
         }
 
         public void onMovingHorizontally() {
-            entity.setScaleX(Math.signum(entity.getComponent(PhysicsComponent.class).getVelocityX()));
+            entity.setScaleX(Math.signum(physicsComponent.getVelocityX()));
+
+            if (!controlComponent.isMovingVertically()) {
+                FXGL.getAudioPlayer().loopMusic(walkingSounds);
+                AnimationChannel currentAnimation = animatedTexture.getAnimationChannel();
+                if (currentAnimation != animationWalking && currentAnimation != animationAfterJump)
+                    animatedTexture.loopAnimationChannel(animationWalking);
+            }
+        }
+
+        public void onHorizontalStop() {
+            FXGL.getAudioPlayer().stopMusic(walkingSounds);
+            if (animatedTexture.getAnimationChannel() != animationIdle)
+                animatedTexture.loopAnimationChannel(animationIdle);
+        }
+
+        public void onVerticalStart() {
+            FXGL.getAudioPlayer().stopMusic(walkingSounds);
+        }
+
+        public void onMovingVertically() {
+            FXGL.getAudioPlayer().stopMusic(walkingSounds);
+            if (animatedTexture.getAnimationChannel() != animationJumping)
+                animatedTexture.loopAnimationChannel(animationJumping);
+        }
+
+        public void onVerticalStop() {
+            FXGL.play("landing-sound.wav");
+            animatedTexture.playAnimationChannel(animationAfterJump);
+            FXGL.runOnce(() -> animatedTexture.loopAnimationChannel(animationIdle), Duration.millis(300));
+        }
+
+        public void setControlComponent(ForestPlayerControlComponent controlComponent) {
+            this.controlComponent = controlComponent;
         }
     }
 }

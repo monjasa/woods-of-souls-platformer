@@ -50,14 +50,18 @@ public class ForestEntityFactory implements PlatformerEntityFactory {
     public Player createPlayer(SpawnData data) {
 
         PhysicsComponent playerPhysicsComponent = new PhysicsComponent();
+        playerPhysicsComponent.addGroundSensor(new HitBox("GROUND_SENSOR", new Point2D(35, 209),
+                BoundingShape.box(50, 2)));
         playerPhysicsComponent.setBodyType(BodyType.DYNAMIC);
         playerPhysicsComponent.setFixtureDef(new FixtureDef().friction(0.0f));
 
         return new PlayerBuilder(this)
                 .loadFromSpawnData(data)
                 .addType(PlatformerEntityType.PLAYER)
+                .centerAt(data.<Integer>get("width") / 2.0, data.<Integer>get("height") / 2.0)
                 .addHitBox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
-                .attachComponents(playerPhysicsComponent, new ForestPlayer.ForestPlayerViewComponent())
+                .attachComponents(playerPhysicsComponent, new ForestPlayer.ForestPlayerViewComponent(),
+                        new ForestPlayer.ForestPlayerControlComponent())
                 .buildPlayer();
     }
 }

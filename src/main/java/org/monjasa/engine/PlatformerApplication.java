@@ -3,20 +3,14 @@ package org.monjasa.engine;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
-import com.almasb.fxgl.app.scene.MenuType;
 import com.almasb.fxgl.app.scene.SceneFactory;
-import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.input.UserAction;
 import javafx.scene.input.KeyCode;
 import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.factories.ForestEntityFactory;
-import org.monjasa.engine.entities.factories.PlatformerEntityFactory;
-import org.monjasa.engine.entities.platforms.Platform;
 import org.monjasa.engine.entities.players.Player;
 import org.jetbrains.annotations.NotNull;
 import org.monjasa.engine.menu.PlatformerMainMenu;
-
-import java.util.List;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -27,7 +21,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.1.7");
+        settings.setVersion("0.1.8");
 
         settings.setMainMenuEnabled(false);
         settings.setGameMenuEnabled(false);
@@ -58,31 +52,31 @@ public class PlatformerApplication extends GameApplication {
         getInput().addAction(new UserAction("Move Left") {
             @Override
             protected void onAction() {
-                player.moveLeft();
+                player.goLeft();
             }
 
             @Override
             protected void onActionEnd() {
-                player.stopHorizontal();
+                player.horizontalStop();
             }
         }, KeyCode.LEFT);
 
         getInput().addAction(new UserAction("Move Right") {
             @Override
             protected void onAction() {
-                player.moveRight();
+                player.goRight();
             }
 
             @Override
             protected void onActionEnd() {
-                player.stopHorizontal();
+                player.horizontalStop();
             }
         }, KeyCode.RIGHT);
 
         getInput().addAction(new UserAction("Jump") {
             @Override
             protected void onAction() {
-                player.jump();
+                player.goUp();
             }
         }, KeyCode.UP);
     }
