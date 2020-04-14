@@ -1,14 +1,19 @@
 package org.monjasa.engine.entities.factories;
 
+import com.almasb.fxgl.dsl.views.ScrollingBackgroundView;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
+import com.almasb.fxgl.entity.level.Level;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
+import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import org.monjasa.engine.entities.PlatformerEntityType;
+import org.monjasa.engine.entities.SimpleEntityBuilder;
 import org.monjasa.engine.entities.exits.Exit;
 import org.monjasa.engine.entities.exits.ExitBuilder;
 import org.monjasa.engine.entities.exits.ForestExit;
@@ -18,6 +23,11 @@ import org.monjasa.engine.entities.platforms.PlatformBuilder;
 import org.monjasa.engine.entities.players.ForestPlayer;
 import org.monjasa.engine.entities.players.Player;
 import org.monjasa.engine.entities.players.PlayerBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.almasb.fxgl.dsl.FXGLForKtKt.getAssetLoader;
 
 public class ForestLevelFactory extends PlatformerLevelFactory {
 
@@ -84,5 +94,55 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
                 .addHitBox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
                 .setCollidable()
                 .buildExit();
+    }
+
+    @Override
+    public Level createLevel(int levelNum, boolean isDevelopingNewLevel) {
+
+        Level level = super.createLevel(levelNum, isDevelopingNewLevel);
+
+        int backgroundParallaxIndex = 0;
+        int foregroundParallaxIndex = 10;
+
+        List<Entity> layers = new ArrayList<>();
+
+        layers.add(new SimpleEntityBuilder(this)
+                .positionAt(0, 0)
+                .addView(new ScrollingBackgroundView(getAssetLoader().loadTexture("background/bushes.png", 1280, 720),
+                        Orientation.HORIZONTAL, 1.20))
+                .layerAt(++foregroundParallaxIndex)
+                .buildEntity());
+
+        layers.add(new SimpleEntityBuilder(this)
+                .positionAt(0, 0)
+                .addView(new ScrollingBackgroundView(getAssetLoader().loadTexture("background/trail.png", 1280, 720),
+                        Orientation.HORIZONTAL, 1.00))
+                .layerAt(--backgroundParallaxIndex)
+                .buildEntity());
+
+        layers.add(new SimpleEntityBuilder(this)
+                .positionAt(0, 0)
+                .addView(new ScrollingBackgroundView(getAssetLoader().loadTexture("background/trees_foreground.png", 1280, 720),
+                        Orientation.HORIZONTAL, 0.90))
+                .layerAt(--backgroundParallaxIndex)
+                .buildEntity());
+
+        layers.add(new SimpleEntityBuilder(this)
+                .positionAt(0, 0)
+                .addView(new ScrollingBackgroundView(getAssetLoader().loadTexture("background/trees_background.png", 1280, 720),
+                        Orientation.HORIZONTAL, 0.70))
+                .layerAt(--backgroundParallaxIndex)
+                .buildEntity());
+
+        layers.add(new SimpleEntityBuilder(this)
+                .positionAt(0, 0)
+                .addView(new ScrollingBackgroundView(getAssetLoader().loadTexture("background/background_texture.png", 1280, 720),
+                        Orientation.HORIZONTAL, 0.50))
+                .layerAt(--backgroundParallaxIndex)
+                .buildEntity());
+
+        layers.forEach(level.getEntities()::add);
+
+        return level;
     }
 }

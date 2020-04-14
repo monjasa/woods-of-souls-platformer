@@ -36,7 +36,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.1.10");
+        settings.setVersion("0.1.11");
 
         settings.setMainMenuEnabled(false);
         settings.setGameMenuEnabled(false);
@@ -101,6 +101,7 @@ public class PlatformerApplication extends GameApplication {
 
     @Override
     protected void initPhysics() {
+
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(PlatformerEntityType.PLAYER, PlatformerEntityType.EXIT) {
             @Override
             protected void onCollisionBegin(Entity player, Entity exit) {
@@ -110,7 +111,6 @@ public class PlatformerApplication extends GameApplication {
     }
 
     private void prepareNextLevel() {
-
 
         if (geti("level") == Objects.requireNonNull(entityFactories.peek()).getMaxLevel()) {
 
