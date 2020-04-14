@@ -129,7 +129,7 @@ public class PlatformerApplication extends GameApplication {
             entityFactories.poll();
 
             if (entityFactories.isEmpty()) {
-                getDialogService().showMessageBox("the end", getGameController()::gotoMainMenu);
+                getDialogService().showMessageBox("The End of Aplha version\nThank you for playing!", getGameController()::gotoMainMenu);
                 return;
             } else {
                 getWorldProperties().setValue("level", 0);

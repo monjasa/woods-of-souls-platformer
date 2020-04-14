@@ -1,19 +1,44 @@
 
-
 /*
- *	    FXGLButton
+ *      Menu Button
  */
 
-
-
-.dialog-border {
-    -fx-border-color: cyan;
-    -fx-border-width: 1;
-    -fx-border-style: solid;
+.platformer-menu-button-wrapper {
+    -fx-rotate: -2;
+    -fx-alignment: center-left;
 }
 
+.platformer-menu-button-wrapper:hover {
+    -fx-translate-x: 10px;
+}
+
+.platformer-menu-button-wrapper:hover .platformer-menu-button {
+    -fx-text-fill: black;
+}
+
+.platformer-menu-button-wrapper:hover .platformer-menu-button-background {
+    -fx-fill: white;
+}
+
+.platformer-menu-button {
+    -fx-text-fill: white;
+    -fx-background-color: transparent;
+    -fx-alignment: center-left;
+    -fx-min-width: 350px;
+    -fx-min-height: 40px;
+}
+
+.platformer-menu-button-background {
+    -fx-fill: black;
+    -fx-opacity: 0.6;
+}
+
+/*
+ *	    Dialog FXGLButton
+ */
 
 .fxgl_button {
+    -fx-min-height: 55px;
     -fx-padding: 5px 22px 5px 22px;
     -fx-border-width: 0;
 
@@ -22,7 +47,7 @@
     -fx-text-fill: #a9a9a9;
 
     /*-fx-border-insets: 5px;*/
-    -fx-background-insets: 5px;
+    -fx-background-insets: 10px;
 }
 
 .fxgl_button:hover {

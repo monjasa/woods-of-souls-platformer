@@ -43,10 +43,8 @@ public class PlatformerMainMenu extends FXGLMenu {
 
         getMenuContentRoot().setTranslateX(getAppWidth() - 200);
 
-
         getMenuRoot().getChildren().add(menuBox);
         getMenuContentRoot().getChildren().add(new MenuContent());
-
     }
 
     private PlatformerMenuBox createMainMenuBody() {

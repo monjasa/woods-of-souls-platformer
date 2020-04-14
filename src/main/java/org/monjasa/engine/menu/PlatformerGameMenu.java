@@ -5,7 +5,6 @@ import com.almasb.fxgl.app.scene.MenuType;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.texture.Texture;
 import javafx.beans.binding.StringBinding;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
@@ -76,7 +75,6 @@ public class PlatformerGameMenu extends FXGLMenu {
     @NotNull
     @Override
     protected Node createBackground(double width, double height) {
-
         return new Rectangle(width, height, Color.rgb(31, 31, 31, 0.50));
     }
 
@@ -110,21 +108,18 @@ public class PlatformerGameMenu extends FXGLMenu {
     @NotNull
     @Override
     protected Button createActionButton(@NotNull StringBinding stringBinding, @NotNull Runnable runnable) {
-
         return new Button(stringBinding.get());
     }
 
     @NotNull
     @Override
     protected Button createActionButton(@NotNull String name, @NotNull Runnable runnable) {
-
         return new Button(name);
     }
 
     @NotNull
     @Override
     protected Node createProfileView(@NotNull String profileName) {
-
         return new Text(profileName);
     }
 }

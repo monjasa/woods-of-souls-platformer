@@ -3,7 +3,6 @@ package org.monjasa.engine.menu;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.GaussianBlur;
@@ -22,43 +21,25 @@ public class PlatformerMenuButton extends StackPane {
 
     public PlatformerMenuButton(String stringKey) {
 
+        getStyleClass().add("platformer-menu-button-wrapper");
+
         button = new Button(stringKey);
+        button.getStyleClass().add("platformer-menu-button");
         button.setFont(getAssetLoader().loadFont("gnomoria.ttf").newFont(48));
-        button.setPrefSize(350, 40);
-        button.setAlignment(Pos.CENTER_LEFT);
-        button.setStyle("-fx-background-color: transparent");
-        button.setTextFill(Color.WHITE);
 
         Rectangle background = new Rectangle(250, 60);
-        background.setFill(Color.BLACK);
-        background.setOpacity(0.6);
+        background.getStyleClass().add("platformer-menu-button-background");
         background.setEffect(new GaussianBlur(5));
 
-        setAlignment(Pos.CENTER_LEFT);
-        setRotate(-3);
-        getChildren().addAll(background, button);
-
         setMargin(button, new Insets(0, 0, 0, 15));
+        getChildren().addAll(background, button);
 
         DropShadow dropShadow = new DropShadow(50, Color.WHITE);
         dropShadow.setInput(new Glow());
 
-        setOnMouseEntered(event -> {
-            background.setTranslateX(10);
-            button.setTranslateX(10);
-            background.setFill(Color.WHITE);
-            button.setTextFill(Color.BLACK);
-        });
-
-        setOnMouseExited(event -> {
-            background.setTranslateX(0);
-            button.setTranslateX(0);
-            background.setFill(Color.BLACK);
-            button.setTextFill(Color.WHITE);
-        });
-
         button.addEventHandler(MouseEvent.MOUSE_PRESSED, event -> setEffect(dropShadow));
         button.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> setEffect(null));
+        button.addEventHandler(MouseEvent.MOUSE_EXITED_TARGET, event -> setEffect(null));
     }
 
     public void setParent(PlatformerMenuBox parent) {
