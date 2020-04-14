@@ -17,10 +17,7 @@ import org.monjasa.engine.entities.players.Player;
 import org.monjasa.engine.menu.PlatformerGameMenu;
 import org.monjasa.engine.menu.PlatformerMainMenu;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -36,7 +33,16 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.1.13");
+        settings.setVersion("0.1.14");
+
+        List<String> cssRules = new ArrayList<>();
+        cssRules.add("styles.css");
+        settings.setCSSList(cssRules);
+
+        settings.setFontGame("gnomoria.ttf");
+        settings.setFontText("gnomoria.ttf");
+        settings.setFontUI("gnomoria.ttf");
+        settings.setFontMono("gnomoria.ttf");
 
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);

@@ -1,0 +1,45 @@
+
+
+/*
+ *	    FXGLButton
+ */
+
+
+
+.dialog-border {
+    -fx-border-color: cyan;
+    -fx-border-width: 1;
+    -fx-border-style: solid;
+}
+
+
+.fxgl_button {
+    -fx-padding: 5px 22px 5px 22px;
+    -fx-border-width: 0;
+
+    -fx-background-color: white;
+    -fx-background-radius: 15px;
+    -fx-text-fill: #a9a9a9;
+
+    /*-fx-border-insets: 5px;*/
+    -fx-background-insets: 5px;
+}
+
+.fxgl_button:hover {
+    -fx-background-color: white;
+    -fx-text-fill: black;
+}
+
+.fxgl_button:pressed, .fxgl_button:default:hover:pressed {
+    -fx-background-color: rgba(97, 207, 232, 0.8);
+    -fx-text-fill: white;
+}
+
+.fxgl_button:focused {
+    -fx-border-color: gray;
+}
+
+.fxgl_button:disabled, .fxgl_button:default:disabled {
+    -fx-opacity: 0.4;
+    -fx-text-fill: #a9a9a9;
+}

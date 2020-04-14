@@ -27,7 +27,7 @@ import org.monjasa.engine.entities.players.PlayerBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.almasb.fxgl.dsl.FXGLForKtKt.getAssetLoader;
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class ForestLevelFactory extends PlatformerLevelFactory {
 
