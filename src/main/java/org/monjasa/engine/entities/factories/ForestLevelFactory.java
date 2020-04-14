@@ -1,21 +1,13 @@
 package org.monjasa.engine.entities.factories;
 
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
-import com.almasb.fxgl.entity.level.Level;
-import com.almasb.fxgl.entity.level.tiled.TMXLevelLoader;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import javafx.geometry.Point2D;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import org.monjasa.engine.PlatformerApplication;
 import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.exits.Exit;
 import org.monjasa.engine.entities.exits.ExitBuilder;
@@ -27,14 +19,14 @@ import org.monjasa.engine.entities.players.ForestPlayer;
 import org.monjasa.engine.entities.players.Player;
 import org.monjasa.engine.entities.players.PlayerBuilder;
 
-import java.net.URL;
+public class ForestLevelFactory extends PlatformerLevelFactory {
 
-import static com.almasb.fxgl.dsl.FXGL.*;
+    private static final String FOREST_LEVEL_PREFIX = "forest";
+    private static final String FOREST_DEVELOPING_LEVEL_NAME = "level_dev";
 
-public class ForestEntityFactory implements PlatformerEntityFactory {
-
-    private static final int MAX_LEVEL = 1;
-    private static final String DEVELOPING_LEVEL_PATH = "assets/levels/tmx/forest_dev.tmx";
+    public ForestLevelFactory(int maxLevel) {
+        super(maxLevel, FOREST_LEVEL_PREFIX, FOREST_DEVELOPING_LEVEL_NAME);
+    }
 
     @Override
     public Platform getPlatformInstance() {
@@ -92,25 +84,5 @@ public class ForestEntityFactory implements PlatformerEntityFactory {
                 .addHitBox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
                 .setCollidable()
                 .buildExit();
-    }
-
-    @Override
-    public Level createLevel(int levelNum, boolean isDevelopingNewLevel) {
-
-        Level level;
-        URL path = getClass().getClassLoader().getResource(DEVELOPING_LEVEL_PATH);
-
-        if (isDevelopingNewLevel && path != null) {
-            level = new TMXLevelLoader().load(path, getGameWorld());
-        } else {
-            level = getAssetLoader().loadLevel(String.format("tmx/forest_%02d.tmx", levelNum), new TMXLevelLoader());
-        }
-
-        return level;
-    }
-
-    @Override
-    public int getMaxLevel() {
-        return MAX_LEVEL;
     }
 }

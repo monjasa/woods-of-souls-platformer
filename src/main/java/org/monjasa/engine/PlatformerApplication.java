@@ -11,12 +11,12 @@ import com.almasb.fxgl.physics.CollisionHandler;
 import javafx.scene.input.KeyCode;
 import org.jetbrains.annotations.NotNull;
 import org.monjasa.engine.entities.PlatformerEntityType;
-import org.monjasa.engine.entities.factories.ForestEntityFactory;
-import org.monjasa.engine.entities.factories.PlatformerEntityFactory;
+import org.monjasa.engine.entities.factories.ForestLevelFactory;
+import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
 import org.monjasa.engine.entities.players.Player;
 import org.monjasa.engine.menu.PlatformerMainMenu;
 
-import java.util.Map;
+import java.util.*;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -24,15 +24,19 @@ public class PlatformerApplication extends GameApplication {
 
     private static final boolean DEVELOPING_NEW_LEVEL = true;
 
-    private PlatformerEntityFactory entityFactory;
+    private Deque<PlatformerLevelFactory> entityFactories;
     private Player player;
+
+    public PlatformerApplication() {
+        entityFactories = new ArrayDeque<>();
+    }
 
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.1.9");
+        settings.setVersion("0.1.10");
 
         settings.setMainMenuEnabled(false);
         settings.setGameMenuEnabled(false);
@@ -48,11 +52,9 @@ public class PlatformerApplication extends GameApplication {
     @Override
     protected void initGame() {
 
-        ForestEntityFactory forestEntityFactory = new ForestEntityFactory();
+        entityFactories.add(new ForestLevelFactory(2));
 
-        getGameWorld().addEntityFactory(forestEntityFactory);
-
-        entityFactory = forestEntityFactory;
+        entityFactories.forEach(getGameWorld()::addEntityFactory);
 
         prepareNextLevel();
     }
@@ -109,12 +111,20 @@ public class PlatformerApplication extends GameApplication {
 
     private void prepareNextLevel() {
 
-        if (geti("level") == entityFactory.getMaxLevel()) {
-            getDialogService().showMessageBox("the end", getGameController()::startNewGame);
-            return;
+
+        if (geti("level") == Objects.requireNonNull(entityFactories.peek()).getMaxLevel()) {
+
+            entityFactories.poll();
+
+            if (entityFactories.isEmpty()) {
+                getDialogService().showMessageBox("the end", getGameController()::startNewGame);
+                return;
+            } else {
+                getWorldProperties().setValue("level", 0);
+            }
         }
 
-        Level level = entityFactory.createLevel(geti("level"), DEVELOPING_NEW_LEVEL);
+        Level level = Objects.requireNonNull(entityFactories.peek()).createLevel(geti("level"), DEVELOPING_NEW_LEVEL);
         getGameWorld().setLevel(level);
 
         if (!DEVELOPING_NEW_LEVEL) {

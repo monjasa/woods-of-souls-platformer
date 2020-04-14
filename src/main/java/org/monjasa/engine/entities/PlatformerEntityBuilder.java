@@ -10,14 +10,14 @@ import com.almasb.fxgl.physics.HitBox;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
-import org.monjasa.engine.entities.factories.PlatformerEntityFactory;
+import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
 
 public abstract class PlatformerEntityBuilder<T extends PlatformerEntityBuilder, E extends Entity>  {
 
     protected E entity;
-    protected PlatformerEntityFactory factory;
+    protected PlatformerLevelFactory factory;
 
-    public PlatformerEntityBuilder(PlatformerEntityFactory factory) {
+    public PlatformerEntityBuilder(PlatformerLevelFactory factory) {
         this.factory = factory;
     }
 
@@ -173,11 +173,11 @@ public abstract class PlatformerEntityBuilder<T extends PlatformerEntityBuilder,
         return getThis();
     }
 
-    public PlatformerEntityFactory getFactory() {
+    public PlatformerLevelFactory getFactory() {
         return factory;
     }
 
-    public void setFactory(PlatformerEntityFactory factory) {
+    public void setFactory(PlatformerLevelFactory factory) {
         this.factory = factory;
     }
 }

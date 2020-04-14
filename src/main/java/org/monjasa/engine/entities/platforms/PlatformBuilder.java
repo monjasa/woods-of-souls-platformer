@@ -1,11 +1,11 @@
 package org.monjasa.engine.entities.platforms;
 
 import org.monjasa.engine.entities.PlatformerEntityBuilder;
-import org.monjasa.engine.entities.factories.PlatformerEntityFactory;
+import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
 
 public class PlatformBuilder extends PlatformerEntityBuilder<PlatformBuilder, Platform> {
 
-    public PlatformBuilder(PlatformerEntityFactory factory) {
+    public PlatformBuilder(PlatformerLevelFactory factory) {
         super(factory);
         entity = factory.getPlatformInstance();
     }
