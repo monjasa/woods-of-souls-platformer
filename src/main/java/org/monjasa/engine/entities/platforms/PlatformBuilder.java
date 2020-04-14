@@ -6,6 +6,7 @@ import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
 public class PlatformBuilder extends PlatformerEntityBuilder<PlatformBuilder, Platform> {
 
     public PlatformBuilder(PlatformerLevelFactory factory) {
+
         super(factory);
         entity = factory.getPlatformInstance();
     }
@@ -17,6 +18,7 @@ public class PlatformBuilder extends PlatformerEntityBuilder<PlatformBuilder, Pl
 
     @Override
     public PlatformBuilder resetEntity() {
+
         entity = factory.getPlatformInstance();
         return this;
     }

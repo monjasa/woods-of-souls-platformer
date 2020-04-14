@@ -5,7 +5,6 @@ import javafx.scene.layout.VBox;
 public class PlatformerMenuBox extends VBox {
 
     public PlatformerMenuBox(PlatformerMenuButton... menuButtons) {
-
         for (PlatformerMenuButton button : menuButtons) {
             add(button);
         }

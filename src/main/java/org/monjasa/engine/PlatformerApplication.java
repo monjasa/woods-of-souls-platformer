@@ -14,9 +14,13 @@ import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.factories.ForestLevelFactory;
 import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
 import org.monjasa.engine.entities.players.Player;
+import org.monjasa.engine.menu.PlatformerGameMenu;
 import org.monjasa.engine.menu.PlatformerMainMenu;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Map;
+import java.util.Objects;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -36,15 +40,21 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.1.11");
+        settings.setVersion("0.1.12");
 
-        settings.setMainMenuEnabled(false);
-        settings.setGameMenuEnabled(false);
+        settings.setMainMenuEnabled(true);
+        settings.setGameMenuEnabled(true);
         settings.setSceneFactory(new SceneFactory() {
             @NotNull
             @Override
             public FXGLMenu newMainMenu() {
                 return PlatformerMainMenu.getMainMenuInstance();
+            }
+
+            @NotNull
+            @Override
+            public FXGLMenu newGameMenu() {
+                return PlatformerGameMenu.getGameMenuInstance();
             }
         });
     }

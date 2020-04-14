@@ -46,6 +46,7 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
     @Override
     @Spawns("forest-platform")
     public Platform createPlatform(SpawnData data) {
+
         return new PlatformBuilder(this)
                 .loadFromSpawnData(data)
                 .addType(PlatformerEntityType.PLATFORM)
@@ -88,6 +89,7 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
     @Override
     @Spawns("forest-exit")
     public Exit createExit(SpawnData data) {
+
         return new ExitBuilder(this)
                 .loadFromSpawnData(data)
                 .addType(PlatformerEntityType.EXIT)
@@ -142,6 +144,22 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
                 .buildEntity());
 
         layers.forEach(level.getEntities()::add);
+
+        List<Entity> borders = new ArrayList<>();
+
+        borders.add(new SimpleEntityBuilder(this)
+                .positionAt(0, 0)
+                .addHitBox(new HitBox(BoundingShape.box(1, level.getHeight())))
+                .attachComponents(new PhysicsComponent())
+                .buildEntity());
+
+        borders.add(new SimpleEntityBuilder(this)
+                .positionAt(level.getWidth(), 0)
+                .addHitBox(new HitBox(BoundingShape.box(1, level.getHeight())))
+                .attachComponents(new PhysicsComponent())
+                .buildEntity());
+
+        borders.forEach(level.getEntities()::add);
 
         return level;
     }

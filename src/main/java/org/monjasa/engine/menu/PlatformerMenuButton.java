@@ -13,8 +13,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-
-import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
 
 public class PlatformerMenuButton extends StackPane {
 
@@ -62,7 +61,7 @@ public class PlatformerMenuButton extends StackPane {
         button.addEventHandler(MouseEvent.MOUSE_RELEASED, event -> setEffect(null));
     }
 
-    public void setParent (PlatformerMenuBox parent) {
+    public void setParent(PlatformerMenuBox parent) {
         this.parent = parent;
     }
 

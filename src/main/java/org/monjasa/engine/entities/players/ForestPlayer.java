@@ -40,6 +40,7 @@ public class ForestPlayer extends Player {
 
         @Override
         public void onAdded() {
+
             physicsComponent.onGroundProperty().addListener((observable, wasOnGround, isOnGround) -> {
                 if (!isOnGround && wasOnGround && movingVertically) {
                     viewComponent.onVerticalStart();
@@ -52,6 +53,7 @@ public class ForestPlayer extends Player {
 
         @Override
         public void onUpdate(double tpf) {
+
             if (FXGLMath.abs(physicsComponent.getVelocityY()) > 0) {
                 movingVertically = true;
                 viewComponent.onMovingVertically();
@@ -123,6 +125,7 @@ public class ForestPlayer extends Player {
         }
 
         public void onMovingHorizontally() {
+
             entity.setScaleX(Math.signum(physicsComponent.getVelocityX()));
 
             if (!entity.getComponent(ForestPlayerControlComponent.class).isMovingVertically()) {
@@ -134,6 +137,7 @@ public class ForestPlayer extends Player {
         }
 
         public void onHorizontalStop() {
+
             FXGL.getAudioPlayer().stopMusic(walkingSounds);
             if (animatedTexture.getAnimationChannel() != animationIdle)
                 animatedTexture.loopAnimationChannel(animationIdle);
@@ -144,12 +148,14 @@ public class ForestPlayer extends Player {
         }
 
         public void onMovingVertically() {
+
             FXGL.getAudioPlayer().stopMusic(walkingSounds);
             if (animatedTexture.getAnimationChannel() != animationJumping)
                 animatedTexture.loopAnimationChannel(animationJumping);
         }
 
         public void onVerticalStop() {
+
             FXGL.play("landing-sound.wav");
             animatedTexture.playAnimationChannel(animationAfterJump);
             FXGL.runOnce(() -> animatedTexture.loopAnimationChannel(animationIdle), Duration.millis(300));
