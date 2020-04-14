@@ -7,8 +7,6 @@ import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.texture.AnimatedTexture;
 import com.almasb.fxgl.texture.AnimationChannel;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.util.Duration;
 
 public class ForestPlayer extends Player {
@@ -21,7 +19,6 @@ public class ForestPlayer extends Player {
     @Override
     public void goRight() {
         getComponent(ForestPlayerControlComponent.class).moveRight();
-
     }
 
     @Override
@@ -43,9 +40,6 @@ public class ForestPlayer extends Player {
 
         @Override
         public void onAdded() {
-
-            viewComponent.setControlComponent(this);
-
             physicsComponent.onGroundProperty().addListener((observable, wasOnGround, isOnGround) -> {
                 if (!isOnGround && wasOnGround && movingVertically) {
                     viewComponent.onVerticalStart();
@@ -93,7 +87,6 @@ public class ForestPlayer extends Player {
 
     public static class ForestPlayerViewComponent extends Component {
 
-        private ForestPlayerControlComponent controlComponent;
         private PhysicsComponent physicsComponent;
 
         private Music walkingSounds;
@@ -132,7 +125,7 @@ public class ForestPlayer extends Player {
         public void onMovingHorizontally() {
             entity.setScaleX(Math.signum(physicsComponent.getVelocityX()));
 
-            if (!controlComponent.isMovingVertically()) {
+            if (!entity.getComponent(ForestPlayerControlComponent.class).isMovingVertically()) {
                 FXGL.getAudioPlayer().loopMusic(walkingSounds);
                 AnimationChannel currentAnimation = animatedTexture.getAnimationChannel();
                 if (currentAnimation != animationWalking && currentAnimation != animationAfterJump)
@@ -160,10 +153,6 @@ public class ForestPlayer extends Player {
             FXGL.play("landing-sound.wav");
             animatedTexture.playAnimationChannel(animationAfterJump);
             FXGL.runOnce(() -> animatedTexture.loopAnimationChannel(animationIdle), Duration.millis(300));
-        }
-
-        public void setControlComponent(ForestPlayerControlComponent controlComponent) {
-            this.controlComponent = controlComponent;
         }
     }
 }
