@@ -3,6 +3,7 @@ package org.monjasa.engine.menu;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType;
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.texture.Texture;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.Node;
@@ -20,7 +21,11 @@ public class PlatformerGameMenu extends FXGLMenu {
     public static PlatformerGameMenu getGameMenuInstance() {
 
         if (gameMenu == null) {
-            gameMenu = new PlatformerGameMenu();
+            synchronized (PlatformerGameMenu.class) {
+                if (gameMenu == null) {
+                    gameMenu = new PlatformerGameMenu();
+                }
+            }
         }
 
         return gameMenu;
@@ -72,29 +77,19 @@ public class PlatformerGameMenu extends FXGLMenu {
     @Override
     protected Node createBackground(double width, double height) {
 
-        return new Rectangle(width, height, Color.TRANSPARENT);
+        return new Rectangle(width, height, Color.rgb(31, 31, 31, 0.50));
     }
 
     @NotNull
     @Override
     protected Node createTitleView(@NotNull String s) {
 
-        SimpleObjectProperty<Color> titleColor = new SimpleObjectProperty<>(Color.BLACK);
-
-        Text textView = new Text("P A U S E");
-        textView.setFont(FXGL.getAssetLoader().loadFont("gnomoria.ttf").newFont(96));
-
-        double titleWidth = textView.getLayoutBounds().getWidth();
-        double titleHeight = textView.getLayoutBounds().getHeight();
-
-        Rectangle border = new Rectangle(titleWidth + 100, titleHeight + 20, Color.TRANSPARENT);
-        border.setStroke(Color.BLACK);
-        border.setStrokeWidth(4.0);
+        Texture logo = FXGL.texture("logo-texture.png", 400, 272);
 
         StackPane titleRoot = new StackPane();
-        titleRoot.getChildren().addAll(border, textView);
-        titleRoot.setTranslateX(getAppWidth() / 2.0 - (titleWidth + 30) / 2);
-        titleRoot.setTranslateY(50.0);
+        titleRoot.getChildren().addAll(logo);
+        titleRoot.setTranslateX(getAppWidth() / 2.0 - logo.getLayoutBounds().getWidth() / 2);
+        titleRoot.setTranslateY(20.0);
 
         return titleRoot;
     }

@@ -14,12 +14,16 @@ import org.jetbrains.annotations.NotNull;
 
 public class PlatformerMainMenu extends FXGLMenu {
 
-    private static PlatformerMainMenu mainMenu;
+    private static volatile PlatformerMainMenu mainMenu;
 
     public static PlatformerMainMenu getMainMenuInstance() {
 
         if (mainMenu == null) {
-            mainMenu = new PlatformerMainMenu();
+            synchronized (PlatformerMainMenu.class) {
+                if (mainMenu == null) {
+                    mainMenu = new PlatformerMainMenu();
+                }
+            }
         }
 
         return mainMenu;

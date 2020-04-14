@@ -26,21 +26,17 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class PlatformerApplication extends GameApplication {
 
-    private static final boolean DEVELOPING_NEW_LEVEL = true;
+    private static final boolean DEVELOPING_NEW_LEVEL = false;
 
     private Deque<PlatformerLevelFactory> entityFactories;
     private Player player;
-
-    public PlatformerApplication() {
-        entityFactories = new ArrayDeque<>();
-    }
 
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.1.12");
+        settings.setVersion("0.1.13");
 
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);
@@ -62,8 +58,8 @@ public class PlatformerApplication extends GameApplication {
     @Override
     protected void initGame() {
 
+        entityFactories = new ArrayDeque<>();
         entityFactories.add(new ForestLevelFactory(2));
-
         entityFactories.forEach(getGameWorld()::addEntityFactory);
 
         prepareNextLevel();
@@ -127,7 +123,7 @@ public class PlatformerApplication extends GameApplication {
             entityFactories.poll();
 
             if (entityFactories.isEmpty()) {
-                getDialogService().showMessageBox("the end", getGameController()::startNewGame);
+                getDialogService().showMessageBox("the end", getGameController()::gotoMainMenu);
                 return;
             } else {
                 getWorldProperties().setValue("level", 0);
