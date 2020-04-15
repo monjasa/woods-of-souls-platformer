@@ -5,8 +5,11 @@ import com.almasb.fxgl.app.scene.MenuType;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.texture.Texture;
 import javafx.beans.binding.StringBinding;
+import javafx.geometry.Point2D;
+import javafx.scene.ImageCursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -29,9 +32,13 @@ public class PlatformerMainMenu extends FXGLMenu {
         return mainMenu;
     }
 
+    private Image cursorImage;
+
     private PlatformerMainMenu() {
 
         super(MenuType.MAIN_MENU);
+
+        cursorImage = FXGL.getAssetLoader().loadCursorImage("cursor.png");
 
         PlatformerMenuBox menuBox = createMainMenuBody();
 
@@ -70,6 +77,16 @@ public class PlatformerMainMenu extends FXGLMenu {
         return platformerMenuBox;
     }
 
+    @Override
+    public void onCreate() {
+        getContentRoot().setCursor(new ImageCursor(cursorImage));
+    }
+
+    @Override
+    public void onDestroy() {
+        FXGL.getGameScene().setCursorInvisible();
+    }
+
     @NotNull
     @Override
     protected Button createActionButton(@NotNull StringBinding stringBinding, @NotNull Runnable runnable) {
@@ -85,7 +102,7 @@ public class PlatformerMainMenu extends FXGLMenu {
     @NotNull
     @Override
     protected Node createBackground(double width, double height) {
-        return FXGL.getAssetLoader().loadTexture("dark-forest-main-menu-background.jpg", width, height);
+        return FXGL.getAssetLoader().loadTexture("menu-background-loop.gif", width, height);
     }
 
     @NotNull

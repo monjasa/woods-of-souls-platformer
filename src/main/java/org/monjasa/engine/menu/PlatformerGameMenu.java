@@ -5,8 +5,12 @@ import com.almasb.fxgl.app.scene.MenuType;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.texture.Texture;
 import javafx.beans.binding.StringBinding;
+import javafx.geometry.Point2D;
+import javafx.scene.Cursor;
+import javafx.scene.ImageCursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -30,9 +34,13 @@ public class PlatformerGameMenu extends FXGLMenu {
         return gameMenu;
     }
 
+    private Image cursorImage;
+
     private PlatformerGameMenu() {
 
         super(MenuType.GAME_MENU);
+
+        cursorImage = FXGL.getAssetLoader().loadCursorImage("cursor.png");
 
         PlatformerMenuBox menu = createGameMenuBody();
 
@@ -72,6 +80,12 @@ public class PlatformerGameMenu extends FXGLMenu {
         return platformerMenuBox;
     }
 
+    @Override
+    public void onCreate() {
+//        getContentRoot().setCursor(new ImageCursor(cursorImage));
+        FXGL.getGameScene().setCursor(cursorImage, new Point2D(10, 10));
+    }
+
     @NotNull
     @Override
     protected Node createBackground(double width, double height) {
@@ -98,7 +112,7 @@ public class PlatformerGameMenu extends FXGLMenu {
 
         Text versionView = new Text(version);
         versionView.setFont(FXGL.getAssetLoader().loadFont("gnomoria.ttf").newFont(18));
-        versionView.setFill(Color.BLACK);
+        versionView.setFill(Color.WHITE);
         versionView.setTranslateX(5);
         versionView.setTranslateY(FXGL.getAppHeight() - 5);
 

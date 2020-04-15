@@ -30,10 +30,11 @@ public class PlatformerApplication extends GameApplication {
 
     @Override
     protected void initSettings(GameSettings settings) {
+
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.1.14");
+        settings.setVersion("0.1.16");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -44,9 +45,11 @@ public class PlatformerApplication extends GameApplication {
         settings.setFontUI("gnomoria.ttf");
         settings.setFontMono("gnomoria.ttf");
 
+        settings.setAppIcon("app/icon.png");
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);
         settings.setSceneFactory(new SceneFactory() {
+
             @NotNull
             @Override
             public FXGLMenu newMainMenu() {
@@ -67,6 +70,8 @@ public class PlatformerApplication extends GameApplication {
         entityFactories = new ArrayDeque<>();
         entityFactories.add(new ForestLevelFactory(2));
         entityFactories.forEach(getGameWorld()::addEntityFactory);
+
+        loopBGM("game_background.mp3");
 
         prepareNextLevel();
     }
