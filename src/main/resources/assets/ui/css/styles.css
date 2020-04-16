@@ -56,7 +56,7 @@
 }
 
 .fxgl_button:pressed, .fxgl_button:default:hover:pressed {
-    -fx-background-color: rgba(97, 207, 232, 0.8);
+    -fx-background-color: #303b2b;
     -fx-text-fill: white;
 }
 

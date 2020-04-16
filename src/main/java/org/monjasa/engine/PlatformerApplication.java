@@ -3,19 +3,23 @@ package org.monjasa.engine;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
+import com.almasb.fxgl.app.scene.LoadingScene;
 import com.almasb.fxgl.app.scene.SceneFactory;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.level.Level;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
+import javafx.scene.ImageCursor;
 import javafx.scene.input.KeyCode;
 import org.jetbrains.annotations.NotNull;
 import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.factories.ForestLevelFactory;
 import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
 import org.monjasa.engine.entities.players.Player;
-import org.monjasa.engine.menu.PlatformerGameMenu;
-import org.monjasa.engine.menu.PlatformerMainMenu;
+import org.monjasa.engine.scenes.PlatformerLoadingScene;
+import org.monjasa.engine.scenes.menu.PlatformerGameMenu;
+import org.monjasa.engine.scenes.menu.PlatformerMainMenu;
 
 import java.util.*;
 
@@ -27,6 +31,7 @@ public class PlatformerApplication extends GameApplication {
 
     private Deque<PlatformerLevelFactory> entityFactories;
     private Player player;
+    private ImageCursor imageCursor;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -34,7 +39,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.1.16");
+        settings.setVersion("0.1.17");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -49,7 +54,6 @@ public class PlatformerApplication extends GameApplication {
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);
         settings.setSceneFactory(new SceneFactory() {
-
             @NotNull
             @Override
             public FXGLMenu newMainMenu() {
@@ -61,7 +65,18 @@ public class PlatformerApplication extends GameApplication {
             public FXGLMenu newGameMenu() {
                 return PlatformerGameMenu.getGameMenuInstance();
             }
+
+            @NotNull
+            @Override
+            public LoadingScene newLoadingScene() {
+                return new PlatformerLoadingScene();
+            }
         });
+    }
+
+    @Override
+    protected void onPreInit() {
+        imageCursor = new ImageCursor(FXGL.getAssetLoader().loadCursorImage("cursor.png"));
     }
 
     @Override
@@ -72,6 +87,9 @@ public class PlatformerApplication extends GameApplication {
         entityFactories.forEach(getGameWorld()::addEntityFactory);
 
         loopBGM("game_background.mp3");
+//        getGameScene().setCursor(FXGL.getAssetLoader().loadCursorImage("cursor.png"), new Point2D(0, 0));
+
+        getGameScene().setCursorInvisible();
 
         prepareNextLevel();
     }
@@ -134,7 +152,7 @@ public class PlatformerApplication extends GameApplication {
             entityFactories.poll();
 
             if (entityFactories.isEmpty()) {
-                getDialogService().showMessageBox("The End of Aplha version\nThank you for playing!", getGameController()::gotoMainMenu);
+                getDialogService().showMessageBox("The end of Aplha version.\nThank you for playing!", getGameController()::gotoMainMenu);
                 return;
             } else {
                 getWorldProperties().setValue("level", 0);
@@ -161,5 +179,9 @@ public class PlatformerApplication extends GameApplication {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public ImageCursor getImageCursor() {
+        return imageCursor;
     }
 }

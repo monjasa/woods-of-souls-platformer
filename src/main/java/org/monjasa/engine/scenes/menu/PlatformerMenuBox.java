@@ -1,4 +1,4 @@
-package org.monjasa.engine.menu;
+package org.monjasa.engine.scenes.menu;
 
 import javafx.scene.layout.VBox;
 

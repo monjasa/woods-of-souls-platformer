@@ -1,19 +1,17 @@
-package org.monjasa.engine.menu;
+package org.monjasa.engine.scenes.menu;
 
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.texture.Texture;
 import javafx.beans.binding.StringBinding;
-import javafx.geometry.Point2D;
-import javafx.scene.ImageCursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import org.jetbrains.annotations.NotNull;
+import org.monjasa.engine.PlatformerApplication;
 
 public class PlatformerMainMenu extends FXGLMenu {
 
@@ -32,13 +30,9 @@ public class PlatformerMainMenu extends FXGLMenu {
         return mainMenu;
     }
 
-    private Image cursorImage;
-
     private PlatformerMainMenu() {
 
         super(MenuType.MAIN_MENU);
-
-        cursorImage = FXGL.getAssetLoader().loadCursorImage("cursor.png");
 
         PlatformerMenuBox menuBox = createMainMenuBody();
 
@@ -79,12 +73,7 @@ public class PlatformerMainMenu extends FXGLMenu {
 
     @Override
     public void onCreate() {
-        getContentRoot().setCursor(new ImageCursor(cursorImage));
-    }
-
-    @Override
-    public void onDestroy() {
-        FXGL.getGameScene().setCursorInvisible();
+        getContentRoot().setCursor(((PlatformerApplication) FXGL.getApp()).getImageCursor());
     }
 
     @NotNull

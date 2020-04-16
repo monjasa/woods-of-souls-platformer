@@ -1,21 +1,22 @@
-package org.monjasa.engine.menu;
+package org.monjasa.engine.scenes.menu;
 
 import com.almasb.fxgl.app.scene.FXGLMenu;
+import com.almasb.fxgl.app.scene.GameScene;
 import com.almasb.fxgl.app.scene.MenuType;
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.scene.Scene;
+import com.almasb.fxgl.scene.SubScene;
 import com.almasb.fxgl.texture.Texture;
 import javafx.beans.binding.StringBinding;
-import javafx.geometry.Point2D;
-import javafx.scene.Cursor;
-import javafx.scene.ImageCursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import org.jetbrains.annotations.NotNull;
+import org.monjasa.engine.PlatformerApplication;
 
 public class PlatformerGameMenu extends FXGLMenu {
 
@@ -34,13 +35,9 @@ public class PlatformerGameMenu extends FXGLMenu {
         return gameMenu;
     }
 
-    private Image cursorImage;
-
     private PlatformerGameMenu() {
 
         super(MenuType.GAME_MENU);
-
-        cursorImage = FXGL.getAssetLoader().loadCursorImage("cursor.png");
 
         PlatformerMenuBox menu = createGameMenuBody();
 
@@ -82,8 +79,21 @@ public class PlatformerGameMenu extends FXGLMenu {
 
     @Override
     public void onCreate() {
-//        getContentRoot().setCursor(new ImageCursor(cursorImage));
-        FXGL.getGameScene().setCursor(cursorImage, new Point2D(10, 10));
+        getContentRoot().setCursor(((PlatformerApplication) FXGL.getApp()).getImageCursor());
+    }
+
+    @Override
+    public void onEnteredFrom(@NotNull Scene prevState) {
+        if (prevState instanceof GameScene)
+            FXGL.getGameScene().getContentRoot().setEffect(new GaussianBlur(5));
+    }
+
+    @Override
+    public void onExitingTo(@NotNull Scene nextState) {
+        if (nextState instanceof SubScene)
+            nextState.getContentRoot().setCursor(getContentRoot().getCursor());
+        else if (nextState instanceof GameScene)
+            FXGL.getGameScene().getContentRoot().setEffect(null);
     }
 
     @NotNull
