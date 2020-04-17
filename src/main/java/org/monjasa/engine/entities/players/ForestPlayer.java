@@ -97,6 +97,7 @@ public class ForestPlayer extends Player {
 
         private AnimationChannel animationIdle;
         private AnimationChannel animationWalking;
+        private AnimationChannel animationBeforeJump;
         private AnimationChannel animationJumping;
         private AnimationChannel animationAfterJump;
 
@@ -109,6 +110,9 @@ public class ForestPlayer extends Player {
 
             animationWalking = new AnimationChannel(FXGL.image("player_spritesheet.png"), 4,
                     90, 165, Duration.millis(700), 1, 2);
+
+            animationBeforeJump = new AnimationChannel(FXGL.image("player_spritesheet.png"), 4,
+                    90, 165, Duration.INDEFINITE, 3, 3);
 
             animationJumping = new AnimationChannel(FXGL.image("player_spritesheet.png"), 4,
                     90, 165, Duration.millis(700), 4, 4);
@@ -144,13 +148,11 @@ public class ForestPlayer extends Player {
         }
 
         public void onVerticalStart() {
-            FXGL.getAudioPlayer().stopMusic(walkingSounds);
         }
 
         public void onMovingVertically() {
-
             FXGL.getAudioPlayer().stopMusic(walkingSounds);
-            if (animatedTexture.getAnimationChannel() != animationJumping)
+            if (animatedTexture.getAnimationChannel() != animationJumping && animatedTexture.getAnimationChannel() != animationBeforeJump)
                 animatedTexture.loopAnimationChannel(animationJumping);
         }
 

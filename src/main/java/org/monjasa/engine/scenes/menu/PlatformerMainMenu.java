@@ -75,6 +75,8 @@ public class PlatformerMainMenu extends FXGLMenu {
 
     @Override
     public void onCreate() {
+        FXGL.getAudioPlayer().stopMusic(application.getGameMusic());
+        FXGL.getAudioPlayer().loopMusic(application.getMainMenuMusic());
         getContentRoot().setCursor(application.getImageCursor());
     }
 
@@ -115,7 +117,7 @@ public class PlatformerMainMenu extends FXGLMenu {
     @Override
     protected Node createVersionView(String version) {
 
-        Text versionView = new Text(version);
+        Text versionView = new Text(String.format("Woods of Souls (%s)",version));
         versionView.setFont(FXGL.getAssetLoader().loadFont("gnomoria.ttf").newFont(18));
         versionView.setFill(Color.WHITE);
         versionView.setTranslateX(5);

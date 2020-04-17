@@ -34,9 +34,13 @@ public class PlatformerGameMenu extends FXGLMenu {
         return gameMenu;
     }
 
+    PlatformerApplication application;
+
     private PlatformerGameMenu() {
 
         super(MenuType.GAME_MENU);
+
+        application = (PlatformerApplication) FXGL.getApp();
 
         PlatformerMenuBox menu = createGameMenuBody();
 
@@ -77,14 +81,18 @@ public class PlatformerGameMenu extends FXGLMenu {
 
     @Override
     public void onEnteredFrom(Scene prevState) {
-        if (prevState instanceof GameScene)
+        if (prevState instanceof GameScene) {
+            FXGL.getAudioPlayer().pauseMusic(application.getGameMusic());
             FXGL.getGameScene().getContentRoot().setEffect(new GaussianBlur(5));
+        }
     }
 
     @Override
     public void onExitingTo(Scene nextState) {
-        if (nextState instanceof GameScene)
+        if (nextState instanceof GameScene) {
+            FXGL.getAudioPlayer().resumeMusic(application.getGameMusic());
             FXGL.getGameScene().getContentRoot().setEffect(null);
+        }
     }
 
     @Override

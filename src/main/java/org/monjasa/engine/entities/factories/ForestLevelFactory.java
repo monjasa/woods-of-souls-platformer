@@ -65,8 +65,8 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
     public Player createPlayer(SpawnData data) {
 
         PhysicsComponent playerPhysicsComponent = new PhysicsComponent();
-        playerPhysicsComponent.addGroundSensor(new HitBox("GROUND_SENSOR", new Point2D(20, 164),
-                BoundingShape.box(50, 2)));
+        playerPhysicsComponent.addGroundSensor(new HitBox("GROUND_SENSOR", new Point2D(25, 164),
+                BoundingShape.box(40, 2)));
         playerPhysicsComponent.setBodyType(BodyType.DYNAMIC);
         playerPhysicsComponent.setFixtureDef(new FixtureDef().friction(0.0f));
 

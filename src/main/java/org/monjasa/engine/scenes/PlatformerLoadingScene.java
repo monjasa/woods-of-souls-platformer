@@ -8,10 +8,15 @@ import javafx.scene.Cursor;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+
+import java.net.URL;
 
 public class PlatformerLoadingScene extends LoadingScene {
 
     private ProgressBar progressBar;
+    private Text text;
 
     public PlatformerLoadingScene() {
 
@@ -24,8 +29,16 @@ public class PlatformerLoadingScene extends LoadingScene {
         progressBar.setTranslateX(100.0);
         progressBar.setTranslateY(getAppHeight() - 100.0);
 
+        text = new Text();
+        URL fontPath = this.getClass().getClassLoader().getResource("assets/ui/fonts/gnomoria.ttf");
+        assert fontPath != null;
+        text.setFont(Font.loadFont(fontPath.toExternalForm(), 42));
+        text.setFill(Color.WHITE);
+
+        FXGL.centerTextBind(text, getAppWidth() / 2.0, getAppHeight() * 4 / 5.0);
+
         setBackgroundColor(Color.BLACK);
-        getContentRoot().getChildren().addAll(imageView, progressBar);
+        getContentRoot().getChildren().addAll(imageView, progressBar, text);
     }
 
     @Override
@@ -36,5 +49,6 @@ public class PlatformerLoadingScene extends LoadingScene {
     @Override
     protected void bind(Task<?> task) {
         progressBar.progressProperty().bind(task.progressProperty());
+        text.textProperty().bind(task.messageProperty());
     }
 }

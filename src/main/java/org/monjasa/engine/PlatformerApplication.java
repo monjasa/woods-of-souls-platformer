@@ -1,5 +1,6 @@
 package org.monjasa.engine;
 
+import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
@@ -35,15 +36,18 @@ public class PlatformerApplication extends GameApplication {
     private Player player;
 
     private Music mainMenuMusic;
+    private Music gameMusic;
     private ImageCursor imageCursor;
 
     @Override
     protected void initSettings(GameSettings settings) {
 
+        settings.setApplicationMode(ApplicationMode.RELEASE);
+
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.1.18");
+        settings.setVersion("0.2.0");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -77,6 +81,8 @@ public class PlatformerApplication extends GameApplication {
 
     @Override
     protected void onPreInit() {
+        gameMusic = FXGL.getAssetLoader().loadMusic("game_background.mp3");
+        mainMenuMusic = FXGL.getAssetLoader().loadMusic("main_menu_background.mp3");
         imageCursor = new ImageCursor(FXGL.getAssetLoader().loadCursorImage("cursor.png"));
     }
 
@@ -87,12 +93,13 @@ public class PlatformerApplication extends GameApplication {
         entityFactories.add(new ForestLevelFactory(2));
         entityFactories.forEach(getGameWorld()::addEntityFactory);
 
-        loopBGM("game_background.mp3");
-
         getPhysicsWorld().setGravity(0, 1000);
 
         getGameScene().setCursor(imageCursor.getImage(), new Point2D(0, 0));
         getGameScene().getContentRoot().setCursor(Cursor.NONE);
+
+        getAudioPlayer().stopMusic(mainMenuMusic);
+        getAudioPlayer().loopMusic(gameMusic);
 
         prepareNextLevel();
     }
@@ -189,6 +196,14 @@ public class PlatformerApplication extends GameApplication {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public Music getMainMenuMusic() {
+        return mainMenuMusic;
+    }
+
+    public Music getGameMusic() {
+        return gameMusic;
     }
 
     public ImageCursor getImageCursor() {
