@@ -15,7 +15,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import org.jetbrains.annotations.NotNull;
 import org.monjasa.engine.PlatformerApplication;
 
 public class PlatformerGameMenu extends FXGLMenu {
@@ -63,7 +62,6 @@ public class PlatformerGameMenu extends FXGLMenu {
         platformerMenuBox.add(itemNewGame);
 
         PlatformerMenuButton itemOptions = new PlatformerMenuButton("Options");
-//        itemOptions.setOnAction(actionEvent -> fireNewGame());
         platformerMenuBox.add(itemOptions);
 
         PlatformerMenuButton itemExitToMainMenu = new PlatformerMenuButton("Main Menu");
@@ -78,33 +76,24 @@ public class PlatformerGameMenu extends FXGLMenu {
     }
 
     @Override
-    public void onCreate() {
-        getContentRoot().setCursor(((PlatformerApplication) FXGL.getApp()).getImageCursor());
-    }
-
-    @Override
-    public void onEnteredFrom(@NotNull Scene prevState) {
+    public void onEnteredFrom(Scene prevState) {
         if (prevState instanceof GameScene)
             FXGL.getGameScene().getContentRoot().setEffect(new GaussianBlur(5));
     }
 
     @Override
-    public void onExitingTo(@NotNull Scene nextState) {
-        if (nextState instanceof SubScene)
-            nextState.getContentRoot().setCursor(getContentRoot().getCursor());
-        else if (nextState instanceof GameScene)
+    public void onExitingTo(Scene nextState) {
+        if (nextState instanceof GameScene)
             FXGL.getGameScene().getContentRoot().setEffect(null);
     }
 
-    @NotNull
     @Override
     protected Node createBackground(double width, double height) {
         return new Rectangle(width, height, Color.rgb(31, 31, 31, 0.50));
     }
 
-    @NotNull
     @Override
-    protected Node createTitleView(@NotNull String s) {
+    protected Node createTitleView(String s) {
 
         Texture logo = FXGL.texture("logo-texture.png", 400, 272);
 
@@ -116,9 +105,8 @@ public class PlatformerGameMenu extends FXGLMenu {
         return titleRoot;
     }
 
-    @NotNull
     @Override
-    protected Node createVersionView(@NotNull String version) {
+    protected Node createVersionView(String version) {
 
         Text versionView = new Text(version);
         versionView.setFont(FXGL.getAssetLoader().loadFont("gnomoria.ttf").newFont(18));
@@ -129,21 +117,18 @@ public class PlatformerGameMenu extends FXGLMenu {
         return versionView;
     }
 
-    @NotNull
     @Override
-    protected Button createActionButton(@NotNull StringBinding stringBinding, @NotNull Runnable runnable) {
+    protected Button createActionButton(StringBinding stringBinding, Runnable runnable) {
         return new Button(stringBinding.get());
     }
 
-    @NotNull
     @Override
-    protected Button createActionButton(@NotNull String name, @NotNull Runnable runnable) {
+    protected Button createActionButton(String name, Runnable runnable) {
         return new Button(name);
     }
 
-    @NotNull
     @Override
-    protected Node createProfileView(@NotNull String profileName) {
+    protected Node createProfileView(String profileName) {
         return new Text(profileName);
     }
 }

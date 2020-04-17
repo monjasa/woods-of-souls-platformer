@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="70" height="16" tilewidth="45" tileheight="45" infinite="0" nextlayerid="10" nextobjectid="14">
- <tileset firstgid="1" name="level_spritesheet" tilewidth="45" tileheight="45" tilecount="30" columns="10">
-  <image source="level_spritesheet.png" width="450" height="135"/>
+ <tileset firstgid="1" name="level_spritesheet" tilewidth="45" tileheight="45" tilecount="40" columns="10">
+  <image source="level_spritesheet.png" width="450" height="180"/>
  </tileset>
  <layer id="9" name="Tile Layer 1" width="70" height="16">
   <data encoding="csv">
@@ -25,7 +25,7 @@
  </layer>
  <objectgroup id="2" name="Object Layer 1">
   <object id="1" type="forest-platform" x="0" y="675" width="3150" height="45"/>
-  <object id="5" type="forest-player" x="90" y="405" width="120" height="210"/>
+  <object id="5" type="forest-player" x="90" y="405" width="90" height="165"/>
   <object id="11" type="forest-exit" x="3015" y="0" width="135" height="675"/>
  </objectgroup>
 </map>

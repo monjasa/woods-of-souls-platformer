@@ -3,14 +3,16 @@ package org.monjasa.engine.scenes.menu;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType;
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.scene.Scene;
+import com.almasb.fxgl.scene.SubScene;
 import com.almasb.fxgl.texture.Texture;
 import javafx.beans.binding.StringBinding;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import org.jetbrains.annotations.NotNull;
 import org.monjasa.engine.PlatformerApplication;
 
 public class PlatformerMainMenu extends FXGLMenu {
@@ -21,18 +23,20 @@ public class PlatformerMainMenu extends FXGLMenu {
 
         if (mainMenu == null) {
             synchronized (PlatformerMainMenu.class) {
-                if (mainMenu == null) {
-                    mainMenu = new PlatformerMainMenu();
-                }
+                if (mainMenu == null) mainMenu = new PlatformerMainMenu();
             }
         }
 
         return mainMenu;
     }
 
+    private PlatformerApplication application;
+
     private PlatformerMainMenu() {
 
         super(MenuType.MAIN_MENU);
+
+        application = (PlatformerApplication) FXGL.getApp();
 
         PlatformerMenuBox menuBox = createMainMenuBody();
 
@@ -57,11 +61,9 @@ public class PlatformerMainMenu extends FXGLMenu {
         platformerMenuBox.add(newGameButton);
 
         PlatformerMenuButton optionsButton = new PlatformerMenuButton("Options");
-//        optionsButton.setOnAction(actionEvent -> fireNewGame());
         platformerMenuBox.add(optionsButton);
 
         PlatformerMenuButton creditsButton = new PlatformerMenuButton("Credits");
-//        creditsButton.setOnAction(actionEvent -> fireNewGame());
         platformerMenuBox.add(creditsButton);
 
         PlatformerMenuButton exitButton = new PlatformerMenuButton("Exit");
@@ -73,30 +75,32 @@ public class PlatformerMainMenu extends FXGLMenu {
 
     @Override
     public void onCreate() {
-        getContentRoot().setCursor(((PlatformerApplication) FXGL.getApp()).getImageCursor());
+        getContentRoot().setCursor(application.getImageCursor());
     }
 
-    @NotNull
     @Override
-    protected Button createActionButton(@NotNull StringBinding stringBinding, @NotNull Runnable runnable) {
+    public void onExitingTo(Scene nextState) {
+        if (nextState instanceof SubScene)
+            nextState.getContentRoot().setCursor(getContentRoot().getCursor());
+    }
+
+    @Override
+    protected Button createActionButton(StringBinding stringBinding, Runnable runnable) {
         return new Button(stringBinding.get());
     }
 
-    @NotNull
     @Override
-    protected Button createActionButton(@NotNull String name, @NotNull Runnable runnable) {
+    protected Button createActionButton(String name, Runnable runnable) {
         return new Button(name);
     }
 
-    @NotNull
     @Override
     protected Node createBackground(double width, double height) {
         return FXGL.getAssetLoader().loadTexture("menu-background-loop.gif", width, height);
     }
 
-    @NotNull
     @Override
-    protected Node createTitleView(@NotNull String tittle) {
+    protected Node createTitleView(String tittle) {
 
         Texture logo = FXGL.texture("logo-texture.png", 500, 340);
 
@@ -108,9 +112,8 @@ public class PlatformerMainMenu extends FXGLMenu {
         return titleRoot;
     }
 
-    @NotNull
     @Override
-    protected Node createVersionView(@NotNull String version) {
+    protected Node createVersionView(String version) {
 
         Text versionView = new Text(version);
         versionView.setFont(FXGL.getAssetLoader().loadFont("gnomoria.ttf").newFont(18));
@@ -121,9 +124,8 @@ public class PlatformerMainMenu extends FXGLMenu {
         return versionView;
     }
 
-    @NotNull
     @Override
-    protected Node createProfileView(@NotNull String profileName) {
+    protected Node createProfileView(String profileName) {
         return new Text(profileName);
     }
 }

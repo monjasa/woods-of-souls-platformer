@@ -5,14 +5,16 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.LoadingScene;
 import com.almasb.fxgl.app.scene.SceneFactory;
+import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.level.Level;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
+import javafx.geometry.Point2D;
+import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.input.KeyCode;
-import org.jetbrains.annotations.NotNull;
 import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.factories.ForestLevelFactory;
 import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
@@ -31,6 +33,8 @@ public class PlatformerApplication extends GameApplication {
 
     private Deque<PlatformerLevelFactory> entityFactories;
     private Player player;
+
+    private Music mainMenuMusic;
     private ImageCursor imageCursor;
 
     @Override
@@ -39,7 +43,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.1.17");
+        settings.setVersion("0.1.18");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -54,19 +58,16 @@ public class PlatformerApplication extends GameApplication {
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);
         settings.setSceneFactory(new SceneFactory() {
-            @NotNull
             @Override
             public FXGLMenu newMainMenu() {
                 return PlatformerMainMenu.getMainMenuInstance();
             }
 
-            @NotNull
             @Override
             public FXGLMenu newGameMenu() {
                 return PlatformerGameMenu.getGameMenuInstance();
             }
 
-            @NotNull
             @Override
             public LoadingScene newLoadingScene() {
                 return new PlatformerLoadingScene();
@@ -87,9 +88,11 @@ public class PlatformerApplication extends GameApplication {
         entityFactories.forEach(getGameWorld()::addEntityFactory);
 
         loopBGM("game_background.mp3");
-//        getGameScene().setCursor(FXGL.getAssetLoader().loadCursorImage("cursor.png"), new Point2D(0, 0));
 
-        getGameScene().setCursorInvisible();
+        getPhysicsWorld().setGravity(0, 1000);
+
+        getGameScene().setCursor(imageCursor.getImage(), new Point2D(0, 0));
+        getGameScene().getContentRoot().setCursor(Cursor.NONE);
 
         prepareNextLevel();
     }
@@ -132,6 +135,13 @@ public class PlatformerApplication extends GameApplication {
                 player.goUp();
             }
         }, KeyCode.UP);
+
+        getInput().addAction(new UserAction("") {
+            @Override
+            protected void onActionBegin() {
+                getDialogService().showMessageBox("hi");
+            }
+        }, KeyCode.F);
     }
 
     @Override

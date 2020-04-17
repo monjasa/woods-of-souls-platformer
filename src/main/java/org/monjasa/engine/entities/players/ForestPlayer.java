@@ -77,7 +77,7 @@ public class ForestPlayer extends Player {
 
         public void jump() {
             if (physicsComponent.isOnGround()) {
-                physicsComponent.setVelocityY(-600);
+                physicsComponent.setVelocityY(-800);
             }
         }
 
@@ -105,16 +105,16 @@ public class ForestPlayer extends Player {
             walkingSounds = FXGL.getAssetLoader().loadMusic("walking_sound.mp3");
 
             animationIdle = new AnimationChannel(FXGL.image("player_spritesheet.png"), 4,
-                    120, 210, Duration.INDEFINITE, 0, 0);
+                    90, 165, Duration.INDEFINITE, 0, 0);
 
             animationWalking = new AnimationChannel(FXGL.image("player_spritesheet.png"), 4,
-                    120, 210, Duration.millis(750), 1, 2);
+                    90, 165, Duration.millis(700), 1, 2);
 
             animationJumping = new AnimationChannel(FXGL.image("player_spritesheet.png"), 4,
-                    120, 210, Duration.millis(750), 4, 4);
+                    90, 165, Duration.millis(700), 4, 4);
 
             animationAfterJump = new AnimationChannel(FXGL.image("player_spritesheet.png"), 4,
-                    120, 210, Duration.INDEFINITE, 5, 5);
+                    90, 165, Duration.INDEFINITE, 5, 5);
 
             animatedTexture = new AnimatedTexture(animationIdle).loop();
         }
