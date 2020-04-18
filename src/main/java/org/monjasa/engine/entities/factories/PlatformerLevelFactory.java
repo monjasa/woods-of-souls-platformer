@@ -4,6 +4,7 @@ import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.level.Level;
 import com.almasb.fxgl.entity.level.tiled.TMXLevelLoader;
+import org.monjasa.engine.entities.coins.Coin;
 import org.monjasa.engine.entities.exits.Exit;
 import org.monjasa.engine.entities.platforms.Platform;
 import org.monjasa.engine.entities.players.Player;
@@ -29,6 +30,10 @@ public abstract class PlatformerLevelFactory implements EntityFactory {
     public abstract Player getPlayerInstance();
 
     public abstract Player createPlayer(SpawnData data);
+
+    public abstract Coin getCoinInstance();
+
+    public abstract Coin createCoin(SpawnData data);
 
     public abstract Exit getExitInstance();
 

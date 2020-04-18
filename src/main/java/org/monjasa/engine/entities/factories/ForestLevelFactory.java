@@ -14,6 +14,9 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.SimpleEntityBuilder;
+import org.monjasa.engine.entities.coins.Coin;
+import org.monjasa.engine.entities.coins.CoinBuilder;
+import org.monjasa.engine.entities.coins.ForestCoin;
 import org.monjasa.engine.entities.exits.Exit;
 import org.monjasa.engine.entities.exits.ExitBuilder;
 import org.monjasa.engine.entities.exits.ForestExit;
@@ -100,6 +103,24 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
                 .addHitBox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
                 .setCollidable()
                 .buildExit();
+    }
+
+    @Override
+    @Spawns("forest-coin")
+    public Coin createCoin(SpawnData data) {
+
+        return new CoinBuilder(this)
+                .loadFromSpawnData(data)
+                .addType(PlatformerEntityType.COIN)
+                .addHitBox(new HitBox(BoundingShape.circle(9)))
+                .attachComponents(new ForestCoin.ForestCoinViewComponent())
+                .setCollidable()
+                .buildCoin();
+    }
+
+    @Override
+    public Coin getCoinInstance() {
+        return new ForestCoin();
     }
 
     @Override

@@ -4,5 +4,6 @@ public enum PlatformerEntityType {
 
     PLAYER,
     PLATFORM,
+    COIN,
     EXIT
 }

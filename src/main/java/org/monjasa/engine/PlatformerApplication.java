@@ -30,7 +30,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class PlatformerApplication extends GameApplication {
 
-    private static final boolean DEVELOPING_NEW_LEVEL = false;
+    private static final boolean DEVELOPING_NEW_LEVEL = true;
 
     private Deque<PlatformerLevelFactory> entityFactories;
     private Player player;
@@ -47,7 +47,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.2.0");
+        settings.setVersion("0.2.1");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -59,8 +59,8 @@ public class PlatformerApplication extends GameApplication {
         settings.setFontMono("gnomoria.ttf");
 
         settings.setAppIcon("app/icon.png");
-        settings.setMainMenuEnabled(true);
-        settings.setGameMenuEnabled(true);
+        settings.setMainMenuEnabled(false);
+        settings.setGameMenuEnabled(false);
         settings.setSceneFactory(new SceneFactory() {
             @Override
             public FXGLMenu newMainMenu() {
@@ -158,6 +158,14 @@ public class PlatformerApplication extends GameApplication {
             @Override
             protected void onCollisionBegin(Entity player, Entity exit) {
                 finishLevel();
+            }
+        });
+
+        getPhysicsWorld().addCollisionHandler(new CollisionHandler(PlatformerEntityType.PLAYER, PlatformerEntityType.COIN) {
+            @Override
+            protected void onCollisionBegin(Entity player, Entity coin) {
+                coin.removeFromWorld();
+                entityFactories.getFirst().getCoinInstance().playPickUpCoinSound();
             }
         });
     }

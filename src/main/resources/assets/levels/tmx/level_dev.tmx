@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="50" height="16" tilewidth="45" tileheight="45" infinite="0" nextlayerid="9" nextobjectid="14">
- <tileset firstgid="1" name="level_spritesheet" tilewidth="45" tileheight="45" tilecount="30" columns="10">
-  <image source="level_spritesheet.png" width="450" height="135"/>
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="50" height="16" tilewidth="45" tileheight="45" infinite="0" nextlayerid="9" nextobjectid="27">
+ <tileset firstgid="1" name="level_spritesheet" tilewidth="45" tileheight="45" tilecount="40" columns="10">
+  <image source="level_spritesheet.png" width="450" height="180"/>
  </tileset>
  <layer id="8" name="Tile Layer 1" width="50" height="16">
   <data encoding="csv">
@@ -31,5 +31,20 @@
   <object id="11" type="forest-exit" x="2115" y="0" width="135" height="675"/>
   <object id="12" type="forest-platform" x="1215" y="315" width="225" height="45"/>
   <object id="13" type="forest-platform" x="675" y="450" width="135" height="45"/>
+  <object id="14" type="forest-coin" x="720.667" y="225" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="23" type="forest-coin" x="401.5" y="584.977" width="46.3333" height="47.5233">
+   <ellipse/>
+  </object>
+  <object id="24" type="forest-coin" x="718.833" y="584.833" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="25" type="forest-coin" x="1170.83" y="586.833" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="26" type="forest-coin" x="1528.83" y="584.833" width="45" height="45">
+   <ellipse/>
+  </object>
  </objectgroup>
 </map>
