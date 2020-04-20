@@ -16,6 +16,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.input.KeyCode;
+import org.jetbrains.annotations.NotNull;
 import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.factories.ForestLevelFactory;
 import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
@@ -47,7 +48,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.2.1");
+        settings.setVersion("0.2.2");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -59,20 +60,24 @@ public class PlatformerApplication extends GameApplication {
         settings.setFontMono("gnomoria.ttf");
 
         settings.setAppIcon("app/icon.png");
-        settings.setMainMenuEnabled(false);
-        settings.setGameMenuEnabled(false);
+        settings.setMainMenuEnabled(!true);
+        settings.setGameMenuEnabled(!true);
+        settings.setDeveloperMenuEnabled(true);
         settings.setSceneFactory(new SceneFactory() {
             @Override
+            @NotNull
             public FXGLMenu newMainMenu() {
                 return PlatformerMainMenu.getMainMenuInstance();
             }
 
             @Override
+            @NotNull
             public FXGLMenu newGameMenu() {
                 return PlatformerGameMenu.getGameMenuInstance();
             }
 
             @Override
+            @NotNull
             public LoadingScene newLoadingScene() {
                 return new PlatformerLoadingScene();
             }
@@ -165,7 +170,16 @@ public class PlatformerApplication extends GameApplication {
             @Override
             protected void onCollisionBegin(Entity player, Entity coin) {
                 coin.removeFromWorld();
-                entityFactories.getFirst().getCoinInstance().playPickUpCoinSound();
+                entityFactories.getFirst().getCoinInstance().playPickUpSound();
+            }
+        });
+
+        getPhysicsWorld().addCollisionHandler(new CollisionHandler(PlatformerEntityType.PLAYER, PlatformerEntityType.ENEMY) {
+            @Override
+            protected void onCollisionBegin(Entity player, Entity enemy) {
+                FXGL.play("game-over.wav");
+                getDialogService().showMessageBox("You died");
+                restartLevel();
             }
         });
     }
@@ -190,6 +204,18 @@ public class PlatformerApplication extends GameApplication {
         if (!DEVELOPING_NEW_LEVEL) {
             inc("level", 1);
         }
+
+        player = (Player) getGameWorld().getSingleton(PlatformerEntityType.PLAYER);
+
+        getGameScene().getViewport().setLazy(true);
+        getGameScene().getViewport().bindToEntity(player, getAppWidth() / 2.0, getAppHeight() / 2.0);
+        getGameScene().getViewport().setBounds(0, 0, level.getWidth(), level.getHeight());
+    }
+
+    private void restartLevel() {
+
+        Level level = Objects.requireNonNull(entityFactories.peek()).createLevel(geti("level"), DEVELOPING_NEW_LEVEL);
+        getGameWorld().setLevel(level);
 
         player = (Player) getGameWorld().getSingleton(PlatformerEntityType.PLAYER);
 

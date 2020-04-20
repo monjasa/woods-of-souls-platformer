@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="50" height="16" tilewidth="45" tileheight="45" infinite="0" nextlayerid="9" nextobjectid="27">
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="50" height="16" tilewidth="45" tileheight="45" infinite="0" nextlayerid="9" nextobjectid="32">
  <tileset firstgid="1" name="level_spritesheet" tilewidth="45" tileheight="45" tilecount="40" columns="10">
   <image source="level_spritesheet.png" width="450" height="180"/>
  </tileset>
@@ -45,6 +45,16 @@
   </object>
   <object id="26" type="forest-coin" x="1528.83" y="584.833" width="45" height="45">
    <ellipse/>
+  </object>
+  <object id="30" type="forest-enemy" x="540.25" y="584" width="90" height="91">
+   <properties>
+    <property name="patrolEndX" type="int" value="900"/>
+   </properties>
+  </object>
+  <object id="31" type="forest-enemy" x="1395" y="582.5" width="90" height="91">
+   <properties>
+    <property name="patrolEndX" type="int" value="2000"/>
+   </properties>
   </object>
  </objectgroup>
 </map>

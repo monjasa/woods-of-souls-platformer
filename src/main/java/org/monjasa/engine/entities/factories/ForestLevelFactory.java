@@ -12,11 +12,16 @@ import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
+import javafx.scene.shape.Rectangle;
 import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.SimpleEntityBuilder;
 import org.monjasa.engine.entities.coins.Coin;
 import org.monjasa.engine.entities.coins.CoinBuilder;
 import org.monjasa.engine.entities.coins.ForestCoin;
+import org.monjasa.engine.entities.coins.ForestCoinAssets;
+import org.monjasa.engine.entities.enemies.Enemy;
+import org.monjasa.engine.entities.enemies.EnemyBuilder;
+import org.monjasa.engine.entities.enemies.ForestEnemy;
 import org.monjasa.engine.entities.exits.Exit;
 import org.monjasa.engine.entities.exits.ExitBuilder;
 import org.monjasa.engine.entities.exits.ForestExit;
@@ -37,8 +42,11 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
     private static final String FOREST_LEVEL_PREFIX = "forest";
     private static final String FOREST_DEVELOPING_LEVEL_NAME = "level_dev";
 
+    private ForestCoinAssets forestCoinAssets;
+
     public ForestLevelFactory(int maxLevel) {
         super(maxLevel, FOREST_LEVEL_PREFIX, FOREST_DEVELOPING_LEVEL_NAME);
+        forestCoinAssets = new ForestCoinAssets();
     }
 
     @Override
@@ -89,6 +97,26 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
     }
 
     @Override
+    public Enemy getEnemyInstance() {
+        return new ForestEnemy();
+    }
+
+    @Override
+    @Spawns("forest-enemy")
+    public Enemy createEnemy(SpawnData data) {
+
+        int patrolEndX = data.get("patrolEndX");
+
+        return new EnemyBuilder(this)
+                .addType(PlatformerEntityType.ENEMY)
+                .loadFromSpawnData(data)
+                .attachComponents(new ForestEnemy.ForestEnemyComponent(patrolEndX))
+                .addHitBox(new HitBox(BoundingShape.box(75, 99)))
+                .setCollidable()
+                .buildEnemy();
+    }
+
+    @Override
     public Exit getExitInstance() {
         return new ForestExit();
     }
@@ -118,9 +146,10 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
                 .buildCoin();
     }
 
+
     @Override
     public Coin getCoinInstance() {
-        return new ForestCoin();
+        return new ForestCoin(forestCoinAssets);
     }
 
     @Override

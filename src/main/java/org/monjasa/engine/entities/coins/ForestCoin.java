@@ -1,27 +1,23 @@
 package org.monjasa.engine.entities.coins;
 
-import com.almasb.fxgl.app.scene.FXGLMenu;
-import com.almasb.fxgl.audio.Music;
-import com.almasb.fxgl.audio.Sound;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.texture.AnimatedTexture;
-import com.almasb.fxgl.texture.AnimationChannel;
-import javafx.util.Duration;
 
 public class ForestCoin extends Coin {
+
+    private static ForestCoinAssets assets;
+
+    public ForestCoin(ForestCoinAssets assets) {
+        this.assets = assets;
+    }
 
     public static class ForestCoinViewComponent extends Component {
 
         private AnimatedTexture animatedTexture;
 
         public ForestCoinViewComponent() {
-
-            AnimationChannel animation = new AnimationChannel(FXGL.image("forest-coin-spritesheet.png"),
-                    6,40, 40, Duration.millis(500), 0, 5);
-
-            animatedTexture = new AnimatedTexture(animation).loop();
+            animatedTexture = new AnimatedTexture(assets.getTexture()).loop();
         }
 
         @Override
@@ -31,7 +27,7 @@ public class ForestCoin extends Coin {
     }
 
     @Override
-    public void playPickUpCoinSound() {
-        FXGL.play("pickup-coin.wav");
+    public void playPickUpSound() {
+        assets.playPickUpSound();
     }
 }
