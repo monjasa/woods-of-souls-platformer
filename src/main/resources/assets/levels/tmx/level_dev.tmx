@@ -25,12 +25,12 @@
  </layer>
  <objectgroup id="2" name="Object Layer 1">
   <object id="1" type="forest-platform" x="0" y="675" width="2250" height="45"/>
-  <object id="2" type="forest-platform" x="630" y="405" width="225" height="45"/>
-  <object id="3" type="forest-platform" x="1170" y="270" width="315" height="45"/>
+  <object id="2" type="forest-platform" x="632" y="432.5" width="225" height="16.5"/>
+  <object id="3" type="forest-platform" x="1170" y="298" width="315" height="17"/>
   <object id="5" type="forest-player" x="90" y="405" width="120" height="210"/>
   <object id="11" type="forest-exit" x="2115" y="0" width="135" height="675"/>
-  <object id="12" type="forest-platform" x="1215" y="315" width="225" height="45"/>
-  <object id="13" type="forest-platform" x="675" y="450" width="135" height="45"/>
+  <object id="12" type="forest-platform" x="1215" y="315" width="265.5" height="45"/>
+  <object id="13" type="forest-platform" x="675" y="450" width="177" height="45"/>
   <object id="14" type="forest-coin" x="720.667" y="225" width="45" height="45">
    <ellipse/>
   </object>

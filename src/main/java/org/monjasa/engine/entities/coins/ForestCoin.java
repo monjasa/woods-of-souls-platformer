@@ -1,6 +1,5 @@
 package org.monjasa.engine.entities.coins;
 
-import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.texture.AnimatedTexture;
 

@@ -6,7 +6,7 @@
 
     <groupId>org.monjasa</groupId>
     <artifactId>woods-of-souls-platformer</artifactId>
-    <version>0.2.2</version>
+    <version>0.2.3</version>
 
     <properties>
 
@@ -37,6 +37,12 @@
             <groupId>com.github.almasb</groupId>
             <artifactId>fxgl</artifactId>
             <version>${fxgl.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jooq</groupId>
+            <artifactId>joou</artifactId>
+            <version>0.9.4</version>
         </dependency>
     </dependencies>
 
