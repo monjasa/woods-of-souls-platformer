@@ -6,7 +6,7 @@
 
     <groupId>org.monjasa</groupId>
     <artifactId>woods-of-souls-platformer</artifactId>
-    <version>0.2.3</version>
+    <version>0.2.4</version>
 
     <properties>
 
@@ -20,6 +20,7 @@
         <maven.shade.version>3.0.0</maven.shade.version>
         <javafx.maven.version>0.0.4</javafx.maven.version>
         <gluon.maven.version>0.1.20</gluon.maven.version>
+        <joou.maven.version>0.9.4</joou.maven.version>
 
         <mainClassName>org.monjasa.engine/org.monjasa.engine.PlatformerApplication</mainClassName>
 
@@ -42,7 +43,7 @@
         <dependency>
             <groupId>org.jooq</groupId>
             <artifactId>joou</artifactId>
-            <version>0.9.4</version>
+            <version>${joou.maven.version}</version>
         </dependency>
     </dependencies>
 

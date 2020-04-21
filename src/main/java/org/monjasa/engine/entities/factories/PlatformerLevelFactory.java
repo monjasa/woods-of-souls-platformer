@@ -9,6 +9,9 @@ import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.exits.Exit;
 import org.monjasa.engine.entities.platforms.Platform;
 import org.monjasa.engine.entities.players.Player;
+import org.monjasa.engine.levels.PlatformerTMXLevelLoader;
+
+import java.net.URL;
 
 import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
 
@@ -47,9 +50,9 @@ public abstract class PlatformerLevelFactory implements EntityFactory {
     public Level createLevel(int levelNum, boolean isDevelopingNewLevel) {
 
         if (isDevelopingNewLevel && developingLevelName != null) {
-            return getAssetLoader().loadLevel(String.format("tmx/%s.tmx", developingLevelName), new TMXLevelLoader());
+            return getAssetLoader().loadLevel(String.format("tmx/%s.tmx", developingLevelName), new PlatformerTMXLevelLoader());
         } else {
-            return getAssetLoader().loadLevel(String.format("tmx/%s_%02d.tmx", levelPrefix, levelNum), new TMXLevelLoader());
+            return getAssetLoader().loadLevel(String.format("tmx/%s_%02d.tmx", levelPrefix, levelNum), new PlatformerTMXLevelLoader());
         }
     }
 

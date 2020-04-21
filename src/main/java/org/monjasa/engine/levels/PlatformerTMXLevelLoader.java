@@ -1,12 +1,14 @@
-package org.monjasa.engine;
+package org.monjasa.engine.levels;
 
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.GameWorld;
+import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.components.IDComponent;
 import com.almasb.fxgl.entity.level.Level;
 import com.almasb.fxgl.entity.level.LevelLoader;
 import com.almasb.fxgl.entity.level.tiled.*;
 import javafx.scene.paint.Color;
-import org.jetbrains.annotations.NotNull;
+import org.joou.UInteger;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
@@ -16,22 +18,96 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.zip.InflaterInputStream;
 
 public class PlatformerTMXLevelLoader implements LevelLoader {
 
-    @NotNull
     @Override
-    public Level load(@NotNull URL url, @NotNull GameWorld gameWorld) {
-        return null;
+    public Level load(URL url, GameWorld gameWorld) {
+
+        try {
+            TiledMap map = parse(url.openStream());
+            TilesetLoader tilesetLoader = new TilesetLoader(map, url);
+            List<Entity> tileLayerEntities = createTileLayerEntities(map, tilesetLoader);
+            List<Entity> objectEntities = createObjectLayerEntities(map, tilesetLoader, gameWorld);
+
+            Level level = new Level(
+                    map.getWidth() * map.getTilewidth(),
+                    map.getHeight() * map.getTileheight(),
+                    Stream.of(tileLayerEntities, objectEntities).flatMap(Collection::stream).collect(Collectors.toList()));
+
+            map.getProperties().forEach(level.getProperties()::setValue);
+
+            return level;
+
+        } catch (IOException | XMLStreamException e) {
+            e.printStackTrace();
+            throw new RuntimeException();
+        }
+    }
+
+    private List<Entity> createTileLayerEntities(TiledMap map, TilesetLoader tilesetLoader) {
+
+        return map.getLayers().stream()
+                .filter(layer -> layer.getType().equals("tilelayer"))
+                .map(layer -> {
+                    Entity layerEntity = new Entity();
+                    layerEntity.getViewComponent().addChild(tilesetLoader.loadView(layer.getName()));
+                    return layerEntity;
+                }).collect(Collectors.toList());
+    }
+
+    private List<Entity> createObjectLayerEntities(TiledMap map, TilesetLoader tilesetLoader, GameWorld world) {
+        return map.getLayers().stream()
+                .filter(layer -> layer.getType().equals("objectgroup"))
+                .flatMap(layer -> layer.getObjects().stream())
+                .map(tiledObject -> {
+
+                    SpawnData data = new SpawnData(
+                            tiledObject.getX(),
+                            tiledObject.getY() - (tiledObject.getGid() == 0 ? 0 : tiledObject.getHeight())
+                    );
+
+                    data.put("name", tiledObject.getName());
+                    data.put("type", tiledObject.getType());
+                    data.put("width", tiledObject.getWidth());
+                    data.put("height", tiledObject.getHeight());
+                    data.put("rotation", tiledObject.getRotation());
+                    data.put("id", tiledObject.getId());
+                    data.put("gid", tiledObject.getGid());
+
+                    tiledObject.getProperties().forEach(data::put);
+
+                    Entity entity = world.create(tiledObject.getType(), data);
+                    data.getData().forEach(entity::setProperty);
+
+                    entity.addComponent(new IDComponent(tiledObject.getName(), tiledObject.getId()));
+
+                    entity.setPosition(data.getX(), data.getY());
+                    entity.setRotation(tiledObject.getRotation());
+
+                    if (tiledObject.getGid() != 0) {
+                        entity.getViewComponent().addChild(tilesetLoader.loadView(
+                                tiledObject.getGid(),
+                                tiledObject.isFlippedHorizontal(),
+                                tiledObject.isFlippedVertical()
+                        ));
+                    }
+
+                    return entity;
+                }).collect(Collectors.toList());
     }
 
     public TiledMap parse(InputStream inputStream) throws XMLStreamException {
+
         XMLInputFactory inputFactory = XMLInputFactory.newInstance();
         XMLEventReader eventReader = inputFactory.createXMLEventReader(inputStream, "UTF-8");
 
@@ -48,6 +124,7 @@ public class PlatformerTMXLevelLoader implements LevelLoader {
         boolean mapPropertiesFinished = false;
 
         while (eventReader.hasNext()) {
+
             XMLEvent event = eventReader.nextEvent();
 
             if (event.isStartElement()) {
@@ -99,23 +176,23 @@ public class PlatformerTMXLevelLoader implements LevelLoader {
                         break;
                     //TODO polygon
                 }
+            }
 
-                if (event.isEndElement()) {
-                    EndElement endElement = event.asEndElement();
+            if (event.isEndElement()) {
+                EndElement endElement = event.asEndElement();
 
-                    switch (endElement.getName().getLocalPart()) {
-                        case "tileset":
-                            tilesets.add(currentTileset);
-                            break;
-                        case "tile":
-                            currentTileset.getTiles().add(currentTile);
-                            insideTileTag = false;
-                            break;
-                        case "layer":
-                        case "objectgroup":
-                            layers.add(currentLayer);
-                            break;
-                    }
+                switch (endElement.getName().getLocalPart()) {
+                    case "tileset":
+                        tilesets.add(currentTileset);
+                        break;
+                    case "tile":
+                        currentTileset.getTiles().add(currentTile);
+                        insideTileTag = false;
+                        break;
+                    case "layer":
+                    case "objectgroup":
+                        layers.add(currentLayer);
+                        break;
                 }
             }
         }
@@ -179,12 +256,34 @@ public class PlatformerTMXLevelLoader implements LevelLoader {
         layer.setVisible(getIntAttribute("visible", start) == 1);
     }
 
-    //TODO ************************
     private void parseData(Layer layer, String data, StartElement start) {
 
         switch (getStringAttribute("encoding", start)) {
+
             case "csv":
-//                layer.setData();
+                layer.setData(Arrays.stream(data.replace("\n", "").split(","))
+                        .map(Integer::parseInt)
+                        .collect(Collectors.toList()));
+                return;
+
+            case "base64":
+
+                System.err.println("TO DO.........");
+
+                byte[] bytes = Base64.getDecoder().decode(data.trim());
+                switch (getStringAttribute("compresiion", start)) {
+                    case "zlib":
+                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                        InflaterInputStream inflaterInputStream = new InflaterInputStream(new ByteArrayInputStream(bytes));
+                        break;
+                    case "gzip":
+                        break;
+                }
+
+                return;
+
+            default:
+                throw new RuntimeException();
         }
     }
 
@@ -193,9 +292,8 @@ public class PlatformerTMXLevelLoader implements LevelLoader {
         layer.setName(getStringAttribute("name", start));
     }
 
-
-    //TODO *********************
     private void parseObject(Layer layer, TiledObject obj, StartElement start) {
+
         obj.setName(getStringAttribute("name", start));
         obj.setType(getStringAttribute("type", start));
         obj.setId(getIntAttribute("id", start));
@@ -205,12 +303,21 @@ public class PlatformerTMXLevelLoader implements LevelLoader {
         obj.setWidth(getIntAttribute("width", start));
         obj.setHeight(getIntAttribute("height", start));
 
-        //TODO "gid is stored as UInt, so parsing as int gives incorrect representation"
-        int gid = getIntAttribute("gid", start);
+        UInteger gidUInt = getUIntAttribute("gid", start);
 
-        int FLIPPED_HORIZONTALLY_FLAG = (1 << 31);
-        int FLIPPED_VERTICALLY_FLAG = (1 << 30);
-        int FLIPPED_DIAGONALLY_FLAG = (1 << 29);
+        UInteger FLIPPED_HORIZONTALLY_FLAG = UInteger.valueOf(1 << 31);
+        UInteger FLIPPED_VERTICALLY_FLAG = UInteger.valueOf(1 << 30);
+        UInteger FLIPPED_DIAGONALLY_FLAG = UInteger.valueOf(1 << 29);
+
+        obj.setFlippedHorizontal((gidUInt.longValue() & FLIPPED_HORIZONTALLY_FLAG.longValue()) != 0);
+        obj.setFlippedVertical((gidUInt.longValue() & FLIPPED_VERTICALLY_FLAG.longValue()) != 0);
+
+        UInteger GID_FLAGS = UInteger.valueOf(FLIPPED_DIAGONALLY_FLAG.longValue() | FLIPPED_HORIZONTALLY_FLAG.longValue() | FLIPPED_VERTICALLY_FLAG.longValue());
+
+        int gid = UInteger.valueOf(gidUInt.longValue() & (~GID_FLAGS.longValue())).intValue();
+
+        obj.setGid(gid);
+        layer.getObjects().add(obj);
     }
 
     private void parseObjectProperty(TiledObject obj, StartElement start) {
@@ -289,10 +396,25 @@ public class PlatformerTMXLevelLoader implements LevelLoader {
     private int getIntAttribute(String attrName, StartElement startElement) {
 
         Attribute attribute = startElement.getAttributeByName(new QName(attrName));
-        if (attribute != null)
+
+        assert attribute != null;
+        try {
             return Integer.parseInt(getStringAttribute(attrName, startElement));
-        else
-            return 0;
+        } catch (NumberFormatException exception) {
+            return (int) getFloatAttribute(attrName, startElement);
+        }
+    }
+
+    private UInteger getUIntAttribute(String attrName, StartElement startElement) {
+
+        Attribute attribute = startElement.getAttributeByName(new QName(attrName));
+
+        if (attribute != null) {
+            return UInteger.valueOf(attribute.getValue());
+        } else {
+            return UInteger.valueOf(0);
+        }
+
     }
 
     private String getStringAttribute(String attrName, StartElement startElement) {
