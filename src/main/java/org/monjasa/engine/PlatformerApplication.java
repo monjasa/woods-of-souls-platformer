@@ -47,7 +47,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.2.4");
+        settings.setVersion("0.2.5");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -59,8 +59,8 @@ public class PlatformerApplication extends GameApplication {
         settings.setFontMono("gnomoria.ttf");
 
         settings.setAppIcon("app/icon.png");
-        settings.setMainMenuEnabled(!true);
-        settings.setGameMenuEnabled(!true);
+        settings.setMainMenuEnabled(true);
+        settings.setGameMenuEnabled(true);
         settings.setDeveloperMenuEnabled(true);
 
         settings.setSceneFactory(new SceneFactory() {

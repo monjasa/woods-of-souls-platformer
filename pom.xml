@@ -6,7 +6,7 @@
 
     <groupId>org.monjasa</groupId>
     <artifactId>woods-of-souls-platformer</artifactId>
-    <version>0.2.4</version>
+    <version>0.2.5</version>
 
     <properties>
 
@@ -25,6 +25,13 @@
         <mainClassName>org.monjasa.engine/org.monjasa.engine.PlatformerApplication</mainClassName>
 
     </properties>
+
+    <repositories>
+        <repository>
+            <id>oss.sonatype.org-snapshot</id>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+    </repositories>
 
     <pluginRepositories>
         <pluginRepository>

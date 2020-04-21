@@ -3,15 +3,12 @@ package org.monjasa.engine.entities.factories;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.level.Level;
-import com.almasb.fxgl.entity.level.tiled.TMXLevelLoader;
 import org.monjasa.engine.entities.coins.Coin;
 import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.exits.Exit;
 import org.monjasa.engine.entities.platforms.Platform;
 import org.monjasa.engine.entities.players.Player;
-import org.monjasa.engine.levels.PlatformerTMXLevelLoader;
-
-import java.net.URL;
+import org.monjasa.engine.levels.tmx.PlatformerTMXLoaderFacade;
 
 import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
 
@@ -50,9 +47,9 @@ public abstract class PlatformerLevelFactory implements EntityFactory {
     public Level createLevel(int levelNum, boolean isDevelopingNewLevel) {
 
         if (isDevelopingNewLevel && developingLevelName != null) {
-            return getAssetLoader().loadLevel(String.format("tmx/%s.tmx", developingLevelName), new PlatformerTMXLevelLoader());
+            return getAssetLoader().loadLevel(String.format("tmx/%s.tmx", developingLevelName), new PlatformerTMXLoaderFacade());
         } else {
-            return getAssetLoader().loadLevel(String.format("tmx/%s_%02d.tmx", levelPrefix, levelNum), new PlatformerTMXLevelLoader());
+            return getAssetLoader().loadLevel(String.format("tmx/%s_%02d.tmx", levelPrefix, levelNum), new PlatformerTMXLoaderFacade());
         }
     }
 
