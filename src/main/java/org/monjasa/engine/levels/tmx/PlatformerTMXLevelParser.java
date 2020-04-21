@@ -256,7 +256,8 @@ class PlatformerTMXLevelParser {
         obj.setFlippedHorizontal((gidUInt.longValue() & FLIPPED_HORIZONTALLY_FLAG.longValue()) != 0);
         obj.setFlippedVertical((gidUInt.longValue() & FLIPPED_VERTICALLY_FLAG.longValue()) != 0);
 
-        UInteger GID_FLAGS = UInteger.valueOf(FLIPPED_DIAGONALLY_FLAG.longValue() | FLIPPED_HORIZONTALLY_FLAG.longValue() | FLIPPED_VERTICALLY_FLAG.longValue());
+        UInteger GID_FLAGS = UInteger.valueOf(FLIPPED_DIAGONALLY_FLAG.longValue() |
+                FLIPPED_HORIZONTALLY_FLAG.longValue() | FLIPPED_VERTICALLY_FLAG.longValue());
 
         int gid = UInteger.valueOf(gidUInt.longValue() & (~GID_FLAGS.longValue())).intValue();
 

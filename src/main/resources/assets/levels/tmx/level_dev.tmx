@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="50" height="16" tilewidth="45" tileheight="45" infinite="0" nextlayerid="9" nextobjectid="36">
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="50" height="16" tilewidth="45" tileheight="45" infinite="0" nextlayerid="9" nextobjectid="59">
  <tileset firstgid="1" name="level_spritesheet" tilewidth="45" tileheight="45" tilecount="40" columns="10">
   <image source="level_spritesheet.png" width="450" height="180"/>
  </tileset>
@@ -41,9 +41,6 @@
   <object id="25" type="forest-coin" x="1170.83" y="586.833" width="45" height="45">
    <ellipse/>
   </object>
-  <object id="26" type="forest-coin" x="1528.83" y="584.833" width="45" height="45">
-   <ellipse/>
-  </object>
   <object id="30" type="forest-enemy" x="540.25" y="584" width="90" height="91">
    <properties>
     <property name="patrolEndX" type="int" value="900"/>
@@ -56,5 +53,74 @@
   </object>
   <object id="34" type="forest-platform" x="720" y="450" width="135" height="45"/>
   <object id="35" type="forest-platform" x="1260" y="360" width="225" height="45"/>
+  <object id="36" type="forest-coin" x="771.439" y="232.045" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="37" type="forest-coin" x="838.106" y="232.045" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="38" type="forest-coin" x="780.53" y="583.561" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="39" type="forest-coin" x="841.136" y="589.621" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="40" type="forest-coin" x="732.045" y="298.712" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="41" type="forest-coin" x="747.197" y="298.712" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="42" type="forest-coin" x="998.712" y="404.773" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="43" type="forest-coin" x="989.621" y="407.803" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="44" type="forest-coin" x="956.288" y="383.561" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="45" type="forest-coin" x="868.409" y="325.985" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="46" type="forest-coin" x="871.439" y="307.803" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="47" type="forest-coin" x="895.682" y="307.803" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="48" type="forest-coin" x="1007.8" y="298.712" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="49" type="forest-coin" x="1104.77" y="295.682" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="50" type="forest-coin" x="1125.98" y="298.712" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="51" type="forest-coin" x="1195.68" y="332.045" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="52" type="forest-coin" x="1325.98" y="516.894" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="53" type="forest-coin" x="1341.14" y="553.258" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="54" type="forest-coin" x="1341.14" y="547.197" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="55" type="forest-coin" x="1656.29" y="583.561" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="56" type="forest-coin" x="1880.53" y="544.167" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="57" type="forest-coin" x="1889.62" y="538.106" width="45" height="45">
+   <ellipse/>
+  </object>
+  <object id="58" type="forest-coin" x="1898.71" y="529.015" width="45" height="45">
+   <ellipse/>
+  </object>
  </objectgroup>
 </map>

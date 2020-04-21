@@ -42,12 +42,12 @@ public class PlatformerApplication extends GameApplication {
     @Override
     protected void initSettings(GameSettings settings) {
 
-        settings.setApplicationMode(ApplicationMode.RELEASE);
+        settings.setApplicationMode(ApplicationMode.DEVELOPER);
 
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.2.5");
+        settings.setVersion("0.2.6");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -59,9 +59,8 @@ public class PlatformerApplication extends GameApplication {
         settings.setFontMono("gnomoria.ttf");
 
         settings.setAppIcon("app/icon.png");
-        settings.setMainMenuEnabled(true);
-        settings.setGameMenuEnabled(true);
-        settings.setDeveloperMenuEnabled(true);
+        settings.setMainMenuEnabled(false);
+        settings.setGameMenuEnabled(false);
 
         settings.setSceneFactory(new SceneFactory() {
             @Override
@@ -98,7 +97,7 @@ public class PlatformerApplication extends GameApplication {
         getPhysicsWorld().setGravity(0, 1000);
 
         getGameScene().setCursor(imageCursor.getImage(), new Point2D(0, 0));
-        getGameScene().getContentRoot().setCursor(Cursor.NONE);
+//        getGameScene().getContentRoot().setCursor(Cursor.NONE);
 
         getAudioPlayer().stopMusic(mainMenuMusic);
         getAudioPlayer().loopMusic(gameMusic);
@@ -144,13 +143,6 @@ public class PlatformerApplication extends GameApplication {
                 player.goUp();
             }
         }, KeyCode.UP);
-
-        getInput().addAction(new UserAction("") {
-            @Override
-            protected void onActionBegin() {
-                getDialogService().showMessageBox("hi");
-            }
-        }, KeyCode.F);
     }
 
     @Override

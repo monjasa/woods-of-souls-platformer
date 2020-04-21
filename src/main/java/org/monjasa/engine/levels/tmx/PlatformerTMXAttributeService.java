@@ -21,7 +21,6 @@ class PlatformerTMXAttributeService {
         return Color.web(getStringAttribute(attributeName));
     }
 
-
     boolean getBoolAttribute(String attributeName) {
         return Boolean.parseBoolean(getStringAttribute(attributeName));
     }

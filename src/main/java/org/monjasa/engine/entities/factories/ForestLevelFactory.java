@@ -12,13 +12,9 @@ import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
-import javafx.scene.shape.Rectangle;
 import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.SimpleEntityBuilder;
-import org.monjasa.engine.entities.coins.Coin;
-import org.monjasa.engine.entities.coins.CoinBuilder;
-import org.monjasa.engine.entities.coins.ForestCoin;
-import org.monjasa.engine.entities.coins.ForestCoinAssets;
+import org.monjasa.engine.entities.coins.*;
 import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.enemies.EnemyBuilder;
 import org.monjasa.engine.entities.enemies.ForestEnemy;
@@ -42,11 +38,10 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
     private static final String FOREST_LEVEL_PREFIX = "forest";
     private static final String FOREST_DEVELOPING_LEVEL_NAME = "level_dev";
 
-    private ForestCoinAssets forestCoinAssets;
+    private CoinFlyWeightFactory coinFactory = CoinFlyWeightFactory.getCoinFactoryInstance();
 
     public ForestLevelFactory(int maxLevel) {
         super(maxLevel, FOREST_LEVEL_PREFIX, FOREST_DEVELOPING_LEVEL_NAME);
-        forestCoinAssets = new ForestCoinAssets();
     }
 
     @Override
@@ -149,7 +144,9 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
 
     @Override
     public Coin getCoinInstance() {
-        return new ForestCoin(forestCoinAssets);
+
+        return new ForestCoin(coinFactory.getCoinType("forest",
+                "forest-coin-spritesheet.png", "pickup-coin.wav"));
     }
 
     @Override

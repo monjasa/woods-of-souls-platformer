@@ -5,10 +5,10 @@ import com.almasb.fxgl.texture.AnimatedTexture;
 
 public class ForestCoin extends Coin {
 
-    private static ForestCoinAssets assets;
+    private static CoinType coinType;
 
-    public ForestCoin(ForestCoinAssets assets) {
-        this.assets = assets;
+    public ForestCoin(CoinType coinType) {
+        this.coinType = coinType;
     }
 
     public static class ForestCoinViewComponent extends Component {
@@ -16,7 +16,7 @@ public class ForestCoin extends Coin {
         private AnimatedTexture animatedTexture;
 
         public ForestCoinViewComponent() {
-            animatedTexture = new AnimatedTexture(assets.getTexture()).loop();
+            animatedTexture = new AnimatedTexture(coinType.getChannel()).loop();
         }
 
         @Override
@@ -27,6 +27,6 @@ public class ForestCoin extends Coin {
 
     @Override
     public void playPickUpSound() {
-        assets.playPickUpSound();
+        coinType.playPickUpSound();
     }
 }
