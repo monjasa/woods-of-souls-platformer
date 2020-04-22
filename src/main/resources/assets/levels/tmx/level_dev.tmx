@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="50" height="16" tilewidth="45" tileheight="45" infinite="0" nextlayerid="9" nextobjectid="36">
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="50" height="16" tilewidth="45" tileheight="45" infinite="0" nextlayerid="9" nextobjectid="44">
  <tileset firstgid="1" name="level_spritesheet" tilewidth="45" tileheight="45" tilecount="40" columns="10">
   <image source="level_spritesheet.png" width="450" height="180"/>
  </tileset>
@@ -24,37 +24,29 @@
 </data>
  </layer>
  <objectgroup id="2" name="Object Layer 1">
-  <object id="1" type="forest-platform" x="0" y="675" width="2250" height="45"/>
-  <object id="5" type="forest-player" x="90" y="405" width="120" height="210"/>
-  <object id="11" type="forest-exit" x="2115" y="0" width="135" height="675"/>
-  <object id="12" type="forest-platform" x="1215" y="315" width="315" height="45"/>
-  <object id="13" type="forest-platform" x="675" y="405" width="225" height="45"/>
-  <object id="14" type="forest-coin" x="720.667" y="225" width="45" height="45">
-   <ellipse/>
-  </object>
-  <object id="23" type="forest-coin" x="401.5" y="584.977" width="46.3333" height="47.5233">
-   <ellipse/>
-  </object>
-  <object id="24" type="forest-coin" x="718.833" y="584.833" width="45" height="45">
-   <ellipse/>
-  </object>
-  <object id="25" type="forest-coin" x="1170.83" y="586.833" width="45" height="45">
-   <ellipse/>
-  </object>
-  <object id="26" type="forest-coin" x="1528.83" y="584.833" width="45" height="45">
-   <ellipse/>
-  </object>
-  <object id="30" type="forest-enemy" x="495" y="540" width="135" height="135">
+  <object id="1" type="platform" x="0" y="675" width="2250" height="45"/>
+  <object id="5" type="player" x="90" y="405" width="120" height="210"/>
+  <object id="11" type="exit" x="2070" y="0" width="180" height="675"/>
+  <object id="12" type="platform" x="1215" y="315" width="315" height="45"/>
+  <object id="13" type="platform" x="675" y="405" width="225" height="45"/>
+  <object id="30" type="enemy" x="495" y="540" width="135" height="135">
    <properties>
     <property name="patrolEndX" type="int" value="900"/>
    </properties>
   </object>
-  <object id="31" type="forest-enemy" x="1305" y="540" width="135" height="135">
+  <object id="31" type="enemy" x="1305" y="540" width="135" height="135">
    <properties>
     <property name="patrolEndX" type="int" value="2000"/>
    </properties>
   </object>
-  <object id="34" type="forest-platform" x="720" y="450" width="135" height="45"/>
-  <object id="35" type="forest-platform" x="1260" y="360" width="225" height="45"/>
+  <object id="34" type="platform" x="720" y="450" width="135" height="45"/>
+  <object id="35" type="platform" x="1260" y="360" width="225" height="45"/>
+  <object id="37" type="coin" x="367.167" y="566" width="30" height="60"/>
+  <object id="38" type="coin" x="773" y="296.667" width="30" height="60"/>
+  <object id="39" type="coin" x="1437" y="207" width="30" height="60"/>
+  <object id="40" type="coin" x="1290.33" y="207.333" width="30" height="60"/>
+  <object id="41" type="coin" x="815.667" y="564.667" width="30" height="60"/>
+  <object id="42" type="coin" x="1175.67" y="564.667" width="30" height="60"/>
+  <object id="43" type="coin" x="1722.33" y="564.667" width="30" height="60"/>
  </objectgroup>
 </map>

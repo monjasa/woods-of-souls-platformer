@@ -44,7 +44,7 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
 
     public ForestLevelFactory(int maxLevel) {
         super(maxLevel, FOREST_LEVEL_PREFIX, FOREST_DEVELOPING_LEVEL_NAME);
-        coinSpritesheetName = "forest-coin-spritesheet.png";
+        coinSpritesheetName = "forest-coin-spritesheet-min.png";
         coinCollectSoundName = "pickup-coin.wav";
     }
 
@@ -54,7 +54,6 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
     }
 
     @Override
-    @Spawns("forest-platform")
     public Platform createPlatform(SpawnData data) {
 
         return new PlatformBuilder(this)
@@ -71,7 +70,6 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
     }
 
     @Override
-    @Spawns("forest-player")
     public Player createPlayer(SpawnData data) {
 
         PhysicsComponent playerPhysicsComponent = new PhysicsComponent();
@@ -100,7 +98,6 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
     }
 
     @Override
-    @Spawns("forest-enemy")
     public Enemy createEnemy(SpawnData data) {
 
         int patrolEndX = data.get("patrolEndX");
@@ -120,7 +117,6 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
     }
 
     @Override
-    @Spawns("forest-exit")
     public Exit createExit(SpawnData data) {
 
         return new ExitBuilder(this)
@@ -132,7 +128,11 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
     }
 
     @Override
-    @Spawns("forest-coin")
+    public Coin getCoinInstance() {
+        return new ForestCoin(coinFactory.getCoinFlyweight(this));
+    }
+
+    @Override
     public Coin createCoin(SpawnData data) {
 
         return new CoinBuilder(this)
@@ -142,12 +142,6 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
                 .attachComponents(new ForestCoin.ForestCoinViewComponent())
                 .setCollidable()
                 .buildCoin();
-    }
-
-
-    @Override
-    public Coin getCoinInstance() {
-        return new ForestCoin(coinFactory.getCoinFlyweight(this));
     }
 
     @Override

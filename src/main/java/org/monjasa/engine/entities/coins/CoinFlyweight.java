@@ -13,7 +13,7 @@ public class CoinFlyweight {
     CoinFlyweight(String spriteSheet, String collectSoundName) {
 
         this.channel = new AnimationChannel(FXGL.image(spriteSheet),
-                4, 80, 80, Duration.millis(1800), 0, 11);
+                4, 30, 60, Duration.millis(1800), 0, 7);
 
         this.collectSound = FXGL.getAssetLoader().loadSound(collectSoundName);
     }

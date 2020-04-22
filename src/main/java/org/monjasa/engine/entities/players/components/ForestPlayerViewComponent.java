@@ -74,7 +74,6 @@ public class ForestPlayerViewComponent extends PlayerViewComponent {
 
     @Override
     public void onVerticalStart() {
-        System.out.println("Vertical Start");
     }
 
     @Override

@@ -12,7 +12,7 @@ import org.monjasa.engine.levels.tmx.PlatformerTMXLoaderFacade;
 
 import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
 
-public abstract class PlatformerLevelFactory implements EntityFactory {
+public abstract class PlatformerLevelFactory {
 
     protected int maxLevel;
     protected String levelPrefix;

@@ -14,13 +14,11 @@ import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.factories.ForestLevelFactory;
@@ -36,9 +34,9 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class PlatformerApplication extends GameApplication {
 
-    private static final boolean DEVELOPING_NEW_LEVEL = true;
+    private static final boolean DEVELOPING_NEW_LEVEL = false;
 
-    private Deque<PlatformerLevelFactory> entityFactories;
+    private PlatformerFactoryAdapter factoryAdapter;
     private Player player;
 
     private Music mainMenuMusic;
@@ -53,7 +51,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.2.8");
+        settings.setVersion("0.2.9");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -96,9 +94,12 @@ public class PlatformerApplication extends GameApplication {
     @Override
     protected void initGame() {
 
-        entityFactories = new ArrayDeque<>();
+        Deque<PlatformerLevelFactory> entityFactories = new ArrayDeque<>();
         entityFactories.add(new ForestLevelFactory(2));
-        entityFactories.forEach(getGameWorld()::addEntityFactory);
+
+        factoryAdapter = new PlatformerFactoryAdapter(entityFactories);
+
+        getGameWorld().addEntityFactory(factoryAdapter);
 
         getPhysicsWorld().setGravity(0, 1000);
 
@@ -184,14 +185,13 @@ public class PlatformerApplication extends GameApplication {
             protected void onCollisionBegin(Entity player, Entity coin) {
                 getWorldProperties().increment("coins-collected", 1);
                 coin.removeFromWorld();
-                entityFactories.getFirst().getCoinInstance().onCollected();
+                factoryAdapter.peekCurrentLevelFactory().getCoinInstance().onCollected();
             }
         });
 
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(PlatformerEntityType.PLAYER, PlatformerEntityType.ENEMY) {
             @Override
             protected void onCollisionBegin(Entity player, Entity enemy) {
-                play("game-over.wav");
                 getDialogService().showMessageBox("You died", () -> prepareLevel());
             }
         });
@@ -199,7 +199,7 @@ public class PlatformerApplication extends GameApplication {
 
     private Level prepareLevel() {
 
-        Level level = Objects.requireNonNull(entityFactories.peek()).createLevel(geti("level"), DEVELOPING_NEW_LEVEL);
+        Level level = factoryAdapter.peekCurrentLevelFactory().createLevel(geti("level"), DEVELOPING_NEW_LEVEL);
         getGameWorld().setLevel(level);
 
         getWorldProperties().setValue("coins-collected", 0);
@@ -215,11 +215,11 @@ public class PlatformerApplication extends GameApplication {
 
     private Optional<Level> prepareNextLevel() {
 
-        if (geti("level") == Objects.requireNonNull(entityFactories.peek()).getMaxLevel()) {
+        if (geti("level") == factoryAdapter.peekCurrentLevelFactory().getMaxLevel()) {
 
-            entityFactories.poll();
+            factoryAdapter.pollCurrentLevelFactory();
 
-            if (entityFactories.isEmpty()) {
+            if (factoryAdapter.isEmpty()) {
                 getDialogService().showMessageBox("The end of Aplha version.\nThank you for playing!", getGameController()::gotoMainMenu);
                 return Optional.empty();
             } else {
