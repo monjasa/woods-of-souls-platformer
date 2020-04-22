@@ -5,7 +5,6 @@ import com.almasb.fxgl.app.scene.GameScene;
 import com.almasb.fxgl.app.scene.MenuType;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.scene.Scene;
-import com.almasb.fxgl.scene.SubScene;
 import com.almasb.fxgl.texture.Texture;
 import javafx.beans.binding.StringBinding;
 import javafx.scene.Node;
@@ -16,6 +15,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import org.monjasa.engine.PlatformerApplication;
+
+import static com.almasb.fxgl.dsl.FXGL.getGameScene;
 
 public class PlatformerGameMenu extends FXGLMenu {
 
@@ -34,7 +35,7 @@ public class PlatformerGameMenu extends FXGLMenu {
         return gameMenu;
     }
 
-    PlatformerApplication application;
+    private PlatformerApplication application;
 
     private PlatformerGameMenu() {
 
@@ -83,7 +84,7 @@ public class PlatformerGameMenu extends FXGLMenu {
     public void onEnteredFrom(Scene prevState) {
         if (prevState instanceof GameScene) {
             FXGL.getAudioPlayer().pauseMusic(application.getGameMusic());
-            FXGL.getGameScene().getContentRoot().setEffect(new GaussianBlur(5));
+            getGameScene().getContentRoot().getChildren().forEach(node -> node.setEffect(new GaussianBlur(5)));
         }
     }
 
@@ -91,7 +92,7 @@ public class PlatformerGameMenu extends FXGLMenu {
     public void onExitingTo(Scene nextState) {
         if (nextState instanceof GameScene) {
             FXGL.getAudioPlayer().resumeMusic(application.getGameMusic());
-            FXGL.getGameScene().getContentRoot().setEffect(null);
+            getGameScene().getContentRoot().getChildren().forEach(node -> node.setEffect(null));
         }
     }
 

@@ -18,6 +18,9 @@ public abstract class PlatformerLevelFactory implements EntityFactory {
     protected String levelPrefix;
     protected String developingLevelName;
 
+    protected String coinSpritesheetName;
+    protected String coinCollectSoundName;
+
     public PlatformerLevelFactory(int maxLevel, String levelPrefix, String developingLevelName) {
         this.maxLevel = maxLevel;
         this.levelPrefix = levelPrefix;
@@ -55,5 +58,13 @@ public abstract class PlatformerLevelFactory implements EntityFactory {
 
     public int getMaxLevel() {
         return maxLevel;
+    }
+
+    public String getCoinSpritesheetName() {
+        return coinSpritesheetName;
+    }
+
+    public String getCoinCollectSoundName() {
+        return coinCollectSoundName;
     }
 }

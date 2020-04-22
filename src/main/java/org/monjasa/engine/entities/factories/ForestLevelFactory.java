@@ -38,10 +38,12 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
     private static final String FOREST_LEVEL_PREFIX = "forest";
     private static final String FOREST_DEVELOPING_LEVEL_NAME = "level_dev";
 
-    private CoinFlyWeightFactory coinFactory = CoinFlyWeightFactory.getCoinFactoryInstance();
+    private CoinFlyweightFactory coinFactory = CoinFlyweightFactory.getCoinFactoryInstance();
 
     public ForestLevelFactory(int maxLevel) {
         super(maxLevel, FOREST_LEVEL_PREFIX, FOREST_DEVELOPING_LEVEL_NAME);
+        coinSpritesheetName = "forest-coin-spritesheet.png";
+        coinCollectSoundName = "pickup-coin.wav";
     }
 
     @Override
@@ -144,9 +146,7 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
 
     @Override
     public Coin getCoinInstance() {
-
-        return new ForestCoin(coinFactory.getCoinType("forest",
-                "forest-coin-spritesheet.png", "pickup-coin.wav"));
+        return new ForestCoin(coinFactory.getCoinFlyweight(this));
     }
 
     @Override
@@ -175,21 +175,21 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
 
         layers.add(new SimpleEntityBuilder(this)
                 .positionAt(0, 0)
-                .addView(new ScrollingBackgroundView(getAssetLoader().loadTexture("background/trees_foreground.png", 1280, 720),
+                .addView(new ScrollingBackgroundView(getAssetLoader().loadTexture("background/trees-foreground.png", 1280, 720),
                         Orientation.HORIZONTAL, 0.90))
                 .layerAt(--backgroundParallaxIndex)
                 .buildEntity());
 
         layers.add(new SimpleEntityBuilder(this)
                 .positionAt(0, 0)
-                .addView(new ScrollingBackgroundView(getAssetLoader().loadTexture("background/trees_background.png", 1280, 720),
+                .addView(new ScrollingBackgroundView(getAssetLoader().loadTexture("background/trees-background.png", 1280, 720),
                         Orientation.HORIZONTAL, 0.70))
                 .layerAt(--backgroundParallaxIndex)
                 .buildEntity());
 
         layers.add(new SimpleEntityBuilder(this)
                 .positionAt(0, 0)
-                .addView(new ScrollingBackgroundView(getAssetLoader().loadTexture("background/background_texture.png", 1280, 720),
+                .addView(new ScrollingBackgroundView(getAssetLoader().loadTexture("background/background-texture.png", 1280, 720),
                         Orientation.HORIZONTAL, 0.50))
                 .layerAt(--backgroundParallaxIndex)
                 .buildEntity());

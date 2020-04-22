@@ -31,8 +31,8 @@ public class ForestEnemy extends Enemy {
         public ForestEnemyComponent(int patrolEndX) {
             this.patrolEndX = patrolEndX;
 
-            animationWalk = new AnimationChannel(FXGL.image("enemy-sprite-sheet.png"), 4,
-                    75, 99, Duration.millis(500), 0, 3);
+            animationWalk = new AnimationChannel(FXGL.image("enemy-spritesheet.png"), 4,
+                    135, 135, Duration.millis(1000), 0, 5);
 
             texture = new AnimatedTexture(animationWalk).loop();
 

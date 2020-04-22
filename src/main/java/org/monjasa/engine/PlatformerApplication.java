@@ -12,10 +12,16 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.level.Level;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.factories.ForestLevelFactory;
 import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
@@ -47,7 +53,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.2.6");
+        settings.setVersion("0.2.7");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -59,8 +65,8 @@ public class PlatformerApplication extends GameApplication {
         settings.setFontMono("gnomoria.ttf");
 
         settings.setAppIcon("app/icon.png");
-        settings.setMainMenuEnabled(false);
-        settings.setGameMenuEnabled(false);
+        settings.setMainMenuEnabled(true);
+        settings.setGameMenuEnabled(true);
 
         settings.setSceneFactory(new SceneFactory() {
             @Override
@@ -82,8 +88,8 @@ public class PlatformerApplication extends GameApplication {
 
     @Override
     protected void onPreInit() {
-        gameMusic = FXGL.getAssetLoader().loadMusic("game_background.mp3");
-        mainMenuMusic = FXGL.getAssetLoader().loadMusic("main_menu_background.mp3");
+        gameMusic = FXGL.getAssetLoader().loadMusic("game-background.mp3");
+        mainMenuMusic = FXGL.getAssetLoader().loadMusic("main-menu-background.mp3");
         imageCursor = new ImageCursor(FXGL.getAssetLoader().loadCursorImage("cursor.png"));
     }
 
@@ -97,7 +103,7 @@ public class PlatformerApplication extends GameApplication {
         getPhysicsWorld().setGravity(0, 1000);
 
         getGameScene().setCursor(imageCursor.getImage(), new Point2D(0, 0));
-//        getGameScene().getContentRoot().setCursor(Cursor.NONE);
+        getGameScene().getContentRoot().getChildren().forEach(node -> node.setCursor(Cursor.NONE));
 
         getAudioPlayer().stopMusic(mainMenuMusic);
         getAudioPlayer().loopMusic(gameMusic);
@@ -108,6 +114,7 @@ public class PlatformerApplication extends GameApplication {
     @Override
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("level", 0);
+        vars.put("coins-collected", 0);
     }
 
     @Override
@@ -146,6 +153,23 @@ public class PlatformerApplication extends GameApplication {
     }
 
     @Override
+    protected void initUI() {
+
+        Text coinsCollectedText = new Text();
+        coinsCollectedText.fontProperty().setValue(FXGL.getAssetLoader().loadFont("gnomoria.ttf").newFont(48));
+        coinsCollectedText.textProperty().bind(getWorldProperties().intProperty("coins-collected").asString());
+
+        BorderPane textPane = new BorderPane(coinsCollectedText);
+        textPane.setPadding(new Insets(0, 0, 0, 20));
+
+        StackPane coinsPane = new StackPane(texture("ui-border.png"), textPane);
+        coinsPane.setTranslateX(20);
+        coinsPane.setTranslateY(20);
+
+        FXGL.getGameScene().addUINode(coinsPane);
+    }
+
+    @Override
     protected void initPhysics() {
 
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(PlatformerEntityType.PLAYER, PlatformerEntityType.EXIT) {
@@ -158,21 +182,38 @@ public class PlatformerApplication extends GameApplication {
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(PlatformerEntityType.PLAYER, PlatformerEntityType.COIN) {
             @Override
             protected void onCollisionBegin(Entity player, Entity coin) {
+                getWorldProperties().increment("coins-collected", 1);
                 coin.removeFromWorld();
-                entityFactories.getFirst().getCoinInstance().playPickUpSound();
+                entityFactories.getFirst().getCoinInstance().onCollected();
             }
         });
 
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(PlatformerEntityType.PLAYER, PlatformerEntityType.ENEMY) {
             @Override
             protected void onCollisionBegin(Entity player, Entity enemy) {
-                FXGL.play("game-over.wav");
-                getDialogService().showMessageBox("You died", () -> restartLevel());
+                play("game-over.wav");
+                getDialogService().showMessageBox("You died", () -> prepareLevel());
             }
         });
     }
 
-    private void prepareNextLevel() {
+    private Level prepareLevel() {
+
+        Level level = Objects.requireNonNull(entityFactories.peek()).createLevel(geti("level"), DEVELOPING_NEW_LEVEL);
+        getGameWorld().setLevel(level);
+
+        getWorldProperties().setValue("coins-collected", 0);
+
+        player = (Player) getGameWorld().getSingleton(PlatformerEntityType.PLAYER);
+
+        getGameScene().getViewport().setLazy(true);
+        getGameScene().getViewport().bindToEntity(player, getAppWidth() / 2.0, getAppHeight() / 2.0);
+        getGameScene().getViewport().setBounds(0, 0, level.getWidth(), level.getHeight());
+
+        return level;
+    }
+
+    private Optional<Level> prepareNextLevel() {
 
         if (geti("level") == Objects.requireNonNull(entityFactories.peek()).getMaxLevel()) {
 
@@ -180,36 +221,19 @@ public class PlatformerApplication extends GameApplication {
 
             if (entityFactories.isEmpty()) {
                 getDialogService().showMessageBox("The end of Aplha version.\nThank you for playing!", getGameController()::gotoMainMenu);
-                return;
+                return Optional.empty();
             } else {
                 getWorldProperties().setValue("level", 0);
             }
         }
 
-        Level level = Objects.requireNonNull(entityFactories.peek()).createLevel(geti("level"), DEVELOPING_NEW_LEVEL);
-        getGameWorld().setLevel(level);
+        Level nextLevel = prepareLevel();
 
         if (!DEVELOPING_NEW_LEVEL) {
             inc("level", 1);
         }
 
-        player = (Player) getGameWorld().getSingleton(PlatformerEntityType.PLAYER);
-
-        getGameScene().getViewport().setLazy(true);
-        getGameScene().getViewport().bindToEntity(player, getAppWidth() / 2.0, getAppHeight() / 2.0);
-        getGameScene().getViewport().setBounds(0, 0, level.getWidth(), level.getHeight());
-    }
-
-    private void restartLevel() {
-
-        Level level = Objects.requireNonNull(entityFactories.peek()).createLevel(geti("level"), DEVELOPING_NEW_LEVEL);
-        getGameWorld().setLevel(level);
-
-        player = (Player) getGameWorld().getSingleton(PlatformerEntityType.PLAYER);
-
-        getGameScene().getViewport().setLazy(true);
-        getGameScene().getViewport().bindToEntity(player, getAppWidth() / 2.0, getAppHeight() / 2.0);
-        getGameScene().getViewport().setBounds(0, 0, level.getWidth(), level.getHeight());
+        return Optional.of(nextLevel);
     }
 
     private void finishLevel() {

@@ -5,5 +5,5 @@ import com.almasb.fxgl.entity.Entity;
 
 public abstract class Coin extends Entity {
 
-    public abstract void playPickUpSound();
+    public abstract void onCollected();
 }
