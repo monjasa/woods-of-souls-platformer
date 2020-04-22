@@ -12,6 +12,7 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.level.Level;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
+import javafx.beans.binding.NumberBinding;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
@@ -20,6 +21,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
+import org.monjasa.engine.entities.PlatformerEntityFactory;
 import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.factories.ForestLevelFactory;
 import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
@@ -36,7 +38,7 @@ public class PlatformerApplication extends GameApplication {
 
     private static final boolean DEVELOPING_NEW_LEVEL = false;
 
-    private PlatformerFactoryAdapter factoryAdapter;
+    private PlatformerEntityFactory entityFactory;
     private Player player;
 
     private Music mainMenuMusic;
@@ -51,7 +53,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.2.9");
+        settings.setVersion("0.2.10");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -97,9 +99,9 @@ public class PlatformerApplication extends GameApplication {
         Deque<PlatformerLevelFactory> entityFactories = new ArrayDeque<>();
         entityFactories.add(new ForestLevelFactory(2));
 
-        factoryAdapter = new PlatformerFactoryAdapter(entityFactories);
+        entityFactory = new PlatformerFactoryAdapter(entityFactories);
 
-        getGameWorld().addEntityFactory(factoryAdapter);
+        getGameWorld().addEntityFactory(entityFactory);
 
         getPhysicsWorld().setGravity(0, 1000);
 
@@ -115,7 +117,8 @@ public class PlatformerApplication extends GameApplication {
     @Override
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("level", 0);
-        vars.put("coins-collected", 0);
+        vars.put("coins-total-collected", 0);
+        vars.put("coins-level-collected", 0);
     }
 
     @Override
@@ -158,7 +161,11 @@ public class PlatformerApplication extends GameApplication {
 
         Text coinsCollectedText = new Text();
         coinsCollectedText.fontProperty().setValue(FXGL.getAssetLoader().loadFont("gnomoria.ttf").newFont(48));
-        coinsCollectedText.textProperty().bind(getWorldProperties().intProperty("coins-collected").asString());
+
+        NumberBinding coinsTotalBinding = getWorldProperties().intProperty("coins-total-collected")
+                .add(getWorldProperties().intProperty("coins-level-collected"));
+
+        coinsCollectedText.textProperty().bind(coinsTotalBinding.asString());
 
         BorderPane textPane = new BorderPane(coinsCollectedText);
         textPane.setPadding(new Insets(0, 0, 0, 20));
@@ -183,9 +190,9 @@ public class PlatformerApplication extends GameApplication {
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(PlatformerEntityType.PLAYER, PlatformerEntityType.COIN) {
             @Override
             protected void onCollisionBegin(Entity player, Entity coin) {
-                getWorldProperties().increment("coins-collected", 1);
+                getWorldProperties().increment("coins-level-collected", 1);
                 coin.removeFromWorld();
-                factoryAdapter.peekCurrentLevelFactory().getCoinInstance().onCollected();
+                entityFactory.peekCurrentLevelFactory().getCoinInstance().onCollected();
             }
         });
 
@@ -199,10 +206,10 @@ public class PlatformerApplication extends GameApplication {
 
     private Level prepareLevel() {
 
-        Level level = factoryAdapter.peekCurrentLevelFactory().createLevel(geti("level"), DEVELOPING_NEW_LEVEL);
+        Level level = entityFactory.peekCurrentLevelFactory().createLevel(geti("level"), DEVELOPING_NEW_LEVEL);
         getGameWorld().setLevel(level);
 
-        getWorldProperties().setValue("coins-collected", 0);
+        getWorldProperties().setValue("coins-level-collected", 0);
 
         player = (Player) getGameWorld().getSingleton(PlatformerEntityType.PLAYER);
 
@@ -215,28 +222,29 @@ public class PlatformerApplication extends GameApplication {
 
     private Optional<Level> prepareNextLevel() {
 
-        if (geti("level") == factoryAdapter.peekCurrentLevelFactory().getMaxLevel()) {
+        if (geti("level") == entityFactory.peekCurrentLevelFactory().getMaxLevel()) {
 
-            factoryAdapter.pollCurrentLevelFactory();
+            entityFactory.pollCurrentLevelFactory();
 
-            if (factoryAdapter.isEmpty()) {
-                getDialogService().showMessageBox("The end of Aplha version.\nThank you for playing!", getGameController()::gotoMainMenu);
+            if (entityFactory.isEmpty()) {
+                getDialogService().showMessageBox("The end of Alpha version.\nThank you for playing!", getGameController()::gotoMainMenu);
                 return Optional.empty();
             } else {
                 getWorldProperties().setValue("level", 0);
             }
         }
 
-        Level nextLevel = prepareLevel();
-
-        if (!DEVELOPING_NEW_LEVEL) {
-            inc("level", 1);
-        }
-
-        return Optional.of(nextLevel);
+        return Optional.of(prepareLevel());
     }
 
     private void finishLevel() {
+
+        if (!DEVELOPING_NEW_LEVEL) {
+            inc("coins-total-collected", geti("coins-level-collected"));
+            getWorldProperties().setValue("coins-level-collected", 0);
+            inc("level", 1);
+        }
+
         getGameScene().getViewport().fade(this::prepareNextLevel);
     }
 

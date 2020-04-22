@@ -105,6 +105,7 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
         return new EnemyBuilder(this)
                 .addType(PlatformerEntityType.ENEMY)
                 .loadFromSpawnData(data)
+                .layerAt(1)
                 .attachComponents(new ForestEnemy.ForestEnemyComponent(patrolEndX))
                 .addHitBox(new HitBox(BoundingShape.box(75, 99)))
                 .setCollidable()
