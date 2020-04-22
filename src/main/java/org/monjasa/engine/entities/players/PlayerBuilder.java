@@ -22,6 +22,6 @@ public class PlayerBuilder extends PlatformerEntityBuilder<PlayerBuilder, Player
     }
 
     public Player buildPlayer() {
-        return entity;
+        return entity.attachPlayerComponents();
     }
 }

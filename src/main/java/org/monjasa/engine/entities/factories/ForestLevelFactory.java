@@ -27,6 +27,8 @@ import org.monjasa.engine.entities.platforms.PlatformBuilder;
 import org.monjasa.engine.entities.players.ForestPlayer;
 import org.monjasa.engine.entities.players.Player;
 import org.monjasa.engine.entities.players.PlayerBuilder;
+import org.monjasa.engine.entities.players.components.ForestPlayerControlComponent;
+import org.monjasa.engine.entities.players.components.ForestPlayerViewComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,8 +89,7 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
                 .addType(PlatformerEntityType.PLAYER)
                 .centerAt(data.<Integer>get("width") / 2.0, data.<Integer>get("height") / 2.0)
                 .addHitBox(playerMainHitBox)
-                .attachComponents(playerPhysicsComponent, new ForestPlayer.ForestPlayerViewComponent(),
-                        new ForestPlayer.ForestPlayerControlComponent())
+                .attachComponents(playerPhysicsComponent, new ForestPlayerViewComponent(), new ForestPlayerControlComponent())
                 .setCollidable()
                 .buildPlayer();
     }

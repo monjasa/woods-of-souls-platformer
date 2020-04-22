@@ -53,7 +53,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.2.7");
+        settings.setVersion("0.2.8");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
