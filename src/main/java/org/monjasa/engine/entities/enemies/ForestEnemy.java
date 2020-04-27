@@ -7,11 +7,15 @@ import com.almasb.fxgl.texture.AnimationChannel;
 import com.almasb.fxgl.time.LocalTimer;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
+import org.monjasa.engine.entities.players.Player;
+import org.monjasa.engine.entities.players.components.PlayerHPComponent;
 
 public class ForestEnemy extends Enemy {
 
-    public ForestEnemy() {
-
+    @Override
+    public void hitPlayer(Player player) {
+        PlayerHPComponent playerHP = player.getComponent(PlayerHPComponent.class);
+        playerHP.setValue(playerHP.getValue() - 30);
     }
 
     public static class ForestEnemyComponent extends Component {

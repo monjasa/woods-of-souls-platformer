@@ -23,12 +23,15 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import org.monjasa.engine.entities.PlatformerEntityFactory;
 import org.monjasa.engine.entities.PlatformerEntityType;
+import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.factories.ForestLevelFactory;
 import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
 import org.monjasa.engine.entities.players.Player;
+import org.monjasa.engine.entities.players.components.PlayerHPComponent;
 import org.monjasa.engine.scenes.PlatformerLoadingScene;
 import org.monjasa.engine.scenes.menu.PlatformerGameMenu;
 import org.monjasa.engine.scenes.menu.PlatformerMainMenu;
+import org.monjasa.engine.ui.HealthBarUI;
 
 import java.util.*;
 
@@ -39,7 +42,8 @@ public class PlatformerApplication extends GameApplication {
     private static final boolean DEVELOPING_NEW_LEVEL = false;
 
     private PlatformerEntityFactory entityFactory;
-    private Player player;
+
+    private HealthBarUI healthBar;
 
     private Music mainMenuMusic;
     private Music gameMusic;
@@ -53,7 +57,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.2.10");
+        settings.setVersion("0.2.11");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -127,37 +131,41 @@ public class PlatformerApplication extends GameApplication {
         getInput().addAction(new UserAction("Move Left") {
             @Override
             protected void onAction() {
-                player.goLeft();
+                ((Player) getGameWorld().getSingleton(PlatformerEntityType.PLAYER)).goLeft();
             }
 
             @Override
             protected void onActionEnd() {
-                player.horizontalStop();
+                ((Player) getGameWorld().getSingleton(PlatformerEntityType.PLAYER)).horizontalStop();
             }
         }, KeyCode.LEFT);
 
         getInput().addAction(new UserAction("Move Right") {
             @Override
             protected void onAction() {
-                player.goRight();
+                ((Player) getGameWorld().getSingleton(PlatformerEntityType.PLAYER)).goRight();
             }
 
             @Override
             protected void onActionEnd() {
-                player.horizontalStop();
+                ((Player) getGameWorld().getSingleton(PlatformerEntityType.PLAYER)).horizontalStop();
             }
         }, KeyCode.RIGHT);
 
         getInput().addAction(new UserAction("Jump") {
             @Override
             protected void onAction() {
-                player.goUp();
+                ((Player) getGameWorld().getSingleton(PlatformerEntityType.PLAYER)).goUp();
             }
         }, KeyCode.UP);
     }
 
     @Override
     protected void initUI() {
+
+        healthBar = new HealthBarUI(
+                getGameWorld().getSingleton(PlatformerEntityType.PLAYER).getComponent(PlayerHPComponent.class)
+        );
 
         Text coinsCollectedText = new Text();
         coinsCollectedText.fontProperty().setValue(FXGL.getAssetLoader().loadFont("gnomoria.ttf").newFont(48));
@@ -174,7 +182,8 @@ public class PlatformerApplication extends GameApplication {
         coinsPane.setTranslateX(20);
         coinsPane.setTranslateY(20);
 
-        FXGL.getGameScene().addUINode(coinsPane);
+        addUINode(coinsPane);
+        addUINode(healthBar);
     }
 
     @Override
@@ -198,10 +207,14 @@ public class PlatformerApplication extends GameApplication {
 
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(PlatformerEntityType.PLAYER, PlatformerEntityType.ENEMY) {
             @Override
-            protected void onCollisionBegin(Entity player, Entity enemy) {
-                getDialogService().showMessageBox("You died", () -> prepareLevel());
+            protected void onCollisionBegin(Entity playerEntity, Entity enemyEntity) {
+                ((Player) playerEntity).onEnemyHit((Enemy) enemyEntity);
             }
         });
+    }
+
+    public void onPlayerDied() {
+        getDialogService().showMessageBox("You died", this::prepareLevel);
     }
 
     private Level prepareLevel() {
@@ -211,11 +224,13 @@ public class PlatformerApplication extends GameApplication {
 
         getWorldProperties().setValue("coins-level-collected", 0);
 
-        player = (Player) getGameWorld().getSingleton(PlatformerEntityType.PLAYER);
+        Entity player = getGameWorld().getSingleton(PlatformerEntityType.PLAYER);
 
         getGameScene().getViewport().setLazy(true);
         getGameScene().getViewport().bindToEntity(player, getAppWidth() / 2.0, getAppHeight() / 2.0);
         getGameScene().getViewport().setBounds(0, 0, level.getWidth(), level.getHeight());
+
+        if (healthBar != null) healthBar.updatePlayerHP(player.getComponent(PlayerHPComponent.class));
 
         return level;
     }

@@ -30,13 +30,9 @@ public class PlatformerMainMenu extends FXGLMenu {
         return mainMenu;
     }
 
-    private PlatformerApplication application;
-
     private PlatformerMainMenu() {
 
         super(MenuType.MAIN_MENU);
-
-        application = (PlatformerApplication) FXGL.getApp();
 
         PlatformerMenuBox menuBox = createMainMenuBody();
 
@@ -75,9 +71,9 @@ public class PlatformerMainMenu extends FXGLMenu {
 
     @Override
     public void onCreate() {
-        FXGL.getAudioPlayer().stopMusic(application.getGameMusic());
-        FXGL.getAudioPlayer().loopMusic(application.getMainMenuMusic());
-        getContentRoot().setCursor(application.getImageCursor());
+        FXGL.getAudioPlayer().stopMusic(FXGL.<PlatformerApplication>getAppCast().getGameMusic());
+        FXGL.getAudioPlayer().loopMusic(FXGL.<PlatformerApplication>getAppCast().getMainMenuMusic());
+        getContentRoot().setCursor(FXGL.<PlatformerApplication>getAppCast().getImageCursor());
     }
 
     @Override
