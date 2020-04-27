@@ -57,7 +57,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.2.11");
+        settings.setVersion("0.2.12");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -69,7 +69,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setFontMono("gnomoria.ttf");
 
         settings.setAppIcon("app/icon.png");
-        settings.setMainMenuEnabled(true);
+        settings.setMainMenuEnabled(false);
         settings.setGameMenuEnabled(true);
 
         settings.setSceneFactory(new SceneFactory() {
@@ -179,11 +179,12 @@ public class PlatformerApplication extends GameApplication {
         textPane.setPadding(new Insets(0, 0, 0, 20));
 
         StackPane coinsPane = new StackPane(texture("ui-border.png"), textPane);
-        coinsPane.setTranslateX(20);
-        coinsPane.setTranslateY(20);
+        coinsPane.setTranslateX(30);
+        coinsPane.setTranslateY(100);
 
         addUINode(coinsPane);
-        addUINode(healthBar);
+        addUINode(healthBar, 60, 30);
+        addUINode(texture("health-bar.png"), 20, 20);
     }
 
     @Override
