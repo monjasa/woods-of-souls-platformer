@@ -4,6 +4,7 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.level.Level;
 import org.monjasa.engine.entities.PlatformerEntityFactory;
+import org.monjasa.engine.entities.checkpoints.Checkpoint;
 import org.monjasa.engine.entities.coins.Coin;
 import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.exits.Exit;
@@ -54,6 +55,13 @@ public class PlatformerFactoryAdapter implements PlatformerEntityFactory {
     public Coin spawnCoin(SpawnData data) {
         assert entityFactories.peek() != null;
         return entityFactories.peek().createCoin(data);
+    }
+
+    @Override
+    @Spawns("checkpoint")
+    public Checkpoint spawnCheckpoint(SpawnData data) {
+        assert entityFactories.peek() != null;
+        return entityFactories.peek().createCheckpoint(data);
     }
 
     @Override

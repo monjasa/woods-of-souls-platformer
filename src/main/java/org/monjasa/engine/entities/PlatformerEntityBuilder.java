@@ -12,7 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
 
-public abstract class PlatformerEntityBuilder<T extends PlatformerEntityBuilder, E extends Entity>  {
+public abstract class PlatformerEntityBuilder<T extends PlatformerEntityBuilder, E extends Entity> {
 
     protected E entity;
     protected PlatformerLevelFactory factory;

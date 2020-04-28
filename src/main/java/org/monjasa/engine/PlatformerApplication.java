@@ -9,10 +9,9 @@ import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
-import com.almasb.fxgl.entity.level.Level;
+import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
-import javafx.beans.binding.NumberBinding;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
@@ -23,11 +22,12 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import org.monjasa.engine.entities.PlatformerEntityFactory;
 import org.monjasa.engine.entities.PlatformerEntityType;
+import org.monjasa.engine.entities.components.EntityHPComponent;
 import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.factories.ForestLevelFactory;
 import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
 import org.monjasa.engine.entities.players.Player;
-import org.monjasa.engine.entities.components.EntityHPComponent;
+import org.monjasa.engine.levels.PlatformerLevel;
 import org.monjasa.engine.perks.PerkTree;
 import org.monjasa.engine.scenes.PerkTreeScene;
 import org.monjasa.engine.scenes.PlatformerLoadingScene;
@@ -38,10 +38,15 @@ import org.monjasa.engine.ui.HealthBarUI;
 import java.util.*;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static org.monjasa.engine.entities.PlatformerEntityType.*;
+import static org.monjasa.engine.levels.PlatformerLevel.LevelMemento;
 
 public class PlatformerApplication extends GameApplication {
 
     private static final boolean DEVELOPING_NEW_LEVEL = false;
+
+    private PlatformerLevel currentLevel;
+    private LevelMemento levelSnapshot;
 
     private PlatformerEntityFactory entityFactory;
 
@@ -60,7 +65,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.2.13");
+        settings.setVersion("0.2.14");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -72,7 +77,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setFontMono("gnomoria.ttf");
 
         settings.setAppIcon("app/icon.png");
-        settings.setMainMenuEnabled(false);
+        settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);
 
         settings.setSceneFactory(new SceneFactory() {
@@ -195,62 +200,86 @@ public class PlatformerApplication extends GameApplication {
     @Override
     protected void initPhysics() {
 
-        getPhysicsWorld().addCollisionHandler(new CollisionHandler(PlatformerEntityType.PLAYER, PlatformerEntityType.EXIT) {
+        getPhysicsWorld().addCollisionHandler(new CollisionHandler(PLAYER, EXIT) {
             @Override
             protected void onCollisionBegin(Entity player, Entity exit) {
                 finishLevel();
             }
+
         });
 
-        getPhysicsWorld().addCollisionHandler(new CollisionHandler(PlatformerEntityType.PLAYER, PlatformerEntityType.COIN) {
+        getPhysicsWorld().addCollisionHandler(new CollisionHandler(PLAYER, COIN) {
             @Override
             protected void onCollisionBegin(Entity player, Entity coin) {
                 getWorldProperties().increment("coins-total-collected", 1);
                 entityFactory.peekCurrentLevelFactory().getCoinInstance().onCollected();
-                coin.removeFromWorld();
+
+                currentLevel.addCoinToRestore(coin);
+
+                coin.setVisible(false);
+                coin.removeComponent(CollidableComponent.class);
             }
         });
 
-        getPhysicsWorld().addCollisionHandler(new CollisionHandler(PlatformerEntityType.PLAYER, PlatformerEntityType.ENEMY) {
+        getPhysicsWorld().addCollisionHandler(new CollisionHandler(PLAYER, ENEMY) {
             @Override
             protected void onCollisionBegin(Entity playerEntity, Entity enemyEntity) {
                 ((Player) playerEntity).onEnemyHit((Enemy) enemyEntity);
             }
         });
+
+        getPhysicsWorld().addCollisionHandler(new CollisionHandler(PLAYER, CHECKPOINT) {
+            @Override
+            protected void onCollisionBegin(Entity player, Entity checkpoint) {
+                levelSnapshot = currentLevel.onCheckpoint();
+            }
+        });
     }
 
     public void onPlayerDied() {
-        getDialogService().showMessageBox("You died", this::prepareLevel);
+        getDialogService().showMessageBox("You died", this::restartFromSnapshot);
     }
 
-    private Level prepareLevel() {
+    private void restartFromSnapshot() {
 
-        Level level = entityFactory.peekCurrentLevelFactory().createLevel(geti("level"), DEVELOPING_NEW_LEVEL);
-        getGameWorld().setLevel(level);
+        for (Entity coin : currentLevel.getCoinsToRestore()) {
+            coin.addComponent(new CollidableComponent(true));
+            coin.setVisible(true);
+        }
 
-        getWorldProperties().setValue("coins-total-collected", 0);
+        currentLevel.restoreLevel(levelSnapshot);
+    }
+
+    private PlatformerLevel prepareLevel() {
+
+        currentLevel = new PlatformerLevel(entityFactory, DEVELOPING_NEW_LEVEL);
+        levelSnapshot = currentLevel.makeSnapshot();
+
+        getGameWorld().setLevel(currentLevel.getLevel());
 
         Entity player = getGameWorld().getSingleton(PlatformerEntityType.PLAYER);
 
         getGameScene().getViewport().setLazy(true);
         getGameScene().getViewport().bindToEntity(player, getAppWidth() / 2.0, getAppHeight() / 2.0);
-        getGameScene().getViewport().setBounds(0, 0, level.getWidth(), level.getHeight());
+        getGameScene().getViewport().setBounds(0, 0, currentLevel.getLevel().getWidth(),
+                currentLevel.getLevel().getHeight());
 
         if (healthBar != null) healthBar.updatePlayerHP(player.getComponent(EntityHPComponent.class));
 
         perkTree = new PerkTree();
 
-        return level;
+        return currentLevel;
     }
 
-    private Optional<Level> prepareNextLevel() {
+    private Optional<PlatformerLevel> prepareNextLevel() {
 
         if (geti("level") == entityFactory.peekCurrentLevelFactory().getMaxLevel()) {
 
             entityFactory.pollCurrentLevelFactory();
 
             if (entityFactory.isEmpty()) {
-                getDialogService().showMessageBox("The end of Alpha version.\nThank you for playing!", getGameController()::gotoMainMenu);
+                getDialogService().showMessageBox("The end of Alpha version.\nThank you for playing!",
+                        getGameController()::gotoMainMenu);
                 return Optional.empty();
             } else {
                 getWorldProperties().setValue("level", 0);

@@ -7,8 +7,8 @@ import com.almasb.fxgl.texture.AnimationChannel;
 import com.almasb.fxgl.time.LocalTimer;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
-import org.monjasa.engine.entities.players.Player;
 import org.monjasa.engine.entities.components.EntityHPComponent;
+import org.monjasa.engine.entities.players.Player;
 
 public class ForestEnemy extends Enemy {
 

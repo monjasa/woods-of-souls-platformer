@@ -2,9 +2,7 @@ package org.monjasa.engine.scenes;
 
 import com.almasb.fxgl.app.scene.LoadingScene;
 import com.almasb.fxgl.dsl.FXGL;
-import com.almasb.fxgl.scene.Scene;
 import javafx.concurrent.Task;
-import javafx.scene.Cursor;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;

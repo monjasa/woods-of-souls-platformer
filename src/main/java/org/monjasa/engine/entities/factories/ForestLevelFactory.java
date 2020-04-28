@@ -13,8 +13,15 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Point2D;
 import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.SimpleEntityBuilder;
-import org.monjasa.engine.entities.coins.*;
+import org.monjasa.engine.entities.checkpoints.Checkpoint;
+import org.monjasa.engine.entities.checkpoints.CheckpointBuilder;
+import org.monjasa.engine.entities.checkpoints.ForestCheckpoint;
+import org.monjasa.engine.entities.coins.Coin;
+import org.monjasa.engine.entities.coins.CoinBuilder;
+import org.monjasa.engine.entities.coins.CoinFlyweightFactory;
+import org.monjasa.engine.entities.coins.ForestCoin;
 import org.monjasa.engine.entities.components.DynamicComponent;
+import org.monjasa.engine.entities.components.EntityHPComponent;
 import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.enemies.EnemyBuilder;
 import org.monjasa.engine.entities.enemies.ForestEnemy;
@@ -29,12 +36,11 @@ import org.monjasa.engine.entities.players.Player;
 import org.monjasa.engine.entities.players.PlayerBuilder;
 import org.monjasa.engine.entities.players.components.ForestPlayerControlComponent;
 import org.monjasa.engine.entities.players.components.ForestPlayerViewComponent;
-import org.monjasa.engine.entities.components.EntityHPComponent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
 
 public class ForestLevelFactory extends PlatformerLevelFactory {
 
@@ -53,7 +59,7 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
         playerHorizontalVelocity = 200;
         playerVerticalVelocity = 800;
 
-        enemyDamage = 30;
+        enemyDamage = 70;
     }
 
     @Override
@@ -153,6 +159,21 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
                 .attachComponents(new ForestCoin.ForestCoinViewComponent())
                 .setCollidable()
                 .buildCoin();
+    }
+
+    @Override
+    public Checkpoint getCheckpointInstance() {
+        return new ForestCheckpoint();
+    }
+
+    @Override
+    public Checkpoint createCheckpoint(SpawnData data) {
+        return new CheckpointBuilder(this)
+                .loadFromSpawnData(data)
+                .addType(PlatformerEntityType.CHECKPOINT)
+                .addHitBox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
+                .setCollidable()
+                .buildCheckpoint();
     }
 
     @Override

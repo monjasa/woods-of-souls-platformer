@@ -4,6 +4,7 @@ import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.level.Level;
+import org.monjasa.engine.entities.checkpoints.Checkpoint;
 import org.monjasa.engine.entities.coins.Coin;
 import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.exits.Exit;
@@ -27,6 +28,9 @@ public interface PlatformerEntityFactory extends EntityFactory {
 
     @Spawns("coin")
     Coin spawnCoin(SpawnData data);
+
+    @Spawns("checkpoint")
+    Checkpoint spawnCheckpoint(SpawnData data);
 
     Level createLevel(int levelNum, boolean isDevelopingNewLevel);
 

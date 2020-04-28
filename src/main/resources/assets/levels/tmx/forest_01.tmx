@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="50" height="16" tilewidth="45" tileheight="45" infinite="0" nextlayerid="9" nextobjectid="44">
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="50" height="16" tilewidth="45" tileheight="45" infinite="0" nextlayerid="9" nextobjectid="46">
  <tileset firstgid="1" name="level_spritesheet" tilewidth="45" tileheight="45" tilecount="40" columns="10">
   <image source="level_spritesheet.png" width="450" height="180"/>
  </tileset>
@@ -35,5 +35,7 @@
   <object id="41" type="coin" x="815.667" y="564.667" width="30" height="60"/>
   <object id="42" type="coin" x="1175.67" y="564.667" width="30" height="60"/>
   <object id="43" type="coin" x="1722.33" y="564.667" width="30" height="60"/>
+  <object id="44" type="checkpoint" x="969.697" y="512.121" width="133.333" height="160.606"/>
+  <object id="45" type="checkpoint" x="706.061" y="-715.152" width="3.0303"/>
  </objectgroup>
 </map>

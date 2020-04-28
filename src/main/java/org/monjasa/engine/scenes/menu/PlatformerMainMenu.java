@@ -7,7 +7,6 @@ import com.almasb.fxgl.scene.Scene;
 import com.almasb.fxgl.scene.SubScene;
 import com.almasb.fxgl.texture.Texture;
 import javafx.beans.binding.StringBinding;
-import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
@@ -113,7 +112,7 @@ public class PlatformerMainMenu extends FXGLMenu {
     @Override
     protected Node createVersionView(String version) {
 
-        Text versionView = new Text(String.format("Woods of Souls (%s)",version));
+        Text versionView = new Text(String.format("Woods of Souls (%s)", version));
         versionView.setFont(FXGL.getAssetLoader().loadFont("gnomoria.ttf").newFont(18));
         versionView.setFill(Color.WHITE);
         versionView.setTranslateX(5);

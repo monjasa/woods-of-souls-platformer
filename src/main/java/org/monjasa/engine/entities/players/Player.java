@@ -7,9 +7,9 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 import org.monjasa.engine.PlatformerApplication;
+import org.monjasa.engine.entities.components.EntityHPComponent;
 import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.players.components.PlayerControlComponent;
-import org.monjasa.engine.entities.components.EntityHPComponent;
 import org.monjasa.engine.entities.players.components.PlayerViewComponent;
 
 import static com.almasb.fxgl.dsl.FXGL.runOnce;
@@ -40,11 +40,11 @@ public abstract class Player extends Entity implements Updatable {
 
         getComponent(PhysicsComponent.class).setLinearVelocity(new Point2D(Math.signum(dmgVector.getX()) * 290, -300));
 
-        // Damage time 1 sec
         runOnce(() -> {
             try {
                 getComponent(PhysicsComponent.class).setVelocityX(0);
-            } catch (IllegalArgumentException ignored) { }
+            } catch (IllegalArgumentException ignored) {
+            }
         }, Duration.millis(1000));
     }
 
