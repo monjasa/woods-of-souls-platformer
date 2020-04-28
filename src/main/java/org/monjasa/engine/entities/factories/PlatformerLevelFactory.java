@@ -1,6 +1,7 @@
 package org.monjasa.engine.entities.factories;
 
 import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.level.Level;
 import org.monjasa.engine.entities.checkpoints.Checkpoint;
 import org.monjasa.engine.entities.coins.Coin;
@@ -9,6 +10,8 @@ import org.monjasa.engine.entities.exits.Exit;
 import org.monjasa.engine.entities.platforms.Platform;
 import org.monjasa.engine.entities.players.Player;
 import org.monjasa.engine.levels.tmx.PlatformerTMXLoaderFacade;
+
+import java.util.List;
 
 import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
 
@@ -21,6 +24,7 @@ public abstract class PlatformerLevelFactory {
     protected String coinSpritesheetName;
     protected String coinCollectSoundName;
 
+    protected List<Component> playerComponents;
     protected double playerHorizontalVelocity;
     protected double playerVerticalVelocity;
 

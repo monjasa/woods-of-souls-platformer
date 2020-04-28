@@ -3,6 +3,7 @@ package org.monjasa.engine.entities.factories;
 import com.almasb.fxgl.dsl.views.ScrollingBackgroundView;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.level.Level;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
@@ -59,6 +60,13 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
         playerHorizontalVelocity = 200;
         playerVerticalVelocity = 800;
 
+        playerComponents = List.of(
+                new DynamicComponent(playerHorizontalVelocity, playerVerticalVelocity),
+                new ForestPlayerViewComponent(),
+                new ForestPlayerControlComponent(),
+                new EntityHPComponent(100)
+        );
+
         enemyDamage = 70;
     }
 
@@ -101,9 +109,8 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
                 .addType(PlatformerEntityType.PLAYER)
                 .centerAt(data.<Integer>get("width") / 2.0, data.<Integer>get("height") / 2.0)
                 .addHitBox(playerMainHitBox)
-                .attachComponents(playerPhysicsComponent, new DynamicComponent(playerHorizontalVelocity, playerVerticalVelocity))
-                .attachComponents(new ForestPlayerViewComponent(), new ForestPlayerControlComponent())
-                .attachComponents(new EntityHPComponent(100))
+                .attachComponents(playerPhysicsComponent)
+                .attachComponents(playerComponents)
                 .setCollidable()
                 .buildPlayer();
     }

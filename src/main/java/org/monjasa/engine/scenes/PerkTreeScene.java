@@ -3,18 +3,24 @@ package org.monjasa.engine.scenes;
 import com.almasb.fxgl.app.scene.GameScene;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxgl.pathfinding.Grid;
 import com.almasb.fxgl.scene.Scene;
 import com.almasb.fxgl.scene.SubScene;
+import com.almasb.fxgl.texture.Texture;
 import javafx.geometry.Pos;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import org.monjasa.engine.PlatformerApplication;
+import org.monjasa.engine.perks.HPChangingPerk;
 import org.monjasa.engine.perks.PerkTree;
+import org.monjasa.engine.perks.SpeedChangingPerk;
 
 import static com.almasb.fxgl.dsl.FXGL.getGameScene;
 
@@ -36,7 +42,7 @@ public class PerkTreeScene extends SubScene {
         StackPane perkTreePane = new StackPane();
 
         perkTreePane.getChildren().addAll(
-                new Rectangle(900, 500, Color.BLUE),
+                FXGL.texture("wood-planks.png", 980, 560),
                 buildButtonHBox()
         );
 
@@ -50,23 +56,24 @@ public class PerkTreeScene extends SubScene {
 
     private HBox buildButtonHBox() {
 
-        Rectangle buttonHPUpgrade = new Rectangle(80, 80, Color.GREEN);
+        Texture buttonHPUpgrade = FXGL.texture("potions/health-potion.png", 128, 128);
         buttonHPUpgrade.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            perkTree.executePerk(0);
+            perkTree.executePerk(HPChangingPerk.class);
         });
 
-        Rectangle buttonSpeedUpgrade = new Rectangle(80, 80, Color.PURPLE);
+        Texture buttonSpeedUpgrade = FXGL.texture("potions/speed-potion.png", 128, 128);
         buttonSpeedUpgrade.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            perkTree.executePerk(1);
+            perkTree.executePerk(SpeedChangingPerk.class);
         });
 
-        Rectangle buttonUndo = new Rectangle(80, 80, Color.RED);
+        Texture buttonUndo = FXGL.texture("potions/revert-potion.png", 128, 128);
         buttonUndo.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             perkTree.undoLastPerk();
         });
 
-        HBox hBox = new HBox(buttonHPUpgrade, buttonSpeedUpgrade, buttonUndo);
+        HBox hBox = new HBox(buttonHPUpgrade, buttonSpeedUpgrade, new Rectangle(128, 128, Color.TRANSPARENT), buttonUndo);
         hBox.setAlignment(Pos.CENTER);
+
         return hBox;
     }
 

@@ -40,12 +40,12 @@ public class ForestPlayerControlComponent extends PlayerControlComponent {
 
     @Override
     public void moveLeft() {
-        physicsComponent.setVelocityX(-1.0 * entity.getComponent(DynamicComponent.class).getHorizontalVelocity());
+        physicsComponent.setVelocityX(-1.0 * parentEntity.getComponent(DynamicComponent.class).getHorizontalVelocity());
     }
 
     @Override
     public void moveRight() {
-        physicsComponent.setVelocityX(entity.getComponent(DynamicComponent.class).getHorizontalVelocity());
+        physicsComponent.setVelocityX(parentEntity.getComponent(DynamicComponent.class).getHorizontalVelocity());
     }
 
     @Override
@@ -56,7 +56,7 @@ public class ForestPlayerControlComponent extends PlayerControlComponent {
     @Override
     public void jump() {
         if (physicsComponent.isOnGround()) {
-            physicsComponent.setVelocityY(-1.0 * entity.getComponent(DynamicComponent.class).getVerticalVelocity());
+            physicsComponent.setVelocityY(-1.0 * parentEntity.getComponent(DynamicComponent.class).getVerticalVelocity());
         }
     }
 

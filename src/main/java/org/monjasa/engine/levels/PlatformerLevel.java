@@ -45,8 +45,6 @@ public class PlatformerLevel {
 
     public LevelMemento makeSnapshot() {
 
-        System.err.println("MAKING SNAPSHOT");
-
         Entity player = level.getEntities().stream()
                 .filter(entity -> entity.getType() == PlatformerEntityType.PLAYER)
                 .findFirst()

@@ -12,6 +12,8 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
 
+import java.util.List;
+
 public abstract class PlatformerEntityBuilder<T extends PlatformerEntityBuilder, E extends Entity> {
 
     protected E entity;
@@ -165,6 +167,11 @@ public abstract class PlatformerEntityBuilder<T extends PlatformerEntityBuilder,
     public T attachComponents(Component... components) {
         for (Component component : components)
             entity.addComponent(component);
+        return getThis();
+    }
+
+    public T attachComponents(List<Component> components) {
+        components.forEach(entity::addComponent);
         return getThis();
     }
 
