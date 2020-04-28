@@ -9,7 +9,7 @@ import javafx.util.Duration;
 import org.monjasa.engine.PlatformerApplication;
 import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.players.components.PlayerControlComponent;
-import org.monjasa.engine.entities.players.components.PlayerHPComponent;
+import org.monjasa.engine.entities.components.EntityHPComponent;
 import org.monjasa.engine.entities.players.components.PlayerViewComponent;
 
 import static com.almasb.fxgl.dsl.FXGL.runOnce;
@@ -18,7 +18,7 @@ public abstract class Player extends Entity implements Updatable {
 
     PlayerViewComponent playerViewComponent;
     PlayerControlComponent playerControlComponent;
-    PlayerHPComponent playerHPComponent;
+    EntityHPComponent playerHPComponent;
 
     public abstract Player attachPlayerComponents();
 

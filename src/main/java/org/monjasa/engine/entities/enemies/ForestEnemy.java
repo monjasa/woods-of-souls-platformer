@@ -8,14 +8,20 @@ import com.almasb.fxgl.time.LocalTimer;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 import org.monjasa.engine.entities.players.Player;
-import org.monjasa.engine.entities.players.components.PlayerHPComponent;
+import org.monjasa.engine.entities.components.EntityHPComponent;
 
 public class ForestEnemy extends Enemy {
 
+    private int damage;
+
+    public ForestEnemy(int damage) {
+        this.damage = damage;
+    }
+
     @Override
     public void hitPlayer(Player player) {
-        PlayerHPComponent playerHP = player.getComponent(PlayerHPComponent.class);
-        playerHP.setValue(playerHP.getValue() - 30);
+        EntityHPComponent playerHP = player.getComponent(EntityHPComponent.class);
+        playerHP.changeValue(-damage);
     }
 
     public static class ForestEnemyComponent extends Component {

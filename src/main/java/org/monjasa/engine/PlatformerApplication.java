@@ -27,7 +27,9 @@ import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.factories.ForestLevelFactory;
 import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
 import org.monjasa.engine.entities.players.Player;
-import org.monjasa.engine.entities.players.components.PlayerHPComponent;
+import org.monjasa.engine.entities.components.EntityHPComponent;
+import org.monjasa.engine.perks.PerkTree;
+import org.monjasa.engine.scenes.PerkTreeScene;
 import org.monjasa.engine.scenes.PlatformerLoadingScene;
 import org.monjasa.engine.scenes.menu.PlatformerGameMenu;
 import org.monjasa.engine.scenes.menu.PlatformerMainMenu;
@@ -44,6 +46,7 @@ public class PlatformerApplication extends GameApplication {
     private PlatformerEntityFactory entityFactory;
 
     private HealthBarUI healthBar;
+    private PerkTree perkTree;
 
     private Music mainMenuMusic;
     private Music gameMusic;
@@ -57,7 +60,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.2.12");
+        settings.setVersion("0.2.13");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -122,7 +125,6 @@ public class PlatformerApplication extends GameApplication {
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("level", 0);
         vars.put("coins-total-collected", 0);
-        vars.put("coins-level-collected", 0);
     }
 
     @Override
@@ -158,22 +160,22 @@ public class PlatformerApplication extends GameApplication {
                 ((Player) getGameWorld().getSingleton(PlatformerEntityType.PLAYER)).goUp();
             }
         }, KeyCode.UP);
+
+        getInput().addAction(new UserAction("Open Perk Tree") {
+            @Override
+            protected void onAction() {
+                getSceneService().pushSubScene(new PerkTreeScene());
+            }
+        }, KeyCode.F);
     }
 
     @Override
     protected void initUI() {
 
-        healthBar = new HealthBarUI(
-                getGameWorld().getSingleton(PlatformerEntityType.PLAYER).getComponent(PlayerHPComponent.class)
-        );
-
         Text coinsCollectedText = new Text();
-        coinsCollectedText.fontProperty().setValue(FXGL.getAssetLoader().loadFont("gnomoria.ttf").newFont(48));
+        coinsCollectedText.fontProperty().setValue(FXGL.getAssetLoader().loadFont("gnomoria.ttf").newFont(36));
 
-        NumberBinding coinsTotalBinding = getWorldProperties().intProperty("coins-total-collected")
-                .add(getWorldProperties().intProperty("coins-level-collected"));
-
-        coinsCollectedText.textProperty().bind(coinsTotalBinding.asString());
+        coinsCollectedText.textProperty().bind(getWorldProperties().intProperty("coins-total-collected").asString());
 
         BorderPane textPane = new BorderPane(coinsCollectedText);
         textPane.setPadding(new Insets(0, 0, 0, 20));
@@ -182,9 +184,12 @@ public class PlatformerApplication extends GameApplication {
         coinsPane.setTranslateX(30);
         coinsPane.setTranslateY(100);
 
+        healthBar = new HealthBarUI(
+                getGameWorld().getSingleton(PlatformerEntityType.PLAYER).getComponent(EntityHPComponent.class)
+        );
+
         addUINode(coinsPane);
-        addUINode(healthBar, 60, 30);
-        addUINode(texture("health-bar.png"), 20, 20);
+        addUINode(healthBar, 20, 30);
     }
 
     @Override
@@ -200,9 +205,9 @@ public class PlatformerApplication extends GameApplication {
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(PlatformerEntityType.PLAYER, PlatformerEntityType.COIN) {
             @Override
             protected void onCollisionBegin(Entity player, Entity coin) {
-                getWorldProperties().increment("coins-level-collected", 1);
-                coin.removeFromWorld();
+                getWorldProperties().increment("coins-total-collected", 1);
                 entityFactory.peekCurrentLevelFactory().getCoinInstance().onCollected();
+                coin.removeFromWorld();
             }
         });
 
@@ -223,7 +228,7 @@ public class PlatformerApplication extends GameApplication {
         Level level = entityFactory.peekCurrentLevelFactory().createLevel(geti("level"), DEVELOPING_NEW_LEVEL);
         getGameWorld().setLevel(level);
 
-        getWorldProperties().setValue("coins-level-collected", 0);
+        getWorldProperties().setValue("coins-total-collected", 0);
 
         Entity player = getGameWorld().getSingleton(PlatformerEntityType.PLAYER);
 
@@ -231,7 +236,9 @@ public class PlatformerApplication extends GameApplication {
         getGameScene().getViewport().bindToEntity(player, getAppWidth() / 2.0, getAppHeight() / 2.0);
         getGameScene().getViewport().setBounds(0, 0, level.getWidth(), level.getHeight());
 
-        if (healthBar != null) healthBar.updatePlayerHP(player.getComponent(PlayerHPComponent.class));
+        if (healthBar != null) healthBar.updatePlayerHP(player.getComponent(EntityHPComponent.class));
+
+        perkTree = new PerkTree();
 
         return level;
     }
@@ -256,8 +263,6 @@ public class PlatformerApplication extends GameApplication {
     private void finishLevel() {
 
         if (!DEVELOPING_NEW_LEVEL) {
-            inc("coins-total-collected", geti("coins-level-collected"));
-            getWorldProperties().setValue("coins-level-collected", 0);
             inc("level", 1);
         }
 
@@ -266,6 +271,10 @@ public class PlatformerApplication extends GameApplication {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public PerkTree getPerkTree() {
+        return perkTree;
     }
 
     public Music getMainMenuMusic() {

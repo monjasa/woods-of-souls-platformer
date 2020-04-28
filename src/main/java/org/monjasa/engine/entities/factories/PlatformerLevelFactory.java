@@ -21,6 +21,11 @@ public abstract class PlatformerLevelFactory {
     protected String coinSpritesheetName;
     protected String coinCollectSoundName;
 
+    protected double playerHorizontalVelocity;
+    protected double playerVerticalVelocity;
+
+    protected int enemyDamage;
+
     public PlatformerLevelFactory(int maxLevel, String levelPrefix, String developingLevelName) {
         this.maxLevel = maxLevel;
         this.levelPrefix = levelPrefix;

@@ -3,7 +3,6 @@ package org.monjasa.engine.entities.factories;
 import com.almasb.fxgl.dsl.views.ScrollingBackgroundView;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.level.Level;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
@@ -15,6 +14,7 @@ import javafx.geometry.Point2D;
 import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.SimpleEntityBuilder;
 import org.monjasa.engine.entities.coins.*;
+import org.monjasa.engine.entities.components.DynamicComponent;
 import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.enemies.EnemyBuilder;
 import org.monjasa.engine.entities.enemies.ForestEnemy;
@@ -29,7 +29,7 @@ import org.monjasa.engine.entities.players.Player;
 import org.monjasa.engine.entities.players.PlayerBuilder;
 import org.monjasa.engine.entities.players.components.ForestPlayerControlComponent;
 import org.monjasa.engine.entities.players.components.ForestPlayerViewComponent;
-import org.monjasa.engine.entities.players.components.PlayerHPComponent;
+import org.monjasa.engine.entities.components.EntityHPComponent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +44,16 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
     private CoinFlyweightFactory coinFactory = CoinFlyweightFactory.getCoinFactoryInstance();
 
     public ForestLevelFactory(int maxLevel) {
+
         super(maxLevel, FOREST_LEVEL_PREFIX, FOREST_DEVELOPING_LEVEL_NAME);
+
         coinSpritesheetName = "forest-coin-spritesheet-min.png";
         coinCollectSoundName = "pickup-coin.wav";
+
+        playerHorizontalVelocity = 200;
+        playerVerticalVelocity = 800;
+
+        enemyDamage = 30;
     }
 
     @Override
@@ -88,15 +95,16 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
                 .addType(PlatformerEntityType.PLAYER)
                 .centerAt(data.<Integer>get("width") / 2.0, data.<Integer>get("height") / 2.0)
                 .addHitBox(playerMainHitBox)
-                .attachComponents(playerPhysicsComponent, new ForestPlayerViewComponent(), new ForestPlayerControlComponent())
-                .attachComponents(new PlayerHPComponent(100))
+                .attachComponents(playerPhysicsComponent, new DynamicComponent(playerHorizontalVelocity, playerVerticalVelocity))
+                .attachComponents(new ForestPlayerViewComponent(), new ForestPlayerControlComponent())
+                .attachComponents(new EntityHPComponent(100))
                 .setCollidable()
                 .buildPlayer();
     }
 
     @Override
     public Enemy getEnemyInstance() {
-        return new ForestEnemy();
+        return new ForestEnemy(enemyDamage);
     }
 
     @Override

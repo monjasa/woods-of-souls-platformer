@@ -2,6 +2,7 @@ package org.monjasa.engine.entities.players.components;
 
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.physics.PhysicsComponent;
+import org.monjasa.engine.entities.components.DynamicComponent;
 import org.monjasa.engine.entities.players.ForestPlayer;
 
 public class ForestPlayerControlComponent extends PlayerControlComponent {
@@ -39,12 +40,12 @@ public class ForestPlayerControlComponent extends PlayerControlComponent {
 
     @Override
     public void moveLeft() {
-        physicsComponent.setVelocityX(-200);
+        physicsComponent.setVelocityX(-1.0 * entity.getComponent(DynamicComponent.class).getHorizontalVelocity());
     }
 
     @Override
     public void moveRight() {
-        physicsComponent.setVelocityX(200);
+        physicsComponent.setVelocityX(entity.getComponent(DynamicComponent.class).getHorizontalVelocity());
     }
 
     @Override
@@ -55,7 +56,7 @@ public class ForestPlayerControlComponent extends PlayerControlComponent {
     @Override
     public void jump() {
         if (physicsComponent.isOnGround()) {
-            physicsComponent.setVelocityY(-800);
+            physicsComponent.setVelocityY(-1.0 * entity.getComponent(DynamicComponent.class).getVerticalVelocity());
         }
     }
 
