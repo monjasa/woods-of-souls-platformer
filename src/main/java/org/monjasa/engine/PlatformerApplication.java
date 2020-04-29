@@ -19,7 +19,9 @@ import javafx.scene.ImageCursor;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 import org.monjasa.engine.entities.PlatformerEntityFactory;
 import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.components.EntityHPComponent;
@@ -65,7 +67,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.2.15");
+        settings.setVersion("0.2.16");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -232,6 +234,19 @@ public class PlatformerApplication extends GameApplication {
             @Override
             protected void onCollisionBegin(Entity player, Entity checkpoint) {
                 levelSnapshot = currentLevel.onCheckpoint();
+
+                checkpoint.removeComponent(CollidableComponent.class);
+
+                Text checkpointReachedText = new Text("You reached checkpoint");
+                checkpointReachedText.fontProperty().setValue(FXGL.getAssetLoader().loadFont("gnomoria.ttf").newFont(50));
+                checkpointReachedText.fillProperty().setValue(Color.WHITE);
+
+                addUINode(checkpointReachedText, getAppWidth() / 2.0 - checkpointReachedText.getLayoutBounds().getWidth() / 2.0,
+                        getAppHeight() / 2.0 - checkpointReachedText.getLayoutBounds().getHeight() / 2.0);
+
+                runOnce(() -> {
+                    removeUINode(checkpointReachedText);
+                }, Duration.millis(3000));
             }
         });
     }
