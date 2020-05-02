@@ -1,6 +1,8 @@
 package org.monjasa.engine.perks;
 
-public interface Perk {
+import java.io.Serializable;
+
+public interface Perk extends Serializable {
 
     boolean execute();
 

@@ -6,7 +6,7 @@
 
     <groupId>org.monjasa</groupId>
     <artifactId>woods-of-souls-platformer</artifactId>
-    <version>0.2.16</version>
+    <version>0.2.17</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

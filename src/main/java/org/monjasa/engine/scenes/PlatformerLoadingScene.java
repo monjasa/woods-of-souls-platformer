@@ -8,6 +8,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import org.monjasa.engine.PlatformerApplication;
 
 import java.net.URL;
 
@@ -43,9 +44,9 @@ public class PlatformerLoadingScene extends LoadingScene {
     public void onCreate() {
         setCursorInvisible();
     }
-
     @Override
     protected void bind(Task<?> task) {
+        task.setOnSucceeded(event -> FXGL.<PlatformerApplication>getAppCast().startGame());
         progressBar.progressProperty().bind(task.progressProperty());
         text.textProperty().bind(task.messageProperty());
     }

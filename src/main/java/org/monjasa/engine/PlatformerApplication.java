@@ -12,6 +12,8 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
+import com.almasb.fxgl.profile.DataFile;
+import com.almasb.fxgl.profile.SaveFile;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
@@ -29,6 +31,7 @@ import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.factories.ForestLevelFactory;
 import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
 import org.monjasa.engine.entities.players.Player;
+import org.monjasa.engine.levels.LevelSaveLoadHandler;
 import org.monjasa.engine.levels.PlatformerLevel;
 import org.monjasa.engine.perks.PerkTree;
 import org.monjasa.engine.scenes.PerkTreeScene;
@@ -37,6 +40,7 @@ import org.monjasa.engine.scenes.menu.PlatformerGameMenu;
 import org.monjasa.engine.scenes.menu.PlatformerMainMenu;
 import org.monjasa.engine.ui.HealthBarUI;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -46,6 +50,8 @@ import static org.monjasa.engine.levels.PlatformerLevel.LevelMemento;
 public class PlatformerApplication extends GameApplication {
 
     private static final boolean DEVELOPING_NEW_LEVEL = false;
+
+    private boolean isLoadingFromSave = false;
 
     private PlatformerLevel currentLevel;
     private LevelMemento levelSnapshot;
@@ -67,7 +73,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.2.16");
+        settings.setVersion("0.2.17");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -105,6 +111,8 @@ public class PlatformerApplication extends GameApplication {
         gameMusic = FXGL.getAssetLoader().loadMusic("game-background.mp3");
         mainMenuMusic = FXGL.getAssetLoader().loadMusic("main-menu-background.mp3");
         imageCursor = new ImageCursor(FXGL.getAssetLoader().loadCursorImage("cursor.png"));
+
+        getSaveLoadService().addHandler(new LevelSaveLoadHandler());
     }
 
     @Override
@@ -126,6 +134,24 @@ public class PlatformerApplication extends GameApplication {
         getAudioPlayer().loopMusic(gameMusic);
 
         prepareNextLevel();
+    }
+
+    public void startGame() {
+
+        if (isLoadingFromSave) {
+            SaveFile saveFile = getSaveLoadService().readSaveFileTask(new SaveFile(
+                    "hello",
+                    "monja",
+                    "ser"
+            )).run();
+
+            getSaveLoadService().load(saveFile.getData());
+            prepareLevel();
+
+            isLoadingFromSave = false;
+        }
+
+        getGameController().gotoPlay();
     }
 
     @Override
@@ -174,6 +200,22 @@ public class PlatformerApplication extends GameApplication {
                 getSceneService().pushSubScene(new PerkTreeScene());
             }
         }, KeyCode.F);
+
+        getInput().addAction(new UserAction("Save") {
+            @Override
+            protected void onActionBegin() {
+                DataFile dataFile = new DataFile();
+                getSaveLoadService().save(dataFile);
+
+                getSaveLoadService().writeSaveFileTask(new SaveFile(
+                        "hello",
+                        "monja",
+                        "ser",
+                        LocalDateTime.now(),
+                        dataFile
+                )).run();
+            }
+        }, KeyCode.K);
     }
 
     @Override
@@ -311,6 +353,10 @@ public class PlatformerApplication extends GameApplication {
         }
 
         getGameScene().getViewport().fade(this::prepareNextLevel);
+    }
+
+    public void setLoadingFromSaveState() {
+        isLoadingFromSave = true;
     }
 
     public static void main(String[] args) {

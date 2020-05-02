@@ -6,7 +6,7 @@ import org.monjasa.engine.entities.components.EntityHPComponent;
 
 public class HPChangingPerk implements Perk {
 
-    private Entity receiver;
+    private transient Entity receiver;
     private int valueDifference;
     private int cost;
 
@@ -42,5 +42,22 @@ public class HPChangingPerk implements Perk {
             hpComponent.expandValue(-valueDifference);
 
         } else throw new UnsupportedPerkReceiverException(receiver, EntityHPComponent.class);
+    }
+
+    public Entity getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(Entity receiver) {
+        this.receiver = receiver;
+    }
+
+    @Override
+    public String toString() {
+        return "HPChangingPerk{" +
+                "receiver=" + receiver +
+                ", valueDifference=" + valueDifference +
+                ", cost=" + cost +
+                '}';
     }
 }

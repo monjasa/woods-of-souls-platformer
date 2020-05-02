@@ -55,6 +55,13 @@ public class PlatformerMainMenu extends FXGLMenu {
         newGameButton.setOnAction(actionEvent -> fireNewGame());
         platformerMenuBox.add(newGameButton);
 
+        PlatformerMenuButton continueButton = new PlatformerMenuButton("Continue");
+        continueButton.setOnAction(actionEvent -> {
+            FXGL.<PlatformerApplication>getAppCast().setLoadingFromSaveState();
+            fireNewGame();
+        });
+        platformerMenuBox.add(continueButton);
+
         PlatformerMenuButton optionsButton = new PlatformerMenuButton("Options");
         platformerMenuBox.add(optionsButton);
 

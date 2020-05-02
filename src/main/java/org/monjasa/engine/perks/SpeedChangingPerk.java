@@ -6,7 +6,7 @@ import org.monjasa.engine.entities.components.DynamicComponent;
 
 public class SpeedChangingPerk implements Perk {
 
-    private Entity receiver;
+    private transient Entity receiver;
     private double valueDifference;
     private int cost;
 
@@ -42,5 +42,22 @@ public class SpeedChangingPerk implements Perk {
             dynamicComponent.setHorizontalVelocity(dynamicComponent.getHorizontalVelocity() / (1 + valueDifference));
 
         } else throw new UnsupportedPerkReceiverException(receiver, DynamicComponent.class);
+    }
+
+    public Entity getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(Entity receiver) {
+        this.receiver = receiver;
+    }
+
+    @Override
+    public String toString() {
+        return "SpeedChangingPerk{" +
+                "receiver=" + receiver +
+                ", valueDifference=" + valueDifference +
+                ", cost=" + cost +
+                '}';
     }
 }
