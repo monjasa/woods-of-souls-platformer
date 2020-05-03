@@ -38,10 +38,11 @@ import org.monjasa.engine.entities.players.PlayerBuilder;
 import org.monjasa.engine.entities.players.components.ForestPlayerControlComponent;
 import org.monjasa.engine.entities.players.components.ForestPlayerViewComponent;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class ForestLevelFactory extends PlatformerLevelFactory {
 
@@ -67,7 +68,7 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
                 new EntityHPComponent(100)
         );
 
-        enemyDamage = 70;
+        enemyDamage = 30;
     }
 
     @Override
@@ -109,6 +110,7 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
                 .addType(PlatformerEntityType.PLAYER)
                 .centerAt(data.<Integer>get("width") / 2.0, data.<Integer>get("height") / 2.0)
                 .addHitBox(playerMainHitBox)
+                .layerAt(1)
                 .attachComponents(playerPhysicsComponent)
                 .attachComponents(playerComponents)
                 .setCollidable()
@@ -178,15 +180,17 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
         return new CheckpointBuilder(this)
                 .loadFromSpawnData(data)
                 .addType(PlatformerEntityType.CHECKPOINT)
+                .layerAt(0)
+                .addView(texture("stone-checkpoint.png", 105, 224))
                 .addHitBox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
                 .setCollidable()
                 .buildCheckpoint();
     }
 
     @Override
-    public Level createLevel(int levelNum, boolean isDevelopingNewLevel) {
+    public Level createLevel(URL levelURL, boolean isDevelopingNewLevel) {
 
-        Level level = super.createLevel(levelNum, isDevelopingNewLevel);
+        Level level = super.createLevel(levelURL, isDevelopingNewLevel);
 
         int backgroundParallaxIndex = 0;
         int foregroundParallaxIndex = 10;
@@ -248,4 +252,6 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
 
         return level;
     }
+
+
 }

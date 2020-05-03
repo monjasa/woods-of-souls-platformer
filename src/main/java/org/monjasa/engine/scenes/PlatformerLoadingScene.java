@@ -44,6 +44,7 @@ public class PlatformerLoadingScene extends LoadingScene {
     public void onCreate() {
         setCursorInvisible();
     }
+
     @Override
     protected void bind(Task<?> task) {
         task.setOnSucceeded(event -> FXGL.<PlatformerApplication>getAppCast().startGame());

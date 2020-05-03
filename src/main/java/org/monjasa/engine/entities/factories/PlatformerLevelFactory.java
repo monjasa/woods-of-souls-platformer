@@ -1,5 +1,6 @@
 package org.monjasa.engine.entities.factories;
 
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.level.Level;
@@ -11,6 +12,7 @@ import org.monjasa.engine.entities.platforms.Platform;
 import org.monjasa.engine.entities.players.Player;
 import org.monjasa.engine.levels.tmx.PlatformerTMXLoaderFacade;
 
+import java.net.URL;
 import java.util.List;
 
 import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
@@ -60,14 +62,13 @@ public abstract class PlatformerLevelFactory {
 
     public abstract Checkpoint createCheckpoint(SpawnData data);
 
-    public Level createLevel(int levelNum, boolean isDevelopingNewLevel) {
+    public Level createLevel(URL levelURL, boolean isDevelopingNewLevel) {
 
         if (isDevelopingNewLevel && developingLevelName != null) {
             return getAssetLoader().loadLevel(String.format("tmx/%s.tmx", developingLevelName),
                     new PlatformerTMXLoaderFacade());
         } else {
-            return getAssetLoader().loadLevel(String.format("tmx/%s_%02d.tmx", levelPrefix, levelNum),
-                    new PlatformerTMXLoaderFacade());
+            return new PlatformerTMXLoaderFacade().load(levelURL, FXGL.getGameWorld());
         }
     }
 
@@ -81,5 +82,9 @@ public abstract class PlatformerLevelFactory {
 
     public String getCoinCollectSoundName() {
         return coinCollectSoundName;
+    }
+
+    public String getLevelPrefix() {
+        return levelPrefix;
     }
 }

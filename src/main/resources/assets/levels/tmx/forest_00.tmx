@@ -3,7 +3,7 @@
  <tileset firstgid="1" name="level_spritesheet" tilewidth="45" tileheight="45" tilecount="40" columns="10">
   <image source="level_spritesheet.png" width="450" height="180"/>
  </tileset>
- <tileset firstgid="41" name="unnamed" tilewidth="260" tileheight="310" tilecount="1" columns="1">
+ <tileset firstgid="41" name="unnamed" tilewidth="260" tileheight="310" tilecount="0" columns="1">
   <image source="../../textures/unnamed.png" width="260" height="310"/>
  </tileset>
  <layer id="8" name="Tile Layer 1" width="50" height="16">
@@ -51,6 +51,6 @@
   <object id="41" type="coin" x="815.667" y="564.667" width="30" height="60"/>
   <object id="42" type="coin" x="1175.67" y="564.667" width="30" height="60"/>
   <object id="43" type="coin" x="1722.33" y="564.667" width="30" height="60"/>
-  <object id="44" type="checkpoint" x="927" y="583" width="242" height="89"/>
+  <object id="44" type="checkpoint" x="1001" y="449" width="105" height="224"/>
  </objectgroup>
 </map>

@@ -12,6 +12,10 @@ import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
 import org.monjasa.engine.entities.platforms.Platform;
 import org.monjasa.engine.entities.players.Player;
 
+import java.net.URL;
+import java.util.Deque;
+import java.util.List;
+
 public interface PlatformerEntityFactory extends EntityFactory {
 
     @Spawns("platform")
@@ -32,11 +36,9 @@ public interface PlatformerEntityFactory extends EntityFactory {
     @Spawns("checkpoint")
     Checkpoint spawnCheckpoint(SpawnData data);
 
-    Level createLevel(int levelNum, boolean isDevelopingNewLevel);
+    Level createLevel(URL levelURL, boolean isDevelopingNewLevel);
 
-    PlatformerLevelFactory peekCurrentLevelFactory();
+    PlatformerLevelFactory getCurrentFactory();
 
-    void pollCurrentLevelFactory();
-
-    boolean isEmpty();
+    List<PlatformerLevelFactory> getLevelFactories();
 }

@@ -4,25 +4,23 @@ import com.almasb.fxgl.core.serialization.Bundle;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.component.SerializableComponent;
+import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.level.Level;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
-import org.monjasa.engine.entities.PlatformerEntityFactory;
 import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.components.EntityHPComponent;
-import org.monjasa.engine.entities.players.Player;
-import org.monjasa.engine.perks.Perk;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxgl.dsl.FXGL.getGameWorld;
+import static com.almasb.fxgl.dsl.FXGL.getWorldProperties;
 
 public class PlatformerLevel {
 
@@ -30,17 +28,18 @@ public class PlatformerLevel {
     private IntegerProperty coinsCollectedProperty;
     private IntegerProperty coinsAvailableProperty;
 
-//    private List<Perk> perksToUndo;
+    //    private List<Perk> perksToUndo;
 //    private List<Perk> executedPerks;
     private List<Entity> coinsToRestore;
 
-    public PlatformerLevel(PlatformerEntityFactory entityFactory, boolean developing) {
+    public PlatformerLevel(Level level) {
 
 //        perksToUndo = new ArrayList<>();
 //        executedPerks = new ArrayList<>();
         coinsToRestore = new ArrayList<>();
 
-        level = entityFactory.peekCurrentLevelFactory().createLevel(geti("level"), developing);
+//        level = entityFactory.peekCurrentLevelFactory().createLevel(geti("level"), developing);
+        this.level = level;
 
         coinsCollectedProperty = new SimpleIntegerProperty();
         coinsAvailableProperty = new SimpleIntegerProperty();
@@ -94,6 +93,12 @@ public class PlatformerLevel {
 
         getWorldProperties().setValue("coinsCollected", levelSnapshot.<Integer>getProperty("coinsCollected"));
         getWorldProperties().setValue("coinsAvailable", levelSnapshot.<Integer>getProperty("coinsAvailable"));
+
+        for (Entity coin : coinsToRestore) {
+            coin.addComponent(new CollidableComponent(true));
+            coin.setVisible(true);
+        }
+        coinsToRestore.clear();
     }
 
     public Level getLevel() {

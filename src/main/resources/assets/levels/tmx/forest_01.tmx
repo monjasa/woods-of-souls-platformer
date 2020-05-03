@@ -35,7 +35,7 @@
   <object id="41" type="coin" x="815.667" y="564.667" width="30" height="60"/>
   <object id="42" type="coin" x="1175.67" y="564.667" width="30" height="60"/>
   <object id="43" type="coin" x="1722.33" y="564.667" width="30" height="60"/>
-  <object id="44" type="checkpoint" x="969.697" y="512.121" width="133.333" height="160.606"/>
+  <object id="44" type="checkpoint" x="1379.7" y="450.121" width="133.333" height="224"/>
   <object id="45" type="checkpoint" x="706.061" y="-715.152" width="3.0303"/>
  </objectgroup>
 </map>

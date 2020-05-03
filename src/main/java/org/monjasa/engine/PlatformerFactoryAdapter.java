@@ -8,80 +8,91 @@ import org.monjasa.engine.entities.checkpoints.Checkpoint;
 import org.monjasa.engine.entities.coins.Coin;
 import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.exits.Exit;
+import org.monjasa.engine.entities.factories.ForestLevelFactory;
 import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
 import org.monjasa.engine.entities.platforms.Platform;
 import org.monjasa.engine.entities.players.Player;
 
-import java.util.Deque;
+import java.io.File;
+import java.net.URL;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PlatformerFactoryAdapter implements PlatformerEntityFactory {
 
-    private Deque<PlatformerLevelFactory> entityFactories;
+    private PlatformerLevelFactory currentFactory;
+    private Map<String, PlatformerLevelFactory> factories;
 
-    public PlatformerFactoryAdapter(Deque<PlatformerLevelFactory> entityFactories) {
-        this.entityFactories = entityFactories;
+    public PlatformerFactoryAdapter() {
+
+        factories = new LinkedHashMap<>();
+        factories.put("forest", new ForestLevelFactory(2));
     }
 
     @Override
     @Spawns("platform")
     public Platform spawnPlatform(SpawnData data) {
-        assert entityFactories.peek() != null;
-        return entityFactories.peek().createPlatform(data);
+        assert currentFactory != null;
+        return currentFactory.createPlatform(data);
     }
 
     @Override
     @Spawns("player")
     public Player spawnPlayer(SpawnData data) {
-        assert entityFactories.peek() != null;
-        return entityFactories.peek().createPlayer(data);
+        assert currentFactory != null;
+        return currentFactory.createPlayer(data);
     }
 
     @Override
     @Spawns("enemy")
     public Enemy spawnEnemy(SpawnData data) {
-        assert entityFactories.peek() != null;
-        return entityFactories.peek().createEnemy(data);
+        assert currentFactory != null;
+        return currentFactory.createEnemy(data);
     }
 
     @Override
     @Spawns("exit")
     public Exit spawnExit(SpawnData data) {
-        assert entityFactories.peek() != null;
-        return entityFactories.peek().createExit(data);
+        assert currentFactory != null;
+        return currentFactory.createExit(data);
     }
 
     @Override
     @Spawns("coin")
     public Coin spawnCoin(SpawnData data) {
-        assert entityFactories.peek() != null;
-        return entityFactories.peek().createCoin(data);
+        assert currentFactory != null;
+        return currentFactory.createCoin(data);
     }
 
     @Override
     @Spawns("checkpoint")
     public Checkpoint spawnCheckpoint(SpawnData data) {
-        assert entityFactories.peek() != null;
-        return entityFactories.peek().createCheckpoint(data);
+        assert currentFactory != null;
+        return currentFactory.createCheckpoint(data);
     }
 
     @Override
-    public Level createLevel(int levelNum, boolean isDevelopingNewLevel) {
-        assert entityFactories.peek() != null;
-        return entityFactories.peek().createLevel(levelNum, isDevelopingNewLevel);
+    public Level createLevel(URL levelURL, boolean isDevelopingNewLevel) {
+
+        String levelName = new File(levelURL.getPath()).getName();
+        Pattern pattern = Pattern.compile("([^_]+)");
+        Matcher matcher = pattern.matcher(levelName);
+
+        if (!matcher.find()) throw new RuntimeException();
+
+        currentFactory = factories.get(levelName.substring(matcher.start(), matcher.end()));
+
+        assert currentFactory != null;
+        return currentFactory.createLevel(levelURL, isDevelopingNewLevel);
+    }
+
+    public PlatformerLevelFactory getCurrentFactory() {
+        return currentFactory;
     }
 
     @Override
-    public PlatformerLevelFactory peekCurrentLevelFactory() {
-        return entityFactories.peek();
-    }
-
-    @Override
-    public void pollCurrentLevelFactory() {
-        entityFactories.poll();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return entityFactories.isEmpty();
+    public List<PlatformerLevelFactory> getLevelFactories() {
+        return new ArrayList<>(factories.values());
     }
 }

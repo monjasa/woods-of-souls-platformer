@@ -10,6 +10,7 @@ import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.entity.level.Level;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.profile.DataFile;
@@ -25,14 +26,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import org.monjasa.engine.entities.PlatformerEntityFactory;
-import org.monjasa.engine.entities.components.DynamicComponent;
 import org.monjasa.engine.entities.components.EntityHPComponent;
 import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.factories.ForestLevelFactory;
 import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
 import org.monjasa.engine.entities.players.Player;
-import org.monjasa.engine.levels.LevelSaveLoadHandler;
-import org.monjasa.engine.levels.PlatformerLevel;
+import org.monjasa.engine.levels.*;
+import org.monjasa.engine.levels.Collection;
 import org.monjasa.engine.perks.PerkTree;
 import org.monjasa.engine.scenes.PerkTreeScene;
 import org.monjasa.engine.scenes.PlatformerLoadingScene;
@@ -40,6 +40,7 @@ import org.monjasa.engine.scenes.menu.PlatformerGameMenu;
 import org.monjasa.engine.scenes.menu.PlatformerMainMenu;
 import org.monjasa.engine.ui.HealthBarUI;
 
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -56,7 +57,7 @@ public class PlatformerApplication extends GameApplication {
     private PlatformerLevel currentLevel;
     private LevelMemento levelSnapshot;
 
-    private PlatformerEntityFactory entityFactory;
+    private PlatformerEntityFactory entityFactories;
 
     private HealthBarUI healthBar;
     private PerkTree perkTree;
@@ -64,6 +65,8 @@ public class PlatformerApplication extends GameApplication {
     private Music mainMenuMusic;
     private Music gameMusic;
     private ImageCursor imageCursor;
+
+    private LevelIterator levelIterator;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -73,7 +76,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.2.18");
+        settings.setVersion("0.2.19");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -85,7 +88,9 @@ public class PlatformerApplication extends GameApplication {
         settings.setFontMono("gnomoria.ttf");
 
         settings.setAppIcon("app/icon.png");
-//        settings.setUserProfileEnabled(true);
+
+        settings.setProfilingEnabled(false);
+
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);
 
@@ -119,12 +124,12 @@ public class PlatformerApplication extends GameApplication {
     @Override
     protected void initGame() {
 
-        Deque<PlatformerLevelFactory> entityFactories = new ArrayDeque<>();
-        entityFactories.add(new ForestLevelFactory(2));
+        this.entityFactories = new PlatformerFactoryAdapter();
 
-        entityFactory = new PlatformerFactoryAdapter(entityFactories);
+        getGameWorld().addEntityFactory(this.entityFactories);
 
-        getGameWorld().addEntityFactory(entityFactory);
+        Collection levelURLs = new LevelCollection(loadLevelURLs());
+        levelIterator = levelURLs.createConsistentLevelIterator();
 
         getPhysicsWorld().setGravity(0, 1000);
 
@@ -259,7 +264,7 @@ public class PlatformerApplication extends GameApplication {
             protected void onCollisionBegin(Entity player, Entity coin) {
                 getWorldProperties().increment("coinsCollected", 1);
                 getWorldProperties().increment("coinsAvailable", 1);
-                entityFactory.peekCurrentLevelFactory().getCoinInstance().onCollected();
+                entityFactories.getCurrentFactory().getCoinInstance().onCollected();
 
                 currentLevel.addCoinToRestore(coin);
 
@@ -282,7 +287,7 @@ public class PlatformerApplication extends GameApplication {
 
                 checkpoint.removeComponent(CollidableComponent.class);
 
-                Text checkpointReachedText = new Text("You reached checkpoint");
+                Text checkpointReachedText = new Text("You reached the checkpoint");
                 checkpointReachedText.fontProperty().setValue(FXGL.getAssetLoader().loadFont("gnomoria.ttf").newFont(50));
                 checkpointReachedText.fillProperty().setValue(Color.WHITE);
 
@@ -301,18 +306,28 @@ public class PlatformerApplication extends GameApplication {
     }
 
     private void restartFromSnapshot() {
-
-        for (Entity coin : currentLevel.getCoinsToRestore()) {
-            coin.addComponent(new CollidableComponent(true));
-            coin.setVisible(true);
-        }
-
         currentLevel.restoreLevel(levelSnapshot);
+    }
+
+    private List<URL> loadLevelURLs() {
+
+        List<URL> levelURLs = new ArrayList<>();
+
+        entityFactories.getLevelFactories().forEach(factory -> {
+            for (int i = 0; i < factory.getMaxLevel(); i++)
+                levelURLs.add(getClass().getClassLoader().getResource(
+                        String.format("assets/levels/tmx/%s_%02d.tmx", factory.getLevelPrefix(), i))
+                );
+        });
+
+        return levelURLs;
     }
 
     private PlatformerLevel prepareLevel() {
 
-        currentLevel = new PlatformerLevel(entityFactory, DEVELOPING_NEW_LEVEL);
+        Level level = entityFactories.createLevel(levelIterator.getNext(), DEVELOPING_NEW_LEVEL);
+        currentLevel = new PlatformerLevel(level);
+
         levelSnapshot = currentLevel.makeSnapshot();
 
         getGameWorld().setLevel(currentLevel.getLevel());
@@ -333,17 +348,10 @@ public class PlatformerApplication extends GameApplication {
 
     private Optional<PlatformerLevel> prepareNextLevel() {
 
-        if (geti("level") == entityFactory.peekCurrentLevelFactory().getMaxLevel()) {
-
-            entityFactory.pollCurrentLevelFactory();
-
-            if (entityFactory.isEmpty()) {
-                getDialogService().showMessageBox("The end of Alpha version.\nThank you for playing!",
-                        getGameController()::gotoMainMenu);
-                return Optional.empty();
-            } else {
-                getWorldProperties().setValue("level", 0);
-            }
+        if (!levelIterator.hasNext()) {
+            getDialogService().showMessageBox("The end of Alpha version.\nThank you for playing!",
+                    getGameController()::gotoMainMenu);
+            return Optional.empty();
         }
 
         return Optional.of(prepareLevel());
