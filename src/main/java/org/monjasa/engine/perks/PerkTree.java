@@ -1,44 +1,47 @@
 package org.monjasa.engine.perks;
 
+import com.almasb.fxgl.dsl.FXGL;
+import org.monjasa.engine.PlatformerApplication;
 import org.monjasa.engine.entities.PlatformerEntityType;
 
 import java.util.*;
 
-import static com.almasb.fxgl.dsl.FXGL.getGameWorld;
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class PerkTree {
 
-    private Map<Class<? extends Perk>, Perk> perkList;
-    private Deque<Perk> perkDeque;
+    private Map<Class<? extends Perk>, Perk> perks;
+    private Deque<Perk> perksDeque;
 
     public PerkTree() {
 
-        perkList = new HashMap<>();
+        perks = new HashMap<>();
 
-        perkList.put(
+        perks.put(
                 HPChangingPerk.class,
-                new HPChangingPerk(getGameWorld().getSingleton(PlatformerEntityType.PLAYER), 10, 1)
+                new HPChangingPerk(10, 1)
         );
 
-        perkList.put(
+        perks.put(
                 SpeedChangingPerk.class,
-                new SpeedChangingPerk(getGameWorld().getSingleton(PlatformerEntityType.PLAYER), 0.1, 2)
+                new SpeedChangingPerk(25, 2)
         );
 
-        perkDeque = new ArrayDeque<>();
+        perksDeque = new ArrayDeque<>();
     }
 
     public void executePerk(Class<? extends Perk> perkClass) {
-        Perk perkToExecute = perkList.get(perkClass);
-        if (perkToExecute.execute()) perkDeque.push(perkToExecute);
+        Perk perkToExecute = perks.get(perkClass);
+//        FXGL.<PlatformerApplication>getAppCast().getCurrentLevel().addPerkToUndo(perkToExecute);
+        if (perkToExecute.execute(getGameWorld().getSingleton(PlatformerEntityType.PLAYER))) perksDeque.push(perkToExecute);
     }
 
     public void undoLastPerk() {
-        if (!perkDeque.isEmpty())
-            perkDeque.pop().undo();
+        if (!perksDeque.isEmpty())
+            perksDeque.pop().undo(getGameWorld().getSingleton(PlatformerEntityType.PLAYER));
     }
 
     public void clearPerkDeque() {
-        perkDeque.clear();
+        perksDeque.clear();
     }
 }

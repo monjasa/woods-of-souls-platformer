@@ -91,7 +91,7 @@ public class HealthBarUI extends StackPane {
                 hp * 1.0 / playerHP.getMaxValue() * WIDTH, Interpolators.LINEAR.EASE_IN_OUT()
         );
 
-        timeline.getKeyFrames().add(new KeyFrame(Duration.millis(500), keyValue));
+        timeline.getKeyFrames().add(new KeyFrame(Duration.millis(750), keyValue));
         timeline.play();
     }
 }

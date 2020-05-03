@@ -6,8 +6,8 @@ import javafx.beans.property.SimpleDoubleProperty;
 
 public class DynamicComponent extends Component {
 
-    protected DoubleProperty horizontalVelocityProperty;
-    protected DoubleProperty verticalVelocityProperty;
+    private DoubleProperty horizontalVelocityProperty;
+    private DoubleProperty verticalVelocityProperty;
 
     public DynamicComponent(double horizontalVelocity, double verticalVelocity) {
         horizontalVelocityProperty = new SimpleDoubleProperty(horizontalVelocity);

@@ -17,6 +17,7 @@ public class SimpleEntityBuilder extends PlatformerEntityBuilder<SimpleEntityBui
 
     @Override
     public SimpleEntityBuilder resetEntity() {
+        entity = new Entity();
         return this;
     }
 

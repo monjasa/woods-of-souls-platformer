@@ -6,26 +6,24 @@ import org.monjasa.engine.entities.components.DynamicComponent;
 
 public class SpeedChangingPerk implements Perk {
 
-    private transient Entity receiver;
     private double valueDifference;
     private int cost;
 
-    public SpeedChangingPerk(Entity receiver, double valueDifference, int cost) {
-        this.receiver = receiver;
+    public SpeedChangingPerk(double valueDifference, int cost) {
         this.valueDifference = valueDifference;
         this.cost = cost;
     }
 
     @Override
-    public boolean execute() {
+    public boolean execute(Entity receiver) {
 
         if (receiver.hasComponent(DynamicComponent.class)) {
 
-            if (FXGL.getWorldProperties().getInt("coins-total-collected") < cost) return false;
-            FXGL.inc("coins-total-collected", -cost);
+            if (FXGL.getWorldProperties().getInt("coinsAvailable") < cost) return false;
+            FXGL.inc("coinsAvailable", -cost);
 
             DynamicComponent dynamicComponent = receiver.getComponent(DynamicComponent.class);
-            dynamicComponent.setHorizontalVelocity(dynamicComponent.getHorizontalVelocity() * (1 + valueDifference));
+            dynamicComponent.setHorizontalVelocity(dynamicComponent.getHorizontalVelocity() + valueDifference);
 
         } else throw new UnsupportedPerkReceiverException(receiver, DynamicComponent.class);
 
@@ -33,30 +31,21 @@ public class SpeedChangingPerk implements Perk {
     }
 
     @Override
-    public void undo() {
+    public void undo(Entity receiver) {
 
         if (receiver.hasComponent(DynamicComponent.class)) {
 
-            FXGL.inc("coins-total-collected", cost);
+            FXGL.inc("coinsAvailable", cost);
             DynamicComponent dynamicComponent = receiver.getComponent(DynamicComponent.class);
-            dynamicComponent.setHorizontalVelocity(dynamicComponent.getHorizontalVelocity() / (1 + valueDifference));
+            dynamicComponent.setHorizontalVelocity(dynamicComponent.getHorizontalVelocity() - valueDifference);
 
         } else throw new UnsupportedPerkReceiverException(receiver, DynamicComponent.class);
-    }
-
-    public Entity getReceiver() {
-        return receiver;
-    }
-
-    public void setReceiver(Entity receiver) {
-        this.receiver = receiver;
     }
 
     @Override
     public String toString() {
         return "SpeedChangingPerk{" +
-                "receiver=" + receiver +
-                ", valueDifference=" + valueDifference +
+                "valueDifference=" + valueDifference +
                 ", cost=" + cost +
                 '}';
     }

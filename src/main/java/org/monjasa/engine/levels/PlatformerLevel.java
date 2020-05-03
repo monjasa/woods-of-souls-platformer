@@ -1,6 +1,9 @@
 package org.monjasa.engine.levels;
 
+import com.almasb.fxgl.core.serialization.Bundle;
 import com.almasb.fxgl.entity.Entity;
+import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.entity.component.SerializableComponent;
 import com.almasb.fxgl.entity.level.Level;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import javafx.beans.property.IntegerProperty;
@@ -9,35 +12,52 @@ import javafx.geometry.Point2D;
 import org.monjasa.engine.entities.PlatformerEntityFactory;
 import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.components.EntityHPComponent;
+import org.monjasa.engine.entities.players.Player;
+import org.monjasa.engine.perks.Perk;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class PlatformerLevel {
 
     private Level level;
-    private Map<String, Object> playerState;
-    private IntegerProperty collectedCoinsProperty;
+    private IntegerProperty coinsCollectedProperty;
+    private IntegerProperty coinsAvailableProperty;
+
+//    private List<Perk> perksToUndo;
+//    private List<Perk> executedPerks;
     private List<Entity> coinsToRestore;
 
     public PlatformerLevel(PlatformerEntityFactory entityFactory, boolean developing) {
-        playerState = new HashMap<>();
+
+//        perksToUndo = new ArrayList<>();
+//        executedPerks = new ArrayList<>();
         coinsToRestore = new ArrayList<>();
 
         level = entityFactory.peekCurrentLevelFactory().createLevel(geti("level"), developing);
 
-        collectedCoinsProperty = new SimpleIntegerProperty();
-        collectedCoinsProperty.bind(getWorldProperties().intProperty("coins-total-collected"));
+        coinsCollectedProperty = new SimpleIntegerProperty();
+        coinsAvailableProperty = new SimpleIntegerProperty();
+        coinsCollectedProperty.bind(getWorldProperties().intProperty("coinsCollected"));
+        coinsAvailableProperty.bind(getWorldProperties().intProperty("coinsAvailable"));
     }
 
     public LevelMemento onCheckpoint() {
+//        executedPerks.addAll(perksToUndo);
+//        perksToUndo.clear();
         coinsToRestore.clear();
         return makeSnapshot();
     }
+
+//    public void addPerkToUndo(Perk perk) {
+//        perksToUndo.add(perk);
+//    }
 
     public void addCoinToRestore(Entity coin) {
         coinsToRestore.add(coin);
@@ -48,24 +68,32 @@ public class PlatformerLevel {
         Entity player = level.getEntities().stream()
                 .filter(entity -> entity.getType() == PlatformerEntityType.PLAYER)
                 .findFirst()
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(NoSuchEntityException::new);
 
-        playerState.put("position", player.getTransformComponent().getPosition());
-        playerState.put("health", player.getComponent(EntityHPComponent.class).getValue());
-
-        return new LevelMemento(playerState, collectedCoinsProperty.getValue());
+        return new LevelMementoBuilder()
+                .addProperty("coinsCollected", coinsCollectedProperty.getValue())
+                .addProperty("coinsAvailable", coinsAvailableProperty.getValue())
+//                .addProperty("perks", executedPerks)
+                .addEntityProperties(player, EntityHPComponent.class)
+                .buildMemento();
     }
 
     public void restoreLevel(LevelMemento levelSnapshot) {
 
         Entity player = getGameWorld().getSingleton(PlatformerEntityType.PLAYER);
 
-        player.getComponent(PhysicsComponent.class)
-                .overwritePosition((Point2D) levelSnapshot.playerState.get("position"));
+//        perksToUndo.forEach(perk -> perk.undo(player));
+//        perksToUndo.clear();
 
-        player.getComponent(EntityHPComponent.class).setValue((int) levelSnapshot.playerState.get("health"));
+        player.getComponent(PhysicsComponent.class).overwritePosition(new Point2D(
+                levelSnapshot.<Double>getProperty("position.x"),
+                levelSnapshot.<Double>getProperty("position.y")
+        ));
 
-        getWorldProperties().setValue("coins-total-collected", levelSnapshot.collectedCoins);
+        player.getComponent(EntityHPComponent.class).read(levelSnapshot.mementoBundle);
+
+        getWorldProperties().setValue("coinsCollected", levelSnapshot.<Integer>getProperty("coinsCollected"));
+        getWorldProperties().setValue("coinsAvailable", levelSnapshot.<Integer>getProperty("coinsAvailable"));
     }
 
     public Level getLevel() {
@@ -76,14 +104,66 @@ public class PlatformerLevel {
         return coinsToRestore;
     }
 
+    public static class LevelMementoBuilder {
+
+        private LevelMemento levelMemento;
+
+        LevelMementoBuilder() {
+            levelMemento = new LevelMemento();
+        }
+
+        <T extends Serializable> LevelMementoBuilder addProperty(String key, T value) {
+            levelMemento.mementoBundle.put(key, value);
+            return this;
+        }
+
+        LevelMementoBuilder addProperties(Map<String, Serializable> properties) {
+            properties.forEach(levelMemento.mementoBundle::put);
+            return this;
+        }
+
+        @SafeVarargs
+        final <E extends Component & SerializableComponent>
+        LevelMementoBuilder addEntityProperties(Entity entity, Class<E>... componentClasses) {
+
+            levelMemento.mementoBundle.put("position.x", entity.getTransformComponent().getPosition().getX());
+            levelMemento.mementoBundle.put("position.y", entity.getTransformComponent().getPosition().getY());
+
+            Stream.of(componentClasses)
+                    .map(entity::getComponent)
+                    .forEach(component -> component.write(levelMemento.mementoBundle));
+
+            return this;
+        }
+
+        LevelMementoBuilder reset() {
+            levelMemento = new LevelMemento();
+            return this;
+        }
+
+        LevelMemento buildMemento() {
+            System.out.println(levelMemento);
+            return levelMemento;
+        }
+    }
+
     public static class LevelMemento {
 
-        private Map<String, Object> playerState;
-        int collectedCoins;
+        private Bundle mementoBundle;
 
-        private LevelMemento(Map<String, Object> playerState, int collectedCoins) {
-            this.playerState = Map.copyOf(playerState);
-            this.collectedCoins = collectedCoins;
+        LevelMemento() {
+            mementoBundle = new Bundle("Memento");
+        }
+
+        public <T extends Serializable> T getProperty(String key) {
+            return mementoBundle.<T>get(key);
+        }
+
+        @Override
+        public String toString() {
+            return "LevelMemento{" +
+                    "mementoBundle=" + mementoBundle +
+                    '}';
         }
     }
 }

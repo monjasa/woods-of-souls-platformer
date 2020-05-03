@@ -6,23 +6,21 @@ import org.monjasa.engine.entities.components.EntityHPComponent;
 
 public class HPChangingPerk implements Perk {
 
-    private transient Entity receiver;
     private int valueDifference;
     private int cost;
 
-    public HPChangingPerk(Entity receiver, int valueDifference, int cost) {
-        this.receiver = receiver;
+    public HPChangingPerk(int valueDifference, int cost) {
         this.valueDifference = valueDifference;
         this.cost = cost;
     }
 
     @Override
-    public boolean execute() {
+    public boolean execute(Entity receiver) {
 
         if (receiver.hasComponent(EntityHPComponent.class)) {
 
-            if (FXGL.getWorldProperties().getInt("coins-total-collected") < cost) return false;
-            FXGL.inc("coins-total-collected", -cost);
+            if (FXGL.getWorldProperties().getInt("coinsAvailable") < cost) return false;
+            FXGL.inc("coinsAvailable", -cost);
 
             EntityHPComponent hpComponent = receiver.getComponent(EntityHPComponent.class);
             hpComponent.expandValue(valueDifference);
@@ -33,30 +31,21 @@ public class HPChangingPerk implements Perk {
     }
 
     @Override
-    public void undo() {
+    public void undo(Entity receiver) {
 
         if (receiver.hasComponent(EntityHPComponent.class)) {
 
-            FXGL.inc("coins-total-collected", cost);
+            FXGL.inc("coinsAvailable", cost);
             EntityHPComponent hpComponent = receiver.getComponent(EntityHPComponent.class);
             hpComponent.expandValue(-valueDifference);
 
         } else throw new UnsupportedPerkReceiverException(receiver, EntityHPComponent.class);
     }
 
-    public Entity getReceiver() {
-        return receiver;
-    }
-
-    public void setReceiver(Entity receiver) {
-        this.receiver = receiver;
-    }
-
     @Override
     public String toString() {
         return "HPChangingPerk{" +
-                "receiver=" + receiver +
-                ", valueDifference=" + valueDifference +
+                "valueDifference=" + valueDifference +
                 ", cost=" + cost +
                 '}';
     }

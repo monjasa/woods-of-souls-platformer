@@ -1,10 +1,12 @@
 package org.monjasa.engine.entities.components;
 
+import com.almasb.fxgl.core.serialization.Bundle;
+import com.almasb.fxgl.entity.component.SerializableComponent;
 import com.almasb.fxgl.entity.components.IntegerComponent;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
-public class EntityHPComponent extends IntegerComponent {
+public class EntityHPComponent extends IntegerComponent implements SerializableComponent {
 
     private IntegerProperty maxValueProperty;
 
@@ -20,6 +22,18 @@ public class EntityHPComponent extends IntegerComponent {
     public void expandValue(int difference) {
         setMaxValue(Math.max(getMaxValue() + difference, 0));
         changeValue(difference);
+    }
+
+    @Override
+    public void read(Bundle bundle) {
+        setValue(bundle.get(getClass().getSimpleName() + ".value"));
+        setMaxValue(bundle.get(getClass().getSimpleName() + ".maxValue"));
+    }
+
+    @Override
+    public void write(Bundle bundle) {
+        bundle.put(getClass().getSimpleName() + ".value", getValue());
+        bundle.put(getClass().getSimpleName() + ".maxValue", getMaxValue());
     }
 
     public IntegerProperty maxValueProperty() {

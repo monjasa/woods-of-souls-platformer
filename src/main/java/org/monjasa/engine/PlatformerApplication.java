@@ -25,7 +25,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import org.monjasa.engine.entities.PlatformerEntityFactory;
-import org.monjasa.engine.entities.PlatformerEntityType;
+import org.monjasa.engine.entities.components.DynamicComponent;
 import org.monjasa.engine.entities.components.EntityHPComponent;
 import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.factories.ForestLevelFactory;
@@ -73,7 +73,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.2.17");
+        settings.setVersion("0.2.18");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -85,6 +85,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setFontMono("gnomoria.ttf");
 
         settings.setAppIcon("app/icon.png");
+//        settings.setUserProfileEnabled(true);
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);
 
@@ -157,7 +158,8 @@ public class PlatformerApplication extends GameApplication {
     @Override
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("level", 0);
-        vars.put("coins-total-collected", 0);
+        vars.put("coinsCollected", 0);
+        vars.put("coinsAvailable", 0);
     }
 
     @Override
@@ -166,31 +168,31 @@ public class PlatformerApplication extends GameApplication {
         getInput().addAction(new UserAction("Move Left") {
             @Override
             protected void onAction() {
-                ((Player) getGameWorld().getSingleton(PlatformerEntityType.PLAYER)).goLeft();
+                ((Player) getGameWorld().getSingleton(PLAYER)).goLeft();
             }
 
             @Override
             protected void onActionEnd() {
-                ((Player) getGameWorld().getSingleton(PlatformerEntityType.PLAYER)).horizontalStop();
+                ((Player) getGameWorld().getSingleton(PLAYER)).horizontalStop();
             }
         }, KeyCode.LEFT);
 
         getInput().addAction(new UserAction("Move Right") {
             @Override
             protected void onAction() {
-                ((Player) getGameWorld().getSingleton(PlatformerEntityType.PLAYER)).goRight();
+                ((Player) getGameWorld().getSingleton(PLAYER)).goRight();
             }
 
             @Override
             protected void onActionEnd() {
-                ((Player) getGameWorld().getSingleton(PlatformerEntityType.PLAYER)).horizontalStop();
+                ((Player) getGameWorld().getSingleton(PLAYER)).horizontalStop();
             }
         }, KeyCode.RIGHT);
 
         getInput().addAction(new UserAction("Jump") {
             @Override
             protected void onAction() {
-                ((Player) getGameWorld().getSingleton(PlatformerEntityType.PLAYER)).goUp();
+                ((Player) getGameWorld().getSingleton(PLAYER)).goUp();
             }
         }, KeyCode.UP);
 
@@ -224,7 +226,7 @@ public class PlatformerApplication extends GameApplication {
         Text coinsCollectedText = new Text();
         coinsCollectedText.fontProperty().setValue(FXGL.getAssetLoader().loadFont("gnomoria.ttf").newFont(36));
 
-        coinsCollectedText.textProperty().bind(getWorldProperties().intProperty("coins-total-collected").asString());
+        coinsCollectedText.textProperty().bind(getWorldProperties().intProperty("coinsAvailable").asString());
 
         BorderPane textPane = new BorderPane(coinsCollectedText);
         textPane.setPadding(new Insets(0, 0, 0, 20));
@@ -234,7 +236,7 @@ public class PlatformerApplication extends GameApplication {
         coinsPane.setTranslateY(100);
 
         healthBar = new HealthBarUI(
-                getGameWorld().getSingleton(PlatformerEntityType.PLAYER).getComponent(EntityHPComponent.class)
+                getGameWorld().getSingleton(PLAYER).getComponent(EntityHPComponent.class)
         );
 
         addUINode(coinsPane);
@@ -255,7 +257,8 @@ public class PlatformerApplication extends GameApplication {
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(PLAYER, COIN) {
             @Override
             protected void onCollisionBegin(Entity player, Entity coin) {
-                getWorldProperties().increment("coins-total-collected", 1);
+                getWorldProperties().increment("coinsCollected", 1);
+                getWorldProperties().increment("coinsAvailable", 1);
                 entityFactory.peekCurrentLevelFactory().getCoinInstance().onCollected();
 
                 currentLevel.addCoinToRestore(coin);
@@ -314,7 +317,7 @@ public class PlatformerApplication extends GameApplication {
 
         getGameWorld().setLevel(currentLevel.getLevel());
 
-        Entity player = getGameWorld().getSingleton(PlatformerEntityType.PLAYER);
+        Entity player = getGameWorld().getSingleton(PLAYER);
 
         getGameScene().getViewport().setLazy(true);
         getGameScene().getViewport().bindToEntity(player, getAppWidth() / 2.0, getAppHeight() / 2.0);
@@ -365,6 +368,10 @@ public class PlatformerApplication extends GameApplication {
 
     public PerkTree getPerkTree() {
         return perkTree;
+    }
+
+    public PlatformerLevel getCurrentLevel() {
+        return currentLevel;
     }
 
     public Music getMainMenuMusic() {
