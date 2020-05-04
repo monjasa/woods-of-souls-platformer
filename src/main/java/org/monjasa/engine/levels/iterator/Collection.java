@@ -1,4 +1,4 @@
-package org.monjasa.engine.levels;
+package org.monjasa.engine.levels.iterator;
 
 public interface Collection {
 

@@ -28,11 +28,14 @@ import javafx.util.Duration;
 import org.monjasa.engine.entities.PlatformerEntityFactory;
 import org.monjasa.engine.entities.components.EntityHPComponent;
 import org.monjasa.engine.entities.enemies.Enemy;
-import org.monjasa.engine.entities.factories.ForestLevelFactory;
-import org.monjasa.engine.entities.factories.PlatformerLevelFactory;
 import org.monjasa.engine.entities.players.Player;
 import org.monjasa.engine.levels.*;
-import org.monjasa.engine.levels.Collection;
+import org.monjasa.engine.levels.iterator.Collection;
+import org.monjasa.engine.levels.iterator.LevelCollection;
+import org.monjasa.engine.levels.iterator.LevelIterator;
+import org.monjasa.engine.observer.Observer;
+import org.monjasa.engine.observer.InscriptionDisplay;
+import org.monjasa.engine.observer.Subject;
 import org.monjasa.engine.perks.PerkTree;
 import org.monjasa.engine.scenes.PerkTreeScene;
 import org.monjasa.engine.scenes.PlatformerLoadingScene;
@@ -48,7 +51,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 import static org.monjasa.engine.entities.PlatformerEntityType.*;
 import static org.monjasa.engine.levels.PlatformerLevel.LevelMemento;
 
-public class PlatformerApplication extends GameApplication {
+public class PlatformerApplication extends GameApplication{
 
     private static final boolean DEVELOPING_NEW_LEVEL = false;
 
@@ -76,7 +79,7 @@ public class PlatformerApplication extends GameApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.2.19");
+        settings.setVersion("0.2.20");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -128,7 +131,7 @@ public class PlatformerApplication extends GameApplication {
 
         getGameWorld().addEntityFactory(this.entityFactories);
 
-        Collection levelURLs = new LevelCollection(loadLevelURLs());
+        Collection levelURLs = new LevelCollection(loadLevelURLs(), entityFactories, DEVELOPING_NEW_LEVEL);
         levelIterator = levelURLs.createConsistentLevelIterator();
 
         getPhysicsWorld().setGravity(0, 1000);
@@ -283,6 +286,7 @@ public class PlatformerApplication extends GameApplication {
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(PLAYER, CHECKPOINT) {
             @Override
             protected void onCollisionBegin(Entity player, Entity checkpoint) {
+
                 levelSnapshot = currentLevel.onCheckpoint();
 
                 checkpoint.removeComponent(CollidableComponent.class);
@@ -325,8 +329,7 @@ public class PlatformerApplication extends GameApplication {
 
     private PlatformerLevel prepareLevel() {
 
-        Level level = entityFactories.createLevel(levelIterator.getNext(), DEVELOPING_NEW_LEVEL);
-        currentLevel = new PlatformerLevel(level);
+        currentLevel = new PlatformerLevel(levelIterator.getNext());
 
         levelSnapshot = currentLevel.makeSnapshot();
 

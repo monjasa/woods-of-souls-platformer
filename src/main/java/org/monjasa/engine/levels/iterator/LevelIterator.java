@@ -1,14 +1,12 @@
-package org.monjasa.engine.levels;
+package org.monjasa.engine.levels.iterator;
 
 import com.almasb.fxgl.entity.level.Level;
 
-import java.net.URL;
-
 public interface LevelIterator {
 
-    URL getNext();
+    Level getNext();
 
-    URL getCurrent();
+    Level getCurrent();
 
     boolean hasNext();
 }
