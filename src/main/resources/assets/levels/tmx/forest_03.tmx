@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="50" height="16" tilewidth="45" tileheight="45" infinite="0" nextlayerid="10" nextobjectid="50">
+ <tileset firstgid="1" name="level_spritesheet" tilewidth="45" tileheight="45" tilecount="40" columns="10">
+  <image source="level_spritesheet.png" width="450" height="180"/>
+ </tileset>
+ <tileset firstgid="41" name="unnamed" tilewidth="260" tileheight="310" tilecount="0" columns="1">
+  <image source="level_spritesheet.png" width="450" height="180"/>
+ </tileset>
+ <layer id="8" name="Tile Layer 1" width="50" height="16">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,3,4,2,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,12,13,14,12,14,15,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,4,4,10,0,0,0,0,0,0,0,21,22,23,24,23,24,25,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,17,18,19,18,20,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,27,28,29,29,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="2" name="Object Layer 1">
+  <object id="1" type="platform" x="0" y="675" width="2250" height="45"/>
+  <object id="5" type="player" x="90" y="405" width="120" height="210"/>
+  <object id="11" type="exit" x="2070" y="0" width="180" height="675"/>
+  <object id="12" type="platform" x="1215" y="315" width="315" height="45"/>
+  <object id="13" type="platform" x="675" y="405" width="225" height="45"/>
+  <object id="30" type="enemy" x="495" y="540" width="135" height="135">
+   <properties>
+    <property name="patrolEndX" type="int" value="750"/>
+   </properties>
+  </object>
+  <object id="31" type="enemy" x="1305" y="540" width="135" height="135">
+   <properties>
+    <property name="patrolEndX" type="int" value="2000"/>
+   </properties>
+  </object>
+  <object id="34" type="platform" x="720" y="450" width="135" height="45"/>
+  <object id="35" type="platform" x="1260" y="360" width="225" height="45"/>
+  <object id="37" type="coin" x="367.167" y="566" width="30" height="60"/>
+  <object id="38" type="coin" x="773" y="296.667" width="30" height="60"/>
+  <object id="39" type="coin" x="1437" y="207" width="30" height="60"/>
+  <object id="40" type="coin" x="1290.33" y="207.333" width="30" height="60"/>
+  <object id="41" type="coin" x="815.667" y="564.667" width="30" height="60"/>
+  <object id="42" type="coin" x="1175.67" y="564.667" width="30" height="60"/>
+  <object id="43" type="coin" x="1722.33" y="564.667" width="30" height="60"/>
+  <object id="44" type="checkpoint" x="1001" y="449" width="105" height="224"/>
+ </objectgroup>
+</map>

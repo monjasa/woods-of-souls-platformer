@@ -27,7 +27,7 @@ public class PlatformerFactoryAdapter implements PlatformerEntityFactory {
     public PlatformerFactoryAdapter() {
 
         factories = new LinkedHashMap<>();
-        factories.put("forest", new ForestLevelFactory(2));
+        factories.put("forest", new ForestLevelFactory(5));
     }
 
     @Override

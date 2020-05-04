@@ -27,7 +27,13 @@
   <object id="1" type="platform" x="0" y="675" width="2250" height="45"/>
   <object id="5" type="player" x="90" y="405" width="120" height="210"/>
   <object id="11" type="exit" x="2070" y="0" width="180" height="675"/>
-  <object id="41" type="coin" x="815.667" y="564.667" width="30" height="60"/>
+  <object id="30" type="enemy" x="495" y="540" width="135" height="135">
+   <properties>
+    <property name="patrolEndX" type="int" value="900"/>
+   </properties>
+  </object>
+  <object id="42" type="coin" x="895.67" y="562.667" width="30" height="60"/>
   <object id="43" type="coin" x="1722.33" y="564.667" width="30" height="60"/>
+  <object id="44" type="checkpoint" x="1223.7" y="450.121" width="133.333" height="224"/>
  </objectgroup>
 </map>

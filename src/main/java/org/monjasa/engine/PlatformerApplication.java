@@ -73,12 +73,12 @@ public class PlatformerApplication extends GameApplication{
     @Override
     protected void initSettings(GameSettings settings) {
 
-        settings.setApplicationMode(ApplicationMode.DEVELOPER);
+        settings.setApplicationMode(ApplicationMode.RELEASE);
 
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.2.21");
+        settings.setVersion("0.3.0");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -147,12 +147,13 @@ public class PlatformerApplication extends GameApplication{
 
         if (loadingFromSave) {
             SaveFile saveFile = getSaveLoadService().readSaveFileTask(new SaveFile(
-                    "hello",
-                    "monja",
+                    "progress",
+                    "player",
                     "ser"
             )).run();
 
             getSaveLoadService().load(saveFile.getData());
+            for (int i = 1; i < geti("level"); i++) prepareLevel();
             prepareLevel();
 
             loadingFromSave = false;
@@ -399,14 +400,12 @@ public class PlatformerApplication extends GameApplication{
         DataFile dataFile = new DataFile();
         getSaveLoadService().save(dataFile);
         getSaveLoadService().writeSaveFileTask(new SaveFile(
-                "hello",
-                "monja",
+                "progress",
+                "player",
                 "ser",
                 LocalDateTime.now(),
                 dataFile
         )).run();
-
-        System.out.println(dataFile);
     }
 
     public void setLoadingFromSaveState() {

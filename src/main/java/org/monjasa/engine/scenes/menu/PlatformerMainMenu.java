@@ -14,6 +14,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import org.monjasa.engine.PlatformerApplication;
 
+import java.io.File;
+
 public class PlatformerMainMenu extends FXGLMenu {
 
     private static volatile PlatformerMainMenu mainMenu;
@@ -29,11 +31,14 @@ public class PlatformerMainMenu extends FXGLMenu {
         return mainMenu;
     }
 
+    private File profileFile;
+    private PlatformerMenuBox menuBox;
+
     private PlatformerMainMenu() {
 
         super(MenuType.MAIN_MENU);
 
-        PlatformerMenuBox menuBox = createMainMenuBody();
+        profileFile = new File("profiles/player/progress.ser");
 
         double menuX = 150;
         double menuY = getAppHeight() / 4.0;
@@ -43,7 +48,6 @@ public class PlatformerMainMenu extends FXGLMenu {
 
         getMenuContentRoot().setTranslateX(getAppWidth() - 200);
 
-        getMenuRoot().getChildren().add(menuBox);
         getMenuContentRoot().getChildren().add(new MenuContent());
     }
 
@@ -60,7 +64,8 @@ public class PlatformerMainMenu extends FXGLMenu {
             FXGL.<PlatformerApplication>getAppCast().setLoadingFromSaveState();
             fireNewGame();
         });
-        platformerMenuBox.add(continueButton);
+
+        if (profileFile.exists()) platformerMenuBox.add(continueButton);
 
         PlatformerMenuButton optionsButton = new PlatformerMenuButton("Options");
         platformerMenuBox.add(optionsButton);
@@ -80,6 +85,10 @@ public class PlatformerMainMenu extends FXGLMenu {
         FXGL.getAudioPlayer().stopMusic(FXGL.<PlatformerApplication>getAppCast().getGameMusic());
         FXGL.getAudioPlayer().loopMusic(FXGL.<PlatformerApplication>getAppCast().getMainMenuMusic());
         getContentRoot().setCursor(FXGL.<PlatformerApplication>getAppCast().getImageCursor());
+
+        getMenuRoot().getChildren().remove(menuBox);
+        menuBox = createMainMenuBody();
+        getMenuRoot().getChildren().add(menuBox);
     }
 
     @Override
