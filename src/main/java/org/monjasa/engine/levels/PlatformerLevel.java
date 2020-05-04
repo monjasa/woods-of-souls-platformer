@@ -1,6 +1,7 @@
 package org.monjasa.engine.levels;
 
 import com.almasb.fxgl.core.serialization.Bundle;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.component.SerializableComponent;
@@ -10,6 +11,7 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Point2D;
+import org.monjasa.engine.PlatformerApplication;
 import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.components.EntityHPComponent;
 
@@ -25,20 +27,16 @@ import static com.almasb.fxgl.dsl.FXGL.getWorldProperties;
 public class PlatformerLevel {
 
     private Level level;
+
     private IntegerProperty coinsCollectedProperty;
     private IntegerProperty coinsAvailableProperty;
 
-    //    private List<Perk> perksToUndo;
-//    private List<Perk> executedPerks;
     private List<Entity> coinsToRestore;
 
     public PlatformerLevel(Level level) {
 
-//        perksToUndo = new ArrayList<>();
-//        executedPerks = new ArrayList<>();
         coinsToRestore = new ArrayList<>();
 
-//        level = entityFactory.peekCurrentLevelFactory().createLevel(geti("level"), developing);
         this.level = level;
 
         coinsCollectedProperty = new SimpleIntegerProperty();
@@ -48,15 +46,10 @@ public class PlatformerLevel {
     }
 
     public LevelMemento onCheckpoint() {
-//        executedPerks.addAll(perksToUndo);
-//        perksToUndo.clear();
+        FXGL.<PlatformerApplication>getAppCast().getPerkTree().savePerkTree();
         coinsToRestore.clear();
         return makeSnapshot();
     }
-
-//    public void addPerkToUndo(Perk perk) {
-//        perksToUndo.add(perk);
-//    }
 
     public void addCoinToRestore(Entity coin) {
         coinsToRestore.add(coin);
@@ -79,10 +72,8 @@ public class PlatformerLevel {
 
     public void restoreLevel(LevelMemento levelSnapshot) {
 
+        FXGL.<PlatformerApplication>getAppCast().getPerkTree().undoPerks();
         Entity player = getGameWorld().getSingleton(PlatformerEntityType.PLAYER);
-
-//        perksToUndo.forEach(perk -> perk.undo(player));
-//        perksToUndo.clear();
 
         player.getComponent(PhysicsComponent.class).overwritePosition(new Point2D(
                 levelSnapshot.<Double>getProperty("position.x"),
@@ -98,15 +89,12 @@ public class PlatformerLevel {
             coin.addComponent(new CollidableComponent(true));
             coin.setVisible(true);
         }
+
         coinsToRestore.clear();
     }
 
     public Level getLevel() {
         return level;
-    }
-
-    public List<Entity> getCoinsToRestore() {
-        return coinsToRestore;
     }
 
     public static class LevelMementoBuilder {
@@ -147,7 +135,7 @@ public class PlatformerLevel {
         }
 
         LevelMemento buildMemento() {
-            System.out.println(levelMemento);
+//            System.out.println(levelMemento);
             return levelMemento;
         }
     }
@@ -160,8 +148,12 @@ public class PlatformerLevel {
             mementoBundle = new Bundle("Memento");
         }
 
-        public <T extends Serializable> T getProperty(String key) {
+        <T extends Serializable> T getProperty(String key) {
             return mementoBundle.<T>get(key);
+        }
+
+        public Bundle getMementoBundle() {
+            return mementoBundle;
         }
 
         @Override

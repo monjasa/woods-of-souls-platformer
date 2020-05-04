@@ -3,7 +3,6 @@ package org.monjasa.engine.scenes;
 import com.almasb.fxgl.app.scene.GameScene;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.input.UserAction;
-import com.almasb.fxgl.pathfinding.Grid;
 import com.almasb.fxgl.scene.Scene;
 import com.almasb.fxgl.scene.SubScene;
 import com.almasb.fxgl.texture.Texture;
@@ -11,8 +10,6 @@ import javafx.geometry.Pos;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -33,7 +30,7 @@ public class PerkTreeScene extends SubScene {
         getInput().addAction(new UserAction("Close Perk Tree") {
             @Override
             protected void onActionEnd() {
-                requestHide();
+                FXGL.getSceneService().popSubScene();
             }
         }, KeyCode.F);
 
@@ -87,12 +84,8 @@ public class PerkTreeScene extends SubScene {
     @Override
     public void onExitingTo(Scene nextState) {
         if (nextState instanceof GameScene) {
+            perkTree.closePerkTree();
             getGameScene().getContentRoot().getChildren().forEach(node -> node.setEffect(null));
-            perkTree.clearPerkDeque();
         }
-    }
-
-    public void requestHide() {
-        FXGL.getSceneService().popSubScene();
     }
 }

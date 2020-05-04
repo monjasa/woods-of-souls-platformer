@@ -2,9 +2,12 @@ package org.monjasa.engine.levels;
 
 import com.almasb.fxgl.core.serialization.Bundle;
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.profile.DataFile;
 import com.almasb.fxgl.profile.SaveLoadHandler;
+import org.monjasa.engine.PlatformerApplication;
 import org.monjasa.engine.entities.PlatformerEntityType;
+import org.monjasa.engine.entities.components.EntityHPComponent;
 import org.monjasa.engine.perks.HPChangingPerk;
 import org.monjasa.engine.perks.SpeedChangingPerk;
 
@@ -17,14 +20,18 @@ public class LevelSaveLoadHandler implements SaveLoadHandler {
 
         Bundle levelBundle = dataFile.getBundle("Level");
         getWorldProperties().setValue("level", levelBundle.<Integer>get("level"));
-        getWorldProperties().setValue("coinsCollected", levelBundle.<Integer>get("coinsCollected"));
-        getWorldProperties().setValue("coinsAvailable", levelBundle.<Integer>get("coinsCollected"));
+
+        Bundle mementoBundle = dataFile.getBundle("Memento");
+
+        getWorldProperties().setValue("coinsCollected", mementoBundle.<Integer>get("coinsCollected"));
+        getWorldProperties().setValue("coinsAvailable", mementoBundle.<Integer>get("coinsCollected"));
 
         Bundle perksBundle = dataFile.getBundle("Perks");
+        FXGL.<PlatformerApplication>getAppCast().getPerkTree().read(perksBundle);
 
-        HPChangingPerk hpChangingPerk = perksBundle.get(HPChangingPerk.class.getSimpleName());
-//        hpChangingPerk.setReceiver(FXGL.getGameWorld().getSingleton(PlatformerEntityType.PLAYER));
-        hpChangingPerk.execute(getGameWorld().getSingleton(PlatformerEntityType.PLAYER));
+        Entity player = getGameWorld().getSingleton(PlatformerEntityType.PLAYER);
+
+        player.getComponent(EntityHPComponent.class).setValue(mementoBundle.<Integer>get("EntityHPComponent.value"));
     }
 
     @Override
@@ -32,11 +39,11 @@ public class LevelSaveLoadHandler implements SaveLoadHandler {
 
         Bundle levelBundle = new Bundle("Level");
         levelBundle.put("level", geti("level"));
-        levelBundle.put("coinsCollected", geti("coinsCollected"));
+
+        Bundle mementoBundle = FXGL.<PlatformerApplication>getAppCast().getLevelSnapshot().getMementoBundle();
 
         Bundle perksBundle = new Bundle("Perks");
-        perksBundle.put(HPChangingPerk.class.getSimpleName(), new HPChangingPerk(10, 1));
-        perksBundle.put(SpeedChangingPerk.class.getSimpleName(), new SpeedChangingPerk(0.25, 2));
+        FXGL.<PlatformerApplication>getAppCast().getPerkTree().write(perksBundle);
 
         Bundle fxglServicesBundle = new Bundle("FXGLServices");
         fxglServicesBundle.put("globalSoundVolume", 0.5);
@@ -44,6 +51,7 @@ public class LevelSaveLoadHandler implements SaveLoadHandler {
         fxglServicesBundle.put("globalMusicVolume", 0.5);
 
         dataFile.putBundle(levelBundle);
+        dataFile.putBundle(mementoBundle);
         dataFile.putBundle(perksBundle);
         dataFile.putBundle(fxglServicesBundle);
     }

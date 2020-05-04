@@ -10,11 +10,13 @@ import com.almasb.fxgl.audio.Music;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
-import com.almasb.fxgl.entity.level.Level;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.profile.DataFile;
 import com.almasb.fxgl.profile.SaveFile;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
@@ -33,9 +35,6 @@ import org.monjasa.engine.levels.*;
 import org.monjasa.engine.levels.iterator.Collection;
 import org.monjasa.engine.levels.iterator.LevelCollection;
 import org.monjasa.engine.levels.iterator.LevelIterator;
-import org.monjasa.engine.observer.Observer;
-import org.monjasa.engine.observer.InscriptionDisplay;
-import org.monjasa.engine.observer.Subject;
 import org.monjasa.engine.perks.PerkTree;
 import org.monjasa.engine.scenes.PerkTreeScene;
 import org.monjasa.engine.scenes.PlatformerLoadingScene;
@@ -55,7 +54,7 @@ public class PlatformerApplication extends GameApplication{
 
     private static final boolean DEVELOPING_NEW_LEVEL = false;
 
-    private boolean isLoadingFromSave = false;
+    private boolean loadingFromSave = false;
 
     private PlatformerLevel currentLevel;
     private LevelMemento levelSnapshot;
@@ -79,7 +78,7 @@ public class PlatformerApplication extends GameApplication{
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.2.20");
+        settings.setVersion("0.2.21");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -91,8 +90,6 @@ public class PlatformerApplication extends GameApplication{
         settings.setFontMono("gnomoria.ttf");
 
         settings.setAppIcon("app/icon.png");
-
-        settings.setProfilingEnabled(false);
 
         settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);
@@ -142,12 +139,13 @@ public class PlatformerApplication extends GameApplication{
         getAudioPlayer().stopMusic(mainMenuMusic);
         getAudioPlayer().loopMusic(gameMusic);
 
+        perkTree = new PerkTree();
         prepareNextLevel();
     }
 
     public void startGame() {
 
-        if (isLoadingFromSave) {
+        if (loadingFromSave) {
             SaveFile saveFile = getSaveLoadService().readSaveFileTask(new SaveFile(
                     "hello",
                     "monja",
@@ -157,15 +155,17 @@ public class PlatformerApplication extends GameApplication{
             getSaveLoadService().load(saveFile.getData());
             prepareLevel();
 
-            isLoadingFromSave = false;
+            loadingFromSave = false;
         }
 
+        set("initialLevel", false);
         getGameController().gotoPlay();
     }
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
         vars.put("level", 0);
+        vars.put("initialLevel", true);
         vars.put("coinsCollected", 0);
         vars.put("coinsAvailable", 0);
     }
@@ -211,19 +211,10 @@ public class PlatformerApplication extends GameApplication{
             }
         }, KeyCode.F);
 
-        getInput().addAction(new UserAction("Save") {
+        getInput().addAction(new UserAction("Save Game") {
             @Override
             protected void onActionBegin() {
-                DataFile dataFile = new DataFile();
-                getSaveLoadService().save(dataFile);
-
-                getSaveLoadService().writeSaveFileTask(new SaveFile(
-                        "hello",
-                        "monja",
-                        "ser",
-                        LocalDateTime.now(),
-                        dataFile
-                )).run();
+                saveGame();
             }
         }, KeyCode.K);
     }
@@ -291,12 +282,13 @@ public class PlatformerApplication extends GameApplication{
 
                 checkpoint.removeComponent(CollidableComponent.class);
 
-                Text checkpointReachedText = new Text("You reached the checkpoint");
-                checkpointReachedText.fontProperty().setValue(FXGL.getAssetLoader().loadFont("gnomoria.ttf").newFont(50));
+                Text checkpointReachedText = new Text("You reached the checkpoint!");
+                checkpointReachedText.fontProperty().setValue(FXGL.getAssetLoader().loadFont("gnomoria.ttf").newFont(42));
                 checkpointReachedText.fillProperty().setValue(Color.WHITE);
+                checkpointReachedText.setTranslateX(10);
+                checkpointReachedText.setTranslateY(getAppHeight() - 10);
 
-                addUINode(checkpointReachedText, getAppWidth() / 2.0 - checkpointReachedText.getLayoutBounds().getWidth() / 2.0,
-                        getAppHeight() / 2.0 - checkpointReachedText.getLayoutBounds().getHeight() / 2.0);
+                addUINode(checkpointReachedText);
 
                 runOnce(() -> {
                     removeUINode(checkpointReachedText);
@@ -330,7 +322,6 @@ public class PlatformerApplication extends GameApplication{
     private PlatformerLevel prepareLevel() {
 
         currentLevel = new PlatformerLevel(levelIterator.getNext());
-
         levelSnapshot = currentLevel.makeSnapshot();
 
         getGameWorld().setLevel(currentLevel.getLevel());
@@ -342,9 +333,41 @@ public class PlatformerApplication extends GameApplication{
         getGameScene().getViewport().setBounds(0, 0, currentLevel.getLevel().getWidth(),
                 currentLevel.getLevel().getHeight());
 
-        if (healthBar != null) healthBar.updatePlayerHP(player.getComponent(EntityHPComponent.class));
+        if (!getb("initialLevel")) {
 
-        perkTree = new PerkTree();
+            healthBar.updatePlayerHP(player.getComponent(EntityHPComponent.class));
+            FXGL.getExecutor().startAsyncFX(() -> {
+
+                String savingGameMessage = "Saving game";
+                Text savingGameTitle = new Text();
+                savingGameTitle.fontProperty().setValue(FXGL.getAssetLoader().loadFont("gnomoria.ttf").newFont(42));
+                savingGameTitle.fillProperty().setValue(Color.WHITE);
+                savingGameTitle.setTranslateX(10);
+                savingGameTitle.setTranslateY(getAppHeight() - 10);
+
+                StringProperty savingGameProcessMessage = new SimpleStringProperty("");
+                run(() -> savingGameProcessMessage.setValue(savingGameProcessMessage.concat(".").getValue()), Duration.millis(500), 3);
+                savingGameTitle.textProperty().bind(Bindings.concat(savingGameMessage, savingGameProcessMessage));
+
+                Text gameSavedTitle = new Text("Game saved!");
+                gameSavedTitle.fontProperty().setValue(FXGL.getAssetLoader().loadFont("gnomoria.ttf").newFont(42));
+                gameSavedTitle.fillProperty().setValue(Color.WHITE);
+                gameSavedTitle.setTranslateX(10);
+                gameSavedTitle.setTranslateY(getAppHeight() - 10);
+
+                addUINode(savingGameTitle);
+                saveGame();
+
+                runOnce(() -> {
+                    removeUINode(savingGameTitle);
+                    addUINode(gameSavedTitle);
+
+                    runOnce(() -> {
+                        removeUINode(gameSavedTitle);
+                    }, Duration.millis(2000));
+                }, Duration.millis(2000));
+            });
+        }
 
         return currentLevel;
     }
@@ -369,8 +392,25 @@ public class PlatformerApplication extends GameApplication{
         getGameScene().getViewport().fade(this::prepareNextLevel);
     }
 
+    private void saveGame() {
+
+        perkTree.savePerkTree();
+
+        DataFile dataFile = new DataFile();
+        getSaveLoadService().save(dataFile);
+        getSaveLoadService().writeSaveFileTask(new SaveFile(
+                "hello",
+                "monja",
+                "ser",
+                LocalDateTime.now(),
+                dataFile
+        )).run();
+
+        System.out.println(dataFile);
+    }
+
     public void setLoadingFromSaveState() {
-        isLoadingFromSave = true;
+        loadingFromSave = true;
     }
 
     public static void main(String[] args) {
@@ -381,8 +421,8 @@ public class PlatformerApplication extends GameApplication{
         return perkTree;
     }
 
-    public PlatformerLevel getCurrentLevel() {
-        return currentLevel;
+    public LevelMemento getLevelSnapshot() {
+        return levelSnapshot;
     }
 
     public Music getMainMenuMusic() {
