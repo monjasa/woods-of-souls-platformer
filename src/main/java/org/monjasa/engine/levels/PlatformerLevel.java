@@ -84,6 +84,7 @@ public class PlatformerLevel {
 
         getWorldProperties().setValue("coinsCollected", levelSnapshot.<Integer>getProperty("coinsCollected"));
         getWorldProperties().setValue("coinsAvailable", levelSnapshot.<Integer>getProperty("coinsAvailable"));
+        FXGL.<PlatformerApplication>getAppCast().notifyObservers();
 
         for (Entity coin : coinsToRestore) {
             coin.addComponent(new CollidableComponent(true));

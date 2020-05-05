@@ -2,6 +2,7 @@ package org.monjasa.engine.perks;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import org.monjasa.engine.PlatformerApplication;
 import org.monjasa.engine.entities.components.EntityHPComponent;
 
 public class HPChangingPerk implements Perk {
@@ -20,7 +21,7 @@ public class HPChangingPerk implements Perk {
         if (receiver.hasComponent(EntityHPComponent.class)) {
 
             if (FXGL.getWorldProperties().getInt("coinsAvailable") < cost) return false;
-            FXGL.inc("coinsAvailable", -cost);
+            FXGL.<PlatformerApplication>getAppCast().changeCoinsAvailableValue(-cost);
 
             EntityHPComponent hpComponent = receiver.getComponent(EntityHPComponent.class);
             hpComponent.expandValue(valueDifference);
@@ -35,7 +36,7 @@ public class HPChangingPerk implements Perk {
 
         if (receiver.hasComponent(EntityHPComponent.class)) {
 
-            FXGL.inc("coinsAvailable", cost);
+            FXGL.<PlatformerApplication>getAppCast().changeCoinsAvailableValue(cost);
             EntityHPComponent hpComponent = receiver.getComponent(EntityHPComponent.class);
             hpComponent.expandValue(-valueDifference);
 

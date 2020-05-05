@@ -2,6 +2,7 @@ package org.monjasa.engine.perks;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
+import org.monjasa.engine.PlatformerApplication;
 import org.monjasa.engine.entities.components.DynamicComponent;
 
 public class SpeedChangingPerk implements Perk {
@@ -20,7 +21,7 @@ public class SpeedChangingPerk implements Perk {
         if (receiver.hasComponent(DynamicComponent.class)) {
 
             if (FXGL.getWorldProperties().getInt("coinsAvailable") < cost) return false;
-            FXGL.inc("coinsAvailable", -cost);
+            FXGL.<PlatformerApplication>getAppCast().changeCoinsAvailableValue(-cost);
 
             DynamicComponent dynamicComponent = receiver.getComponent(DynamicComponent.class);
             dynamicComponent.setHorizontalVelocity(dynamicComponent.getHorizontalVelocity() + valueDifference);
@@ -35,7 +36,7 @@ public class SpeedChangingPerk implements Perk {
 
         if (receiver.hasComponent(DynamicComponent.class)) {
 
-            FXGL.inc("coinsAvailable", cost);
+            FXGL.<PlatformerApplication>getAppCast().changeCoinsAvailableValue(cost);
             DynamicComponent dynamicComponent = receiver.getComponent(DynamicComponent.class);
             dynamicComponent.setHorizontalVelocity(dynamicComponent.getHorizontalVelocity() - valueDifference);
 

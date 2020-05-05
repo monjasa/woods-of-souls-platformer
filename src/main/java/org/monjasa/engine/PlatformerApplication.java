@@ -35,11 +35,14 @@ import org.monjasa.engine.levels.*;
 import org.monjasa.engine.levels.iterator.Collection;
 import org.monjasa.engine.levels.iterator.LevelCollection;
 import org.monjasa.engine.levels.iterator.LevelIterator;
+import org.monjasa.engine.observer.Observer;
+import org.monjasa.engine.observer.Subject;
 import org.monjasa.engine.perks.PerkTree;
 import org.monjasa.engine.scenes.PerkTreeScene;
 import org.monjasa.engine.scenes.PlatformerLoadingScene;
 import org.monjasa.engine.scenes.menu.PlatformerGameMenu;
 import org.monjasa.engine.scenes.menu.PlatformerMainMenu;
+import org.monjasa.engine.ui.CoinsUI;
 import org.monjasa.engine.ui.HealthBarUI;
 
 import java.net.URL;
@@ -50,7 +53,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 import static org.monjasa.engine.entities.PlatformerEntityType.*;
 import static org.monjasa.engine.levels.PlatformerLevel.LevelMemento;
 
-public class PlatformerApplication extends GameApplication{
+public class PlatformerApplication extends GameApplication implements Subject {
 
     private static final boolean DEVELOPING_NEW_LEVEL = false;
 
@@ -62,6 +65,7 @@ public class PlatformerApplication extends GameApplication{
     private PlatformerEntityFactory entityFactories;
 
     private HealthBarUI healthBar;
+
     private PerkTree perkTree;
 
     private Music mainMenuMusic;
@@ -69,6 +73,8 @@ public class PlatformerApplication extends GameApplication{
     private ImageCursor imageCursor;
 
     private LevelIterator levelIterator;
+
+    private List<Observer> observers;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -131,6 +137,8 @@ public class PlatformerApplication extends GameApplication{
         Collection levelURLs = new LevelCollection(loadLevelURLs(), entityFactories, DEVELOPING_NEW_LEVEL);
         levelIterator = levelURLs.createConsistentLevelIterator();
 
+        observers = new ArrayList<>();
+
         getPhysicsWorld().setGravity(0, 1000);
 
         getGameScene().setCursor(imageCursor.getImage(), new Point2D(0, 0));
@@ -153,6 +161,7 @@ public class PlatformerApplication extends GameApplication{
             )).run();
 
             getSaveLoadService().load(saveFile.getData());
+            notifyObservers();
             for (int i = 1; i < geti("level"); i++) prepareLevel();
             prepareLevel();
 
@@ -223,23 +232,14 @@ public class PlatformerApplication extends GameApplication{
     @Override
     protected void initUI() {
 
-        Text coinsCollectedText = new Text();
-        coinsCollectedText.fontProperty().setValue(FXGL.getAssetLoader().loadFont("gnomoria.ttf").newFont(36));
-
-        coinsCollectedText.textProperty().bind(getWorldProperties().intProperty("coinsAvailable").asString());
-
-        BorderPane textPane = new BorderPane(coinsCollectedText);
-        textPane.setPadding(new Insets(0, 0, 0, 20));
-
-        StackPane coinsPane = new StackPane(texture("ui-border.png"), textPane);
-        coinsPane.setTranslateX(30);
-        coinsPane.setTranslateY(100);
+        CoinsUI coinsPlate = new CoinsUI();
+        registerObserver(coinsPlate);
 
         healthBar = new HealthBarUI(
                 getGameWorld().getSingleton(PLAYER).getComponent(EntityHPComponent.class)
         );
 
-        addUINode(coinsPane);
+        addUINode(coinsPlate, 30, 100);
         addUINode(healthBar, 20, 30);
     }
 
@@ -258,7 +258,8 @@ public class PlatformerApplication extends GameApplication{
             @Override
             protected void onCollisionBegin(Entity player, Entity coin) {
                 getWorldProperties().increment("coinsCollected", 1);
-                getWorldProperties().increment("coinsAvailable", 1);
+                changeCoinsAvailableValue(1);
+
                 entityFactories.getCurrentFactory().getCoinInstance().onCollected();
 
                 currentLevel.addCoinToRestore(coin);
@@ -373,6 +374,7 @@ public class PlatformerApplication extends GameApplication{
         return currentLevel;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     private Optional<PlatformerLevel> prepareNextLevel() {
 
         if (!levelIterator.hasNext()) {
@@ -406,6 +408,30 @@ public class PlatformerApplication extends GameApplication{
                 LocalDateTime.now(),
                 dataFile
         )).run();
+    }
+
+    public void changeCoinsAvailableValue(int difference) {
+        inc("coinsAvailable", difference);
+        notifyObservers();
+    }
+
+    @Override
+    public void registerObserver(Observer o) {
+        observers.add(o);
+    }
+
+    @Override
+    public void removeObserver(Observer o) {
+        if (observers.indexOf(o) >= 0) {
+            observers.remove(o);
+        }
+    }
+
+    @Override
+    public void notifyObservers() {
+        for (Observer o : observers) {
+            o.update(getWorldProperties().getInt("coinsAvailable"));
+        }
     }
 
     public void setLoadingFromSaveState() {
