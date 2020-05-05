@@ -11,6 +11,7 @@ import org.monjasa.engine.entities.components.EntityHPComponent;
 import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.players.components.PlayerControlComponent;
 import org.monjasa.engine.entities.players.components.PlayerViewComponent;
+import org.monjasa.engine.entities.players.weapons.WeaponStrategy;
 
 import static com.almasb.fxgl.dsl.FXGL.runOnce;
 
@@ -19,6 +20,8 @@ public abstract class Player extends Entity implements Updatable {
     PlayerViewComponent playerViewComponent;
     PlayerControlComponent playerControlComponent;
     EntityHPComponent playerHPComponent;
+
+    WeaponStrategy weaponStrategy;
 
     public abstract Player attachPlayerComponents();
 
@@ -65,6 +68,10 @@ public abstract class Player extends Entity implements Updatable {
 
     public void goUp() {
         playerControlComponent.jump();
+    }
+
+    public void attack() {
+        weaponStrategy.useWeapon();
     }
 
     public PlayerViewComponent getPlayerViewComponent() {

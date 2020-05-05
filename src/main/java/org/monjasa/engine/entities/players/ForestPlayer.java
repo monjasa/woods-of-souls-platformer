@@ -3,8 +3,13 @@ package org.monjasa.engine.entities.players;
 import org.monjasa.engine.entities.players.components.ForestPlayerControlComponent;
 import org.monjasa.engine.entities.players.components.ForestPlayerViewComponent;
 import org.monjasa.engine.entities.components.EntityHPComponent;
+import org.monjasa.engine.entities.players.weapons.BowStrategy;
 
 public class ForestPlayer extends Player {
+
+    public ForestPlayer() {
+        weaponStrategy = new BowStrategy();
+    }
 
     @Override
     public Player attachPlayerComponents() {

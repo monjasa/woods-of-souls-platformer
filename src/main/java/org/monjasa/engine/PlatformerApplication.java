@@ -17,17 +17,15 @@ import com.almasb.fxgl.profile.SaveFile;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import org.monjasa.engine.entities.PlatformerEntityFactory;
+import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.components.EntityHPComponent;
 import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.players.Player;
@@ -55,7 +53,7 @@ import static org.monjasa.engine.levels.PlatformerLevel.LevelMemento;
 
 public class PlatformerApplication extends GameApplication implements Subject {
 
-    private static final boolean DEVELOPING_NEW_LEVEL = false;
+    private static final boolean DEVELOPING_NEW_LEVEL = true;
 
     private boolean loadingFromSave = false;
 
@@ -79,12 +77,12 @@ public class PlatformerApplication extends GameApplication implements Subject {
     @Override
     protected void initSettings(GameSettings settings) {
 
-        settings.setApplicationMode(ApplicationMode.RELEASE);
+        settings.setApplicationMode(ApplicationMode.DEVELOPER);
 
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.3.0");
+        settings.setVersion("0.3.2");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -186,33 +184,40 @@ public class PlatformerApplication extends GameApplication implements Subject {
         getInput().addAction(new UserAction("Move Left") {
             @Override
             protected void onAction() {
-                ((Player) getGameWorld().getSingleton(PLAYER)).goLeft();
+                FXGL.<PlatformerApplication>getAppCast().<Player>getSingletonCast(PLAYER).goLeft();
             }
 
             @Override
             protected void onActionEnd() {
-                ((Player) getGameWorld().getSingleton(PLAYER)).horizontalStop();
+                FXGL.<PlatformerApplication>getAppCast().<Player>getSingletonCast(PLAYER).horizontalStop();
             }
         }, KeyCode.LEFT);
 
         getInput().addAction(new UserAction("Move Right") {
             @Override
             protected void onAction() {
-                ((Player) getGameWorld().getSingleton(PLAYER)).goRight();
+                FXGL.<PlatformerApplication>getAppCast().<Player>getSingletonCast(PLAYER).goRight();
             }
 
             @Override
             protected void onActionEnd() {
-                ((Player) getGameWorld().getSingleton(PLAYER)).horizontalStop();
+                FXGL.<PlatformerApplication>getAppCast().<Player>getSingletonCast(PLAYER).horizontalStop();
             }
         }, KeyCode.RIGHT);
 
         getInput().addAction(new UserAction("Jump") {
             @Override
             protected void onAction() {
-                ((Player) getGameWorld().getSingleton(PLAYER)).goUp();
+                FXGL.<PlatformerApplication>getAppCast().<Player>getSingletonCast(PLAYER).goUp();
             }
         }, KeyCode.UP);
+
+        getInput().addAction(new UserAction("Attack") {
+            @Override
+            protected void onActionBegin() {
+                FXGL.<PlatformerApplication>getAppCast().<Player>getSingletonCast(PLAYER).attack();
+            }
+        }, KeyCode.X);
 
         getInput().addAction(new UserAction("Open Perk Tree") {
             @Override
@@ -221,12 +226,6 @@ public class PlatformerApplication extends GameApplication implements Subject {
             }
         }, KeyCode.F);
 
-        getInput().addAction(new UserAction("Save Game") {
-            @Override
-            protected void onActionBegin() {
-                saveGame();
-            }
-        }, KeyCode.K);
     }
 
     @Override
@@ -436,6 +435,11 @@ public class PlatformerApplication extends GameApplication implements Subject {
 
     public void setLoadingFromSaveState() {
         loadingFromSave = true;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Entity> T getSingletonCast(PlatformerEntityType entityType) {
+        return (T) getGameWorld().getSingleton(entityType);
     }
 
     public static void main(String[] args) {
