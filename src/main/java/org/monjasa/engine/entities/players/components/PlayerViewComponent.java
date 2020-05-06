@@ -13,4 +13,8 @@ public abstract class PlayerViewComponent extends Component {
     public abstract void onMovingVertically();
 
     public abstract void onVerticalStop();
+
+    public abstract void onMeleeAttack();
+
+    public abstract void onRangedAttack();
 }

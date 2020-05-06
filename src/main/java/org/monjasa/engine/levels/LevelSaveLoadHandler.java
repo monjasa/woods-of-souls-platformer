@@ -8,8 +8,7 @@ import com.almasb.fxgl.profile.SaveLoadHandler;
 import org.monjasa.engine.PlatformerApplication;
 import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.components.EntityHPComponent;
-import org.monjasa.engine.perks.HPChangingPerk;
-import org.monjasa.engine.perks.SpeedChangingPerk;
+import org.monjasa.engine.perks.PerkTree;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -27,7 +26,7 @@ public class LevelSaveLoadHandler implements SaveLoadHandler {
         getWorldProperties().setValue("coinsAvailable", mementoBundle.<Integer>get("coinsCollected"));
 
         Bundle perksBundle = dataFile.getBundle("Perks");
-        FXGL.<PlatformerApplication>getAppCast().getPerkTree().read(perksBundle);
+        getWorldProperties().<PerkTree>getObject("perkTree").read(perksBundle);
 
         Entity player = getGameWorld().getSingleton(PlatformerEntityType.PLAYER);
 
@@ -43,7 +42,7 @@ public class LevelSaveLoadHandler implements SaveLoadHandler {
         Bundle mementoBundle = FXGL.<PlatformerApplication>getAppCast().getLevelSnapshot().getMementoBundle();
 
         Bundle perksBundle = new Bundle("Perks");
-        FXGL.<PlatformerApplication>getAppCast().getPerkTree().write(perksBundle);
+        getWorldProperties().<PerkTree>getObject("perkTree").write(perksBundle);
 
         Bundle fxglServicesBundle = new Bundle("FXGLServices");
         fxglServicesBundle.put("globalSoundVolume", 0.5);

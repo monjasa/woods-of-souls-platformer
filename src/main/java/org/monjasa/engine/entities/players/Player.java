@@ -4,6 +4,8 @@ import com.almasb.fxgl.core.Updatable;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.physics.PhysicsComponent;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 import org.monjasa.engine.PlatformerApplication;
@@ -12,6 +14,7 @@ import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.players.components.PlayerControlComponent;
 import org.monjasa.engine.entities.players.components.PlayerViewComponent;
 import org.monjasa.engine.entities.players.weapons.WeaponStrategy;
+import org.monjasa.engine.util.CircularQueue;
 
 import static com.almasb.fxgl.dsl.FXGL.runOnce;
 
@@ -21,9 +24,12 @@ public abstract class Player extends Entity implements Updatable {
     PlayerControlComponent playerControlComponent;
     EntityHPComponent playerHPComponent;
 
-    WeaponStrategy weaponStrategy;
+    CircularQueue<WeaponStrategy> weaponStrategies;
+    Property<WeaponStrategy> currentWeaponStrategyProperty = new SimpleObjectProperty<>();
 
     public abstract Player attachPlayerComponents();
+
+    public abstract void attack();
 
     @Override
     public void onUpdate(double tpf) {
@@ -70,8 +76,8 @@ public abstract class Player extends Entity implements Updatable {
         playerControlComponent.jump();
     }
 
-    public void attack() {
-        weaponStrategy.useWeapon();
+    public void switchWeapon() {
+        currentWeaponStrategyProperty.setValue(weaponStrategies.peekNextElement());
     }
 
     public PlayerViewComponent getPlayerViewComponent() {
@@ -80,5 +86,13 @@ public abstract class Player extends Entity implements Updatable {
 
     public PlayerControlComponent getPlayerControlComponent() {
         return playerControlComponent;
+    }
+
+    public Property<WeaponStrategy> currentWeaponStrategyProperty() {
+        return currentWeaponStrategyProperty;
+    }
+
+    public WeaponStrategy getCurrentWeaponStrategy() {
+        return currentWeaponStrategyProperty.getValue();
     }
 }

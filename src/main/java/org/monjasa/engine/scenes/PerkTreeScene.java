@@ -20,6 +20,7 @@ import org.monjasa.engine.perks.PerkTree;
 import org.monjasa.engine.perks.SpeedChangingPerk;
 
 import static com.almasb.fxgl.dsl.FXGL.getGameScene;
+import static com.almasb.fxgl.dsl.FXGL.getWorldProperties;
 
 public class PerkTreeScene extends SubScene {
 
@@ -33,8 +34,6 @@ public class PerkTreeScene extends SubScene {
                 FXGL.getSceneService().popSubScene();
             }
         }, KeyCode.F);
-
-        perkTree = FXGL.<PlatformerApplication>getAppCast().getPerkTree();
 
         StackPane perkTreePane = new StackPane();
 
@@ -72,6 +71,11 @@ public class PerkTreeScene extends SubScene {
         hBox.setAlignment(Pos.CENTER);
 
         return hBox;
+    }
+
+    @Override
+    public void onCreate() {
+        perkTree = getWorldProperties().getObject("perkTree");
     }
 
     @Override

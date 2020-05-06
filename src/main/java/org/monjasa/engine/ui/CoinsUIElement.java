@@ -12,11 +12,11 @@ import org.monjasa.engine.observer.Observer;
 
 import static com.almasb.fxgl.dsl.FXGL.texture;
 
-public class CoinsUI extends StackPane implements Observer {
+public class CoinsUIElement extends StackPane implements Observer {
 
     private IntegerProperty availableCoinsProperty;
 
-    public CoinsUI() {
+    public CoinsUIElement() {
 
         availableCoinsProperty = new SimpleIntegerProperty();
 

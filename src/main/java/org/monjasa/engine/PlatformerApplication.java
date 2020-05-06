@@ -40,8 +40,10 @@ import org.monjasa.engine.scenes.PerkTreeScene;
 import org.monjasa.engine.scenes.PlatformerLoadingScene;
 import org.monjasa.engine.scenes.menu.PlatformerGameMenu;
 import org.monjasa.engine.scenes.menu.PlatformerMainMenu;
-import org.monjasa.engine.ui.CoinsUI;
-import org.monjasa.engine.ui.HealthBarUI;
+import org.monjasa.engine.ui.CoinsUIElement;
+import org.monjasa.engine.ui.HealthBarUIElement;
+import org.monjasa.engine.ui.UpdatableUIElement;
+import org.monjasa.engine.ui.WeaponUIElement;
 
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -53,7 +55,7 @@ import static org.monjasa.engine.levels.PlatformerLevel.LevelMemento;
 
 public class PlatformerApplication extends GameApplication implements Subject {
 
-    private static final boolean DEVELOPING_NEW_LEVEL = true;
+    private static final boolean DEVELOPING_NEW_LEVEL = false;
 
     private boolean loadingFromSave = false;
 
@@ -62,17 +64,14 @@ public class PlatformerApplication extends GameApplication implements Subject {
 
     private PlatformerEntityFactory entityFactories;
 
-    private HealthBarUI healthBar;
-
-    private PerkTree perkTree;
+    private List<Observer> observers;
+    private List<UpdatableUIElement> updatableUIElements;
 
     private Music mainMenuMusic;
     private Music gameMusic;
     private ImageCursor imageCursor;
 
     private LevelIterator levelIterator;
-
-    private List<Observer> observers;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -136,6 +135,7 @@ public class PlatformerApplication extends GameApplication implements Subject {
         levelIterator = levelURLs.createConsistentLevelIterator();
 
         observers = new ArrayList<>();
+        updatableUIElements = new ArrayList<>();
 
         getPhysicsWorld().setGravity(0, 1000);
 
@@ -145,7 +145,6 @@ public class PlatformerApplication extends GameApplication implements Subject {
         getAudioPlayer().stopMusic(mainMenuMusic);
         getAudioPlayer().loopMusic(gameMusic);
 
-        perkTree = new PerkTree();
         prepareNextLevel();
     }
 
@@ -172,10 +171,13 @@ public class PlatformerApplication extends GameApplication implements Subject {
 
     @Override
     protected void initGameVars(Map<String, Object> vars) {
+
         vars.put("level", 0);
         vars.put("initialLevel", true);
         vars.put("coinsCollected", 0);
         vars.put("coinsAvailable", 0);
+
+        vars.put("perkTree", new PerkTree());
     }
 
     @Override
@@ -219,27 +221,39 @@ public class PlatformerApplication extends GameApplication implements Subject {
             }
         }, KeyCode.X);
 
+        getInput().addAction(new UserAction("Switch Weapon") {
+            @Override
+            protected void onActionBegin() {
+                FXGL.<PlatformerApplication>getAppCast().<Player>getSingletonCast(PLAYER).switchWeapon();
+            }
+        }, KeyCode.C);
+
         getInput().addAction(new UserAction("Open Perk Tree") {
             @Override
             protected void onAction() {
                 getSceneService().pushSubScene(new PerkTreeScene());
             }
-        }, KeyCode.F);
+        }, KeyCode.E);
 
     }
 
     @Override
     protected void initUI() {
 
-        CoinsUI coinsPlate = new CoinsUI();
-        registerObserver(coinsPlate);
-
-        healthBar = new HealthBarUI(
+        WeaponUIElement weaponElement = new WeaponUIElement(FXGL.<PlatformerApplication>getAppCast().<Player>getSingletonCast(PLAYER));
+        HealthBarUIElement healthBarElement = new HealthBarUIElement(
                 getGameWorld().getSingleton(PLAYER).getComponent(EntityHPComponent.class)
         );
 
-        addUINode(coinsPlate, 30, 100);
-        addUINode(healthBar, 20, 30);
+        CoinsUIElement coinsElement = new CoinsUIElement();
+        registerObserver(coinsElement);
+
+        updatableUIElements.add(weaponElement);
+        updatableUIElements.add(healthBarElement);
+
+        addUINode(weaponElement, 220, 110);
+        addUINode(healthBarElement, 20, 30);
+        addUINode(coinsElement, 30, 100);
     }
 
     @Override
@@ -327,7 +341,7 @@ public class PlatformerApplication extends GameApplication implements Subject {
 
         getGameWorld().setLevel(currentLevel.getLevel());
 
-        Entity player = getGameWorld().getSingleton(PLAYER);
+        Player player = getSingletonCast(PLAYER);
 
         getGameScene().getViewport().setLazy(true);
         getGameScene().getViewport().bindToEntity(player, getAppWidth() / 2.0, getAppHeight() / 2.0);
@@ -336,7 +350,8 @@ public class PlatformerApplication extends GameApplication implements Subject {
 
         if (!getb("initialLevel")) {
 
-            healthBar.updatePlayerHP(player.getComponent(EntityHPComponent.class));
+            updatableUIElements.forEach(element -> element.updatePlayer(player));
+
             FXGL.getExecutor().startAsyncFX(() -> {
 
                 String savingGameMessage = "Saving game";
@@ -396,7 +411,7 @@ public class PlatformerApplication extends GameApplication implements Subject {
 
     private void saveGame() {
 
-        perkTree.savePerkTree();
+        getWorldProperties().<PerkTree>getObject("perkTree").savePerkTree();
 
         DataFile dataFile = new DataFile();
         getSaveLoadService().save(dataFile);
@@ -444,10 +459,6 @@ public class PlatformerApplication extends GameApplication implements Subject {
 
     public static void main(String[] args) {
         launch(args);
-    }
-
-    public PerkTree getPerkTree() {
-        return perkTree;
     }
 
     public LevelMemento getLevelSnapshot() {

@@ -14,6 +14,7 @@ import javafx.geometry.Point2D;
 import org.monjasa.engine.PlatformerApplication;
 import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.components.EntityHPComponent;
+import org.monjasa.engine.perks.PerkTree;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class PlatformerLevel {
     }
 
     public LevelMemento onCheckpoint() {
-        FXGL.<PlatformerApplication>getAppCast().getPerkTree().savePerkTree();
+        getWorldProperties().<PerkTree>getObject("perkTree").savePerkTree();
         coinsToRestore.clear();
         return makeSnapshot();
     }
@@ -65,14 +66,13 @@ public class PlatformerLevel {
         return new LevelMementoBuilder()
                 .addProperty("coinsCollected", coinsCollectedProperty.getValue())
                 .addProperty("coinsAvailable", coinsAvailableProperty.getValue())
-//                .addProperty("perks", executedPerks)
                 .addEntityProperties(player, EntityHPComponent.class)
                 .buildMemento();
     }
 
     public void restoreLevel(LevelMemento levelSnapshot) {
 
-        FXGL.<PlatformerApplication>getAppCast().getPerkTree().undoPerks();
+        getWorldProperties().<PerkTree>getObject("perkTree").undoPerks();
         Entity player = getGameWorld().getSingleton(PlatformerEntityType.PLAYER);
 
         player.getComponent(PhysicsComponent.class).overwritePosition(new Point2D(
@@ -136,7 +136,6 @@ public class PlatformerLevel {
         }
 
         LevelMemento buildMemento() {
-//            System.out.println(levelMemento);
             return levelMemento;
         }
     }

@@ -13,8 +13,9 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import org.monjasa.engine.entities.components.EntityHPComponent;
+import org.monjasa.engine.entities.players.Player;
 
-public class HealthBarUI extends StackPane {
+public class HealthBarUIElement extends StackPane implements UpdatableUIElement {
 
     private static final int WIDTH = 340;
     private static final int HEIGHT = 45;
@@ -24,7 +25,7 @@ public class HealthBarUI extends StackPane {
     private Rectangle bar;
     private Text currentHealthLabel;
 
-    public HealthBarUI(EntityHPComponent playerHP) {
+    public HealthBarUIElement(EntityHPComponent playerHP) {
 
         this.playerHP = playerHP;
 
@@ -68,9 +69,10 @@ public class HealthBarUI extends StackPane {
         });
     }
 
-    public void updatePlayerHP(EntityHPComponent playerHP) {
+    @Override
+    public void updatePlayer(Player player) {
 
-        this.playerHP = playerHP;
+        playerHP = player.getComponent(EntityHPComponent.class);
 
         bindHPChangeListeners();
 
