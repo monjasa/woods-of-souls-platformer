@@ -191,9 +191,7 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
     }
 
     @Override
-    public Level createLevel(URL levelURL, boolean isDevelopingNewLevel) {
-
-        Level level = super.createLevel(levelURL, isDevelopingNewLevel);
+    protected List<Entity> createBackground() {
 
         int backgroundParallaxIndex = 0;
         int foregroundParallaxIndex = 10;
@@ -235,26 +233,6 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
                 .layerAt(--backgroundParallaxIndex)
                 .buildEntity());
 
-        layers.forEach(level.getEntities()::add);
-
-        List<Entity> borders = new ArrayList<>();
-
-        borders.add(new SimpleEntityBuilder(this)
-                .positionAt(0, 0)
-                .addHitBox(new HitBox(BoundingShape.box(1, level.getHeight())))
-                .attachComponents(new PhysicsComponent())
-                .buildEntity());
-
-        borders.add(new SimpleEntityBuilder(this)
-                .positionAt(level.getWidth(), 0)
-                .addHitBox(new HitBox(BoundingShape.box(1, level.getHeight())))
-                .attachComponents(new PhysicsComponent())
-                .buildEntity());
-
-        borders.forEach(level.getEntities()::add);
-
-        return level;
+        return layers;
     }
-
-
 }

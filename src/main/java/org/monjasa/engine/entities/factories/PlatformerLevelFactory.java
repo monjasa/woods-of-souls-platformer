@@ -1,9 +1,14 @@
 package org.monjasa.engine.entities.factories;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.level.Level;
+import com.almasb.fxgl.physics.BoundingShape;
+import com.almasb.fxgl.physics.HitBox;
+import com.almasb.fxgl.physics.PhysicsComponent;
+import org.monjasa.engine.entities.SimpleEntityBuilder;
 import org.monjasa.engine.entities.checkpoints.Checkpoint;
 import org.monjasa.engine.entities.coins.Coin;
 import org.monjasa.engine.entities.enemies.Enemy;
@@ -13,6 +18,7 @@ import org.monjasa.engine.entities.players.Player;
 import org.monjasa.engine.levels.tmx.PlatformerTMXLoaderFacade;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
@@ -62,7 +68,20 @@ public abstract class PlatformerLevelFactory {
 
     public abstract Checkpoint createCheckpoint(SpawnData data);
 
-    public Level createLevel(URL levelURL, boolean isDevelopingNewLevel) {
+    public final Level createLevel(URL levelURL, boolean isDevelopingNewLevel) {
+
+        Level level = loadLevel(levelURL, isDevelopingNewLevel);
+
+        List<Entity> layers = createBackground();
+        layers.forEach(level.getEntities()::add);
+
+        List<Entity> borders = createBorders(level.getWidth(), level.getHeight());
+        borders.forEach(level.getEntities()::add);
+
+        return level;
+    }
+
+    private Level loadLevel(URL levelURL, boolean isDevelopingNewLevel) {
 
         if (isDevelopingNewLevel && developingLevelName != null) {
             return getAssetLoader().loadLevel(String.format("tmx/%s.tmx", developingLevelName),
@@ -70,6 +89,27 @@ public abstract class PlatformerLevelFactory {
         } else {
             return new PlatformerTMXLoaderFacade().load(levelURL, FXGL.getGameWorld());
         }
+    }
+
+    protected abstract List<Entity> createBackground();
+
+    protected List<Entity> createBorders(double width, double height) {
+
+        List<Entity> borders = new ArrayList<>();
+
+        borders.add(new SimpleEntityBuilder(this)
+                .positionAt(0, 0)
+                .addHitBox(new HitBox(BoundingShape.box(1, height)))
+                .attachComponents(new PhysicsComponent())
+                .buildEntity());
+
+        borders.add(new SimpleEntityBuilder(this)
+                .positionAt(width, 0)
+                .addHitBox(new HitBox(BoundingShape.box(1, height)))
+                .attachComponents(new PhysicsComponent())
+                .buildEntity());
+
+        return borders;
     }
 
     public int getMaxLevel() {

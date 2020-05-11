@@ -34,7 +34,7 @@ import org.monjasa.engine.levels.iterator.Collection;
 import org.monjasa.engine.levels.iterator.LevelCollection;
 import org.monjasa.engine.levels.iterator.LevelIterator;
 import org.monjasa.engine.observer.Observer;
-import org.monjasa.engine.observer.Subject;
+import org.monjasa.engine.observer.Publisher;
 import org.monjasa.engine.perks.PerkTree;
 import org.monjasa.engine.scenes.PerkTreeScene;
 import org.monjasa.engine.scenes.PlatformerLoadingScene;
@@ -53,7 +53,7 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 import static org.monjasa.engine.entities.PlatformerEntityType.*;
 import static org.monjasa.engine.levels.PlatformerLevel.LevelMemento;
 
-public class PlatformerApplication extends GameApplication implements Subject {
+public class PlatformerApplication extends GameApplication implements Publisher {
 
     private static final boolean DEVELOPING_NEW_LEVEL = false;
 
@@ -81,7 +81,7 @@ public class PlatformerApplication extends GameApplication implements Subject {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.3.4");
+        settings.setVersion("0.3.5");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");

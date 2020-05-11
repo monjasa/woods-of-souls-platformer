@@ -1,6 +1,6 @@
 package org.monjasa.engine.observer;
 
-public interface Subject {
+public interface Publisher {
 
     void registerObserver(Observer o);
     void removeObserver(Observer o);
