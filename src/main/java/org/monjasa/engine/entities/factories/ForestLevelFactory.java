@@ -96,25 +96,28 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
     public Player createPlayer(SpawnData data) {
 
         PhysicsComponent playerPhysicsComponent = new PhysicsComponent();
-        playerPhysicsComponent.addGroundSensor(new HitBox("GROUND_SENSOR", new Point2D(25, 164),
+        playerPhysicsComponent.addGroundSensor(new HitBox("GROUND_SENSOR", new Point2D(25, 119),
                 BoundingShape.box(40, 2)));
         playerPhysicsComponent.setBodyType(BodyType.DYNAMIC);
         playerPhysicsComponent.setFixtureDef(new FixtureDef().friction(0.0f));
 
-        HitBox playerMainHitBox = new HitBox("PLAYER_HITBOX",
-                new Point2D(20, 0),
-                BoundingShape.box(50, 165));
+//        HitBox playerMainHitBox = new HitBox("PLAYER_HITBOX",
+//                new Point2D(20, 0),
+//                BoundingShape.box(50, 165));
 
-        return new PlayerBuilder(this)
+        Player player = new PlayerBuilder(this)
                 .loadFromSpawnData(data)
                 .addType(PlatformerEntityType.PLAYER)
                 .centerAt(data.<Integer>get("width") / 2.0, data.<Integer>get("height") / 2.0)
-                .addHitBox(playerMainHitBox)
+//                .addHitBox(playerMainHitBox)
+                .addHitBox(new HitBox(BoundingShape.box(80, 120)))
                 .layerAt(1)
                 .attachComponents(playerPhysicsComponent)
                 .attachComponents(playerComponents)
                 .setCollidable()
                 .buildPlayer();
+
+        return player;
     }
 
     @Override

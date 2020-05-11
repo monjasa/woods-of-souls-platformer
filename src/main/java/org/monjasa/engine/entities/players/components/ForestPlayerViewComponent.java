@@ -35,26 +35,26 @@ public class ForestPlayerViewComponent extends PlayerViewComponent {
 
         walkingSounds = FXGL.getAssetLoader().loadMusic("walking-sound.mp3");
 
-        animationIdle = new AnimationChannel(FXGL.image("player-spritesheet.png"), 4,
-                90, 165, Duration.INDEFINITE, 0, 0);
+        animationIdle = new AnimationChannel(FXGL.image("player-spritesheet.png"), 12,
+                80, 120, Duration.millis(1000), 0, 3);
 
-        animationWalking = new AnimationChannel(FXGL.image("player-spritesheet.png"), 4,
-                90, 165, Duration.millis(700), 1, 2);
+        animationWalking = new AnimationChannel(FXGL.image("player-spritesheet.png"), 12,
+                80, 120, Duration.millis(1000), 0, 3);
 
-        animationBeforeJump = new AnimationChannel(FXGL.image("player-spritesheet.png"), 4,
-                90, 165, Duration.INDEFINITE, 3, 3);
+        animationBeforeJump = new AnimationChannel(FXGL.image("player-spritesheet.png"), 12,
+                20, 30, Duration.millis(1000), 0, 3);
 
-        animationJumping = new AnimationChannel(FXGL.image("player-spritesheet.png"), 4,
-                90, 165, Duration.millis(700), 4, 4);
+        animationJumping = new AnimationChannel(FXGL.image("player-spritesheet.png"), 12,
+                80, 120, Duration.millis(2000), 5, 23);
 
-        animationAfterJump = new AnimationChannel(FXGL.image("player-spritesheet.png"), 4,
-                90, 165, Duration.INDEFINITE, 5, 5);
+        animationAfterJump = new AnimationChannel(FXGL.image("player-spritesheet.png"), 12,
+                80, 120, Duration.millis(1000), 0, 3);
 
-        animationDaggerAttack = new AnimationChannel(FXGL.image("player-spritesheet.png"), 4,
-                90, 165, Duration.INDEFINITE, 6, 6);
+        animationDaggerAttack = new AnimationChannel(FXGL.image("player-spritesheet.png"), 12,
+                80, 120, Duration.millis(1000), 25, 40);
 
-        animationBowAttack = new AnimationChannel(FXGL.image("player-spritesheet.png"), 4,
-                90, 165, Duration.INDEFINITE, 7, 7);
+        animationBowAttack = new AnimationChannel(FXGL.image("player-spritesheet.png"), 12,
+                80, 120, Duration.millis(1500), 5, 23);
 
         uninterruptibleAnimations = List.of(
                 animationAfterJump,
@@ -112,12 +112,12 @@ public class ForestPlayerViewComponent extends PlayerViewComponent {
     @Override
     public void onMeleeAttack() {
         animatedTexture.playAnimationChannel(animationDaggerAttack);
-        FXGL.runOnce(() -> animatedTexture.loopAnimationChannel(animationIdle), Duration.millis(500));
+        FXGL.runOnce(() -> animatedTexture.loopAnimationChannel(animationIdle), Duration.millis(1000));
     }
 
     @Override
     public void onRangedAttack() {
         animatedTexture.playAnimationChannel(animationBowAttack);
-        FXGL.runOnce(() -> animatedTexture.loopAnimationChannel(animationIdle), Duration.millis(500));
+        FXGL.runOnce(() -> animatedTexture.loopAnimationChannel(animationIdle), Duration.millis(1500));
     }
 }

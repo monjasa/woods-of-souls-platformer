@@ -81,7 +81,7 @@ public class PlatformerApplication extends GameApplication implements Subject {
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.3.2");
+        settings.setVersion("0.3.4");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -94,7 +94,7 @@ public class PlatformerApplication extends GameApplication implements Subject {
 
         settings.setAppIcon("app/icon.png");
 
-        settings.setMainMenuEnabled(true);
+        settings.setMainMenuEnabled(false);
         settings.setGameMenuEnabled(true);
 
         settings.setSceneFactory(new SceneFactory() {
