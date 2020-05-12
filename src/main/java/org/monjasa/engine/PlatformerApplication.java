@@ -3,6 +3,7 @@ package org.monjasa.engine;
 import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.app.MenuItem;
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.LoadingScene;
 import com.almasb.fxgl.app.scene.SceneFactory;
@@ -12,8 +13,6 @@ import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.fxgl.profile.DataFile;
-import com.almasb.fxgl.profile.SaveFile;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -21,6 +20,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
@@ -29,7 +29,8 @@ import org.monjasa.engine.entities.PlatformerEntityType;
 import org.monjasa.engine.entities.components.EntityHPComponent;
 import org.monjasa.engine.entities.enemies.Enemy;
 import org.monjasa.engine.entities.players.Player;
-import org.monjasa.engine.levels.*;
+import org.monjasa.engine.levels.LevelSaveLoadHandler;
+import org.monjasa.engine.levels.PlatformerLevel;
 import org.monjasa.engine.levels.iterator.Collection;
 import org.monjasa.engine.levels.iterator.LevelCollection;
 import org.monjasa.engine.levels.iterator.LevelIterator;
@@ -46,7 +47,6 @@ import org.monjasa.engine.ui.UpdatableUIElement;
 import org.monjasa.engine.ui.WeaponUIElement;
 
 import java.net.URL;
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
@@ -81,7 +81,7 @@ public class PlatformerApplication extends GameApplication implements Publisher 
         settings.setWidth(1280);
         settings.setHeight(720);
         settings.setTitle("Woods of Souls");
-        settings.setVersion("0.3.5");
+        settings.setVersion("0.3.6");
 
         List<String> cssRules = new ArrayList<>();
         cssRules.add("styles.css");
@@ -94,7 +94,9 @@ public class PlatformerApplication extends GameApplication implements Publisher 
 
         settings.setAppIcon("app/icon.png");
 
-        settings.setMainMenuEnabled(false);
+        settings.setEnabledMenuItems(EnumSet.allOf(MenuItem.class));
+
+        settings.setMainMenuEnabled(true);
         settings.setGameMenuEnabled(true);
 
         settings.setSceneFactory(new SceneFactory() {
@@ -151,15 +153,12 @@ public class PlatformerApplication extends GameApplication implements Publisher 
     public void startGame() {
 
         if (loadingFromSave) {
-            SaveFile saveFile = getSaveLoadService().readSaveFileTask(new SaveFile(
-                    "progress",
-                    "player",
-                    "ser"
-            )).run();
 
-            getSaveLoadService().load(saveFile.getData());
+            getSaveLoadService().readAndLoadTask("progress.sav").run();
             notifyObservers();
+
             for (int i = 1; i < geti("level"); i++) prepareLevel();
+
             prepareLevel();
 
             loadingFromSave = false;
@@ -219,14 +218,14 @@ public class PlatformerApplication extends GameApplication implements Publisher 
             protected void onActionBegin() {
                 FXGL.<PlatformerApplication>getAppCast().<Player>getSingletonCast(PLAYER).attack();
             }
-        }, KeyCode.X);
+        }, MouseButton.PRIMARY);
 
         getInput().addAction(new UserAction("Switch Weapon") {
             @Override
             protected void onActionBegin() {
                 FXGL.<PlatformerApplication>getAppCast().<Player>getSingletonCast(PLAYER).switchWeapon();
             }
-        }, KeyCode.C);
+        }, MouseButton.SECONDARY);
 
         getInput().addAction(new UserAction("Open Perk Tree") {
             @Override
@@ -234,13 +233,13 @@ public class PlatformerApplication extends GameApplication implements Publisher 
                 getSceneService().pushSubScene(new PerkTreeScene());
             }
         }, KeyCode.E);
-
     }
 
     @Override
     protected void initUI() {
 
-        WeaponUIElement weaponElement = new WeaponUIElement(FXGL.<PlatformerApplication>getAppCast().<Player>getSingletonCast(PLAYER));
+        WeaponUIElement weaponElement = new WeaponUIElement(FXGL.<PlatformerApplication>getAppCast().getSingletonCast(PLAYER));
+
         HealthBarUIElement healthBarElement = new HealthBarUIElement(
                 getGameWorld().getSingleton(PLAYER).getComponent(EntityHPComponent.class)
         );
@@ -308,6 +307,14 @@ public class PlatformerApplication extends GameApplication implements Publisher 
                 runOnce(() -> {
                     removeUINode(checkpointReachedText);
                 }, Duration.millis(3000));
+            }
+        });
+
+        getPhysicsWorld().addCollisionHandler(new CollisionHandler(ENEMY, PROJECTILE) {
+            @Override
+            protected void onCollisionBegin(Entity enemy, Entity arrow) {
+                enemy.removeFromWorld();
+                arrow.removeFromWorld();
             }
         });
     }
@@ -413,15 +420,7 @@ public class PlatformerApplication extends GameApplication implements Publisher 
 
         getWorldProperties().<PerkTree>getObject("perkTree").savePerkTree();
 
-        DataFile dataFile = new DataFile();
-        getSaveLoadService().save(dataFile);
-        getSaveLoadService().writeSaveFileTask(new SaveFile(
-                "progress",
-                "player",
-                "ser",
-                LocalDateTime.now(),
-                dataFile
-        )).run();
+        getSaveLoadService().saveAndWriteTask("progress.sav").run();
     }
 
     public void changeCoinsAvailableValue(int difference) {

@@ -7,5 +7,6 @@ public enum PlatformerEntityType {
     COIN,
     ENEMY,
     CHECKPOINT,
+    PROJECTILE,
     EXIT
 }

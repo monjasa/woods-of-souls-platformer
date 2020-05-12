@@ -3,8 +3,6 @@ package org.monjasa.engine.entities.factories;
 import com.almasb.fxgl.dsl.views.ScrollingBackgroundView;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.entity.component.Component;
-import com.almasb.fxgl.entity.level.Level;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
@@ -38,11 +36,11 @@ import org.monjasa.engine.entities.players.PlayerBuilder;
 import org.monjasa.engine.entities.players.components.ForestPlayerControlComponent;
 import org.monjasa.engine.entities.players.components.ForestPlayerViewComponent;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.almasb.fxgl.dsl.FXGL.getAssetLoader;
+import static com.almasb.fxgl.dsl.FXGL.texture;
 
 public class ForestLevelFactory extends PlatformerLevelFactory {
 
@@ -135,7 +133,7 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
                 .loadFromSpawnData(data)
                 .layerAt(1)
                 .attachComponents(new ForestEnemy.ForestEnemyComponent(patrolEndX))
-                .addHitBox(new HitBox(BoundingShape.box(75, 99)))
+                .addHitBox(new HitBox(BoundingShape.box(135, 135)))
                 .setCollidable()
                 .buildEnemy();
     }
@@ -183,7 +181,6 @@ public class ForestLevelFactory extends PlatformerLevelFactory {
         return new CheckpointBuilder(this)
                 .loadFromSpawnData(data)
                 .addType(PlatformerEntityType.CHECKPOINT)
-                .layerAt(0)
                 .addView(texture("stone-checkpoint.png", 105, 224))
                 .addHitBox(new HitBox(BoundingShape.box(data.<Integer>get("width"), data.<Integer>get("height"))))
                 .setCollidable()

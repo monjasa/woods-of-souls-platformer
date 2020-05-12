@@ -38,7 +38,7 @@ public class PlatformerMainMenu extends FXGLMenu {
 
         super(MenuType.MAIN_MENU);
 
-        profileFile = new File("profiles/player/progress.ser");
+        profileFile = new File("progress.sav");
 
         double menuX = 150;
         double menuY = getAppHeight() / 4.0;

@@ -70,7 +70,7 @@ public abstract class PlatformerLevelFactory {
 
     public final Level createLevel(URL levelURL, boolean isDevelopingNewLevel) {
 
-        Level level = loadLevel(levelURL, isDevelopingNewLevel);
+        Level level = loadLevelFromTMX(levelURL, isDevelopingNewLevel);
 
         List<Entity> layers = createBackground();
         layers.forEach(level.getEntities()::add);
@@ -81,7 +81,7 @@ public abstract class PlatformerLevelFactory {
         return level;
     }
 
-    private Level loadLevel(URL levelURL, boolean isDevelopingNewLevel) {
+    private Level loadLevelFromTMX(URL levelURL, boolean isDevelopingNewLevel) {
 
         if (isDevelopingNewLevel && developingLevelName != null) {
             return getAssetLoader().loadLevel(String.format("tmx/%s.tmx", developingLevelName),
@@ -93,19 +93,19 @@ public abstract class PlatformerLevelFactory {
 
     protected abstract List<Entity> createBackground();
 
-    protected List<Entity> createBorders(double width, double height) {
+    protected List<Entity> createBorders(double levelWidth, double levelHeight) {
 
         List<Entity> borders = new ArrayList<>();
 
         borders.add(new SimpleEntityBuilder(this)
                 .positionAt(0, 0)
-                .addHitBox(new HitBox(BoundingShape.box(1, height)))
+                .addHitBox(new HitBox(BoundingShape.box(1, levelHeight)))
                 .attachComponents(new PhysicsComponent())
                 .buildEntity());
 
         borders.add(new SimpleEntityBuilder(this)
-                .positionAt(width, 0)
-                .addHitBox(new HitBox(BoundingShape.box(1, height)))
+                .positionAt(levelWidth, 0)
+                .addHitBox(new HitBox(BoundingShape.box(1, levelHeight)))
                 .attachComponents(new PhysicsComponent())
                 .buildEntity());
 

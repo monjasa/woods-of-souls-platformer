@@ -14,7 +14,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import org.monjasa.engine.PlatformerApplication;
 import org.monjasa.engine.perks.HPChangingPerk;
 import org.monjasa.engine.perks.PerkTree;
 import org.monjasa.engine.perks.SpeedChangingPerk;
@@ -33,7 +32,7 @@ public class PerkTreeScene extends SubScene {
             protected void onActionEnd() {
                 FXGL.getSceneService().popSubScene();
             }
-        }, KeyCode.F);
+        }, KeyCode.E);
 
         StackPane perkTreePane = new StackPane();
 

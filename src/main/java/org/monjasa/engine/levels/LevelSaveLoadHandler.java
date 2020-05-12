@@ -44,14 +44,8 @@ public class LevelSaveLoadHandler implements SaveLoadHandler {
         Bundle perksBundle = new Bundle("Perks");
         getWorldProperties().<PerkTree>getObject("perkTree").write(perksBundle);
 
-        Bundle fxglServicesBundle = new Bundle("FXGLServices");
-        fxglServicesBundle.put("globalSoundVolume", 0.5);
-        fxglServicesBundle.put("fullscreen", false);
-        fxglServicesBundle.put("globalMusicVolume", 0.5);
-
         dataFile.putBundle(levelBundle);
         dataFile.putBundle(mementoBundle);
         dataFile.putBundle(perksBundle);
-        dataFile.putBundle(fxglServicesBundle);
     }
 }

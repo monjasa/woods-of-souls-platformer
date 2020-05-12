@@ -51,10 +51,10 @@ public class ForestPlayerViewComponent extends PlayerViewComponent {
                 80, 120, Duration.millis(1000), 0, 3);
 
         animationDaggerAttack = new AnimationChannel(FXGL.image("player-spritesheet.png"), 12,
-                80, 120, Duration.millis(1000), 25, 40);
+                80, 120, Duration.millis(500), 25, 40);
 
         animationBowAttack = new AnimationChannel(FXGL.image("player-spritesheet.png"), 12,
-                80, 120, Duration.millis(1500), 5, 23);
+                80, 120, Duration.millis(500), 5, 23);
 
         uninterruptibleAnimations = List.of(
                 animationAfterJump,
